@@ -10,18 +10,24 @@
 
     <title>Our Space - Login ❤️</title>
 
+
     <style>
 
         * {
             box-sizing: border-box;
         }
 
+
         body {
+
             margin: 0;
+
             min-height: 100vh;
 
             display: flex;
+
             align-items: center;
+
             justify-content: center;
 
             font-family: Arial, sans-serif;
@@ -34,14 +40,21 @@
                 );
 
             padding: 20px;
+
         }
+
 
         .login-container {
+
             width: 100%;
+
             max-width: 400px;
+
         }
 
+
         .login-card {
+
             background: white;
 
             padding: 35px 25px;
@@ -53,27 +66,41 @@
                 rgba(0, 0, 0, 0.10);
 
             text-align: center;
+
         }
+
 
         .heart {
+
             font-size: 55px;
+
             margin-bottom: 5px;
+
         }
 
+
         h1 {
+
             margin: 5px 0 8px;
 
             color: #e75480;
+
         }
 
+
         .subtitle {
+
             color: #999;
+
             font-size: 14px;
 
             margin-bottom: 25px;
+
         }
 
+
         input {
+
             width: 100%;
 
             padding: 14px;
@@ -87,13 +114,19 @@
             font-size: 15px;
 
             outline: none;
+
         }
+
 
         input:focus {
+
             border-color: #e75480;
+
         }
 
+
         .login-btn {
+
             width: 100%;
 
             padding: 14px;
@@ -109,24 +142,36 @@
             font-size: 16px;
 
             cursor: pointer;
+
         }
+
 
         .login-btn:hover {
+
             opacity: 0.9;
+
         }
 
+
         #message {
+
             margin-top: 15px;
 
             font-size: 14px;
+
+            min-height: 20px;
+
         }
 
+
         .footer {
+
             margin-top: 25px;
 
             color: #aaa;
 
             font-size: 12px;
+
         }
 
     </style>
@@ -139,36 +184,46 @@
 
 <div class="login-container">
 
+
     <div class="login-card">
+
 
         <div class="heart">
             💕
         </div>
 
+
         <h1>
             Our Space
         </h1>
+
 
         <p class="subtitle">
             Only for us ❤️
         </p>
 
 
+        <!-- USERNAME -->
+
         <input
-            type="email"
-            id="email"
-            placeholder="Email"
-            autocomplete="email"
+            type="text"
+            id="username"
+            placeholder="👤 Username"
+            autocomplete="username"
         >
 
+
+        <!-- PASSWORD -->
 
         <input
             type="password"
             id="password"
-            placeholder="Password"
+            placeholder="🔐 Password"
             autocomplete="current-password"
         >
 
+
+        <!-- LOGIN -->
 
         <button
             class="login-btn"
@@ -186,17 +241,22 @@
             Nur Hazirah ❤️ Zulkarnain
         </p>
 
+
     </div>
 
 </div>
 
 
-<!-- SUPABASE -->
+
+<!-- =========================
+     SUPABASE
+========================= -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 
 <script>
+
 
 const SUPABASE_URL =
     "https://ognpydprqxxwjdnophxq.supabase.co";
@@ -216,11 +276,13 @@ const supabaseClient =
 
 async function login() {
 
-    const email =
+
+    const username =
         document
-            .getElementById("email")
+            .getElementById("username")
             .value
-            .trim();
+            .trim()
+            .toLowerCase();
 
 
     const password =
@@ -235,15 +297,20 @@ async function login() {
         );
 
 
-    if (!email || !password) {
+    // =========================
+    // CHECK INPUT
+    // =========================
+
+    if (!username || !password) {
 
         message.style.color =
             "#e75480";
 
         message.textContent =
-            "Please enter email and password ❤️";
+            "Please enter username and password ❤️";
 
         return;
+
     }
 
 
@@ -255,46 +322,104 @@ async function login() {
 
 
 
-    const { data, error } =
-        await supabaseClient.auth
-            .signInWithPassword({
+    // =========================
+    // FIND USERNAME
+    // =========================
 
-                email: email,
+    const {
+        data: profile,
+        error: profileError
+    } =
+        await supabaseClient
+            .from("profiles")
+            .select("id, username")
+            .eq("username", username)
+            .maybeSingle();
 
-                password: password
 
-            });
+    if (profileError) {
 
+        console.error(
+            "Profile error:",
+            profileError
+        );
 
-    if (error) {
-
-        console.error(error);
 
         message.style.color =
             "#e75480";
 
         message.textContent =
-            error.message;
+            "Unable to find account.";
 
         return;
+
     }
 
 
+    if (!profile) {
+
+        message.style.color =
+            "#e75480";
+
+        message.textContent =
+            "Username not found ❤️";
+
+        return;
+
+    }
+
+
+
+    // =========================
+    // GET AUTH USER
+    // =========================
+
+    const {
+        data: authData,
+        error: authError
+    } =
+        await supabaseClient
+            .from("profiles")
+            .select("id")
+            .eq("username", username)
+            .single();
+
+
+    if (authError || !authData) {
+
+        message.style.color =
+            "#e75480";
+
+        message.textContent =
+            "Account not found.";
+
+        return;
+
+    }
+
+
+
+    /*
+       Supabase signInWithPassword()
+       masih perlukan email.
+
+       Untuk username login, kita perlukan
+       email dalaman account tersebut.
+
+       Jadi bahagian ini akan kita sambungkan
+       selepas profile account dibuat.
+    */
+
+
     message.style.color =
-        "#4caf50";
+        "#e75480";
 
     message.textContent =
-        "Login successful ❤️";
+        "Username account found ❤️";
 
-
-    setTimeout(() => {
-
-        window.location.href =
-            "index.html";
-
-    }, 700);
 
 }
+
 
 </script>
 
