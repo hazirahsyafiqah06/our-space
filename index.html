@@ -3,6 +3,7 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta name="viewport"
@@ -10,7 +11,9 @@
 
     <title>Our Space ❤️</title>
 
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet"
+          href="style.css">
+
 </head>
 
 <body>
@@ -43,7 +46,75 @@
             Together since 18 January 2021
         </p>
 
-        <!-- COUNTDOWN -->
+
+        <!-- =========================
+             RELATIONSHIP COUNTER
+        ========================== -->
+
+        <div class="relationship-card">
+
+            <div class="relationship-icon">
+                💕
+            </div>
+
+            <h2>
+                Our Journey
+            </h2>
+
+            <p class="relationship-subtitle">
+                Together for
+            </p>
+
+            <div id="relationshipCounter">
+
+                <div class="journey-box">
+
+                    <strong id="years">
+                        0
+                    </strong>
+
+                    <span>
+                        Years
+                    </span>
+
+                </div>
+
+                <div class="journey-box">
+
+                    <strong id="months">
+                        0
+                    </strong>
+
+                    <span>
+                        Months
+                    </span>
+
+                </div>
+
+                <div class="journey-box">
+
+                    <strong id="journeyDays">
+                        0
+                    </strong>
+
+                    <span>
+                        Days
+                    </span>
+
+                </div>
+
+            </div>
+
+            <p class="started-date">
+                Since 18 January 2021 ❤️
+            </p>
+
+        </div>
+
+
+        <!-- =========================
+             ANNIVERSARY COUNTDOWN
+        ========================== -->
 
         <div class="anniversary">
 
@@ -54,23 +125,51 @@
             <div id="countdown">
 
                 <div class="countdown-box">
-                    <strong id="days">0</strong>
-                    <span>Days</span>
+
+                    <strong id="days">
+                        0
+                    </strong>
+
+                    <span>
+                        Days
+                    </span>
+
                 </div>
 
                 <div class="countdown-box">
-                    <strong id="hours">0</strong>
-                    <span>Hours</span>
+
+                    <strong id="hours">
+                        0
+                    </strong>
+
+                    <span>
+                        Hours
+                    </span>
+
                 </div>
 
                 <div class="countdown-box">
-                    <strong id="minutes">0</strong>
-                    <span>Minutes</span>
+
+                    <strong id="minutes">
+                        0
+                    </strong>
+
+                    <span>
+                        Minutes
+                    </span>
+
                 </div>
 
                 <div class="countdown-box">
-                    <strong id="seconds">0</strong>
-                    <span>Seconds</span>
+
+                    <strong id="seconds">
+                        0
+                    </strong>
+
+                    <span>
+                        Seconds
+                    </span>
+
                 </div>
 
             </div>
@@ -86,7 +185,10 @@
 
     <div class="logout-area">
 
-        <button onclick="logout()" class="logout-btn">
+        <button
+            onclick="logout()"
+            class="logout-button"
+        >
             🚪 Logout
         </button>
 
@@ -103,16 +205,16 @@
             📝 Notes
         </button>
 
+        <button onclick="showSection('message-section')">
+            💌 Secret Message
+        </button>
+
         <button onclick="showSection('gallery-section')">
             📸 Gallery
         </button>
 
         <button onclick="showSection('memories-section')">
-            💌 Memories
-        </button>
-
-        <button onclick="showSection('messages-section')">
-            💬 Secret
+            💕 Memories
         </button>
 
     </nav>
@@ -124,30 +226,131 @@
 
     <section id="notes-section">
 
-        <div class="section-card">
+        <div class="section-title">
 
-            <h2>📝 Our Notes</h2>
+            <span>
+                📝
+            </span>
 
-            <div class="note-form">
+            <div>
+                <h2>
+                    Our Notes
+                </h2>
 
-                <input
-                    type="text"
-                    id="title"
-                    placeholder="Note title..."
-                >
+                <p>
+                    Little things we want to remember ❤️
+                </p>
+            </div>
 
-                <textarea
-                    id="content"
-                    placeholder="Write something..."
-                ></textarea>
+        </div>
 
-                <button onclick="addNote()">
-                    + Save Note
-                </button>
+
+        <div class="note-form">
+
+            <input
+                type="text"
+                id="title"
+                placeholder="Note title..."
+            >
+
+            <textarea
+                id="content"
+                placeholder="Write something..."
+            ></textarea>
+
+            <button
+                onclick="addNote()"
+                class="primary-button"
+            >
+                + Save Note
+            </button>
+
+        </div>
+
+
+        <div id="notes"></div>
+
+    </section>
+
+
+    <!-- =========================
+         SECRET MESSAGE
+    ========================== -->
+
+    <section id="message-section">
+
+        <div class="section-title">
+
+            <span>
+                💌
+            </span>
+
+            <div>
+                <h2>
+                    Secret Messages
+                </h2>
+
+                <p>
+                    A little message just for us ❤️
+                </p>
+            </div>
+
+        </div>
+
+
+        <div class="message-card">
+
+            <div class="message-to">
+                💕 Send a message
+            </div>
+
+            <textarea
+                id="secretMessage"
+                class="message-input"
+                placeholder="Write something for your favourite person..."
+            ></textarea>
+
+
+            <div class="message-recipient">
+
+                <label>
+                    Send to:
+                </label>
+
+                <select id="receiverSelect">
+
+                    <option value="327adb82-7b8b-4e01-be1d-2802a334e6db">
+                        Zulkarnain ❤️
+                    </option>
+
+                    <option value="fd76923c-6b95-4668-b020-32ff37192990">
+                        Hazirah ❤️
+                    </option>
+
+                </select>
 
             </div>
 
-            <div id="notes"></div>
+
+            <button
+                onclick="sendSecretMessage()"
+                class="primary-button"
+            >
+                💌 Send Message
+            </button>
+
+        </div>
+
+
+        <div class="messages-heading">
+            💕 Our Messages
+        </div>
+
+        <div id="secretMessages">
+
+            <p class="empty-message">
+                No messages yet ❤️
+            </p>
 
         </div>
 
@@ -160,33 +363,50 @@
 
     <section id="gallery-section">
 
-        <div class="section-card">
+        <div class="section-title">
 
-            <h2>📸 Our Gallery</h2>
+            <span>
+                📸
+            </span>
 
-            <div class="upload-card">
+            <div>
+                <h2>
+                    Our Gallery
+                </h2>
 
-                <input
-                    type="file"
-                    id="imageInput"
-                    accept="image/*"
-                >
-
-                <input
-                    type="text"
-                    id="caption"
-                    placeholder="Caption for this photo..."
-                >
-
-                <button onclick="uploadImage()">
-                    📸 Upload Photo
-                </button>
-
+                <p>
+                    Our favourite moments together ❤️
+                </p>
             </div>
 
-            <div id="gallery"></div>
+        </div>
+
+
+        <div class="upload-card">
+
+            <input
+                type="file"
+                id="imageInput"
+                accept="image/*"
+            >
+
+            <input
+                type="text"
+                id="caption"
+                placeholder="Caption for this photo..."
+            >
+
+            <button
+                onclick="uploadImage()"
+                class="primary-button"
+            >
+                📸 Upload Photo
+            </button>
 
         </div>
+
+
+        <div id="gallery"></div>
 
     </section>
 
@@ -197,86 +417,60 @@
 
     <section id="memories-section">
 
-        <div class="section-card">
+        <div class="section-title">
 
-            <h2>💌 Our Memories</h2>
+            <span>
+                💕
+            </span>
 
-            <div class="memory">
+            <div>
+                <h2>
+                    Our Memories
+                </h2>
 
-                <span>❤️</span>
-
-                <div>
-                    <h3>18 January 2021</h3>
-
-                    <p>
-                        The beginning of our story.
-                    </p>
-                </div>
-
+                <p>
+                    Moments that mean everything ❤️
+                </p>
             </div>
 
-            <div class="memory">
+        </div>
 
-                <span>💕</span>
 
-                <div>
-                    <h3>Our First Memory</h3>
+        <div class="memory">
 
-                    <p>
-                        More memories coming soon...
-                    </p>
-                </div>
+            <span class="memory-icon">
+                ❤️
+            </span>
+
+            <div>
+
+                <h3>
+                    18 January 2021
+                </h3>
+
+                <p>
+                    The beginning of our story.
+                </p>
 
             </div>
 
         </div>
 
-    </section>
 
+        <div class="memory">
 
-    <!-- =========================
-         SECRET MESSAGE
-    ========================== -->
+            <span class="memory-icon">
+                💕
+            </span>
 
-    <section id="messages-section">
+            <div>
 
-        <div class="section-card message-section-card">
+                <h3>
+                    Our First Memory
+                </h3>
 
-            <h2>
-                💬 Secret Messages
-            </h2>
-
-            <p class="message-subtitle">
-                A little place just for us ❤️
-            </p>
-
-
-            <!-- SEND MESSAGE -->
-
-            <div class="message-form">
-
-                <textarea
-                    id="secretMessage"
-                    placeholder="Write a secret message for your love... ❤️"
-                    maxlength="1000"
-                ></textarea>
-
-                <button
-                    id="sendMessageBtn"
-                    onclick="sendSecretMessage()"
-                >
-                    💌 Send Message
-                </button>
-
-            </div>
-
-
-            <!-- MESSAGE LIST -->
-
-            <div id="secretMessages">
-
-                <p class="loading-message">
-                    Loading messages... 💕
+                <p>
+                    More memories coming soon...
                 </p>
 
             </div>
@@ -303,6 +497,7 @@ const AUTH_SUPABASE_URL =
 const AUTH_SUPABASE_KEY =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9nbnB5ZHBycXh4d2pkbm9waHhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcyOTM3NzIsImV4cCI6MjEwMjg2OTc3Mn0.GEboyNWovkJ7U9zXAWtzcQ7iddISbQuoLSirBJfFkrM";
 
+
 const authClient =
     window.supabase.createClient(
         AUTH_SUPABASE_URL,
@@ -315,7 +510,8 @@ async function checkLogin() {
     const {
         data,
         error
-    } = await authClient.auth.getSession();
+    } =
+        await authClient.auth.getSession();
 
 
     if (error || !data.session) {
@@ -326,16 +522,6 @@ async function checkLogin() {
         return;
 
     }
-
-
-    const session =
-        data.session;
-
-
-    console.log(
-        "Logged in user:",
-        session.user
-    );
 
 
     const savedUsername =
@@ -350,7 +536,10 @@ async function checkLogin() {
         );
 
 
-    if (welcomeUser && savedUsername) {
+    if (
+        welcomeUser &&
+        savedUsername
+    ) {
 
         welcomeUser.textContent =
             "Welcome back, " +
@@ -369,7 +558,8 @@ async function logout() {
 
     const {
         error
-    } = await authClient.auth.signOut();
+    } =
+        await authClient.auth.signOut();
 
 
     if (error) {
@@ -396,10 +586,6 @@ async function logout() {
 </script>
 
 
-<!-- =========================
-     MAIN SCRIPT
-========================= -->
-
 <script src="./script.js"></script>
 
 
@@ -410,13 +596,16 @@ async function logout() {
 <script>
 
 const targetDate =
-    new Date("2027-01-18T00:00:00").getTime();
+    new Date(
+        "2027-01-18T00:00:00"
+    ).getTime();
 
 
 function countdown() {
 
     const now =
         new Date().getTime();
+
 
     const distance =
         targetDate - now;
@@ -437,52 +626,35 @@ function countdown() {
     }
 
 
-    const days =
+    document.getElementById("days")
+        .textContent =
         Math.floor(
             distance /
             (1000 * 60 * 60 * 24)
         );
 
 
-    const hours =
+    document.getElementById("hours")
+        .textContent =
         Math.floor(
             (distance /
             (1000 * 60 * 60)) % 24
         );
 
 
-    const minutes =
+    document.getElementById("minutes")
+        .textContent =
         Math.floor(
             (distance /
             (1000 * 60)) % 60
         );
 
 
-    const seconds =
+    document.getElementById("seconds")
+        .textContent =
         Math.floor(
-            (distance /
-            1000) % 60
+            (distance / 1000) % 60
         );
-
-
-    document.getElementById(
-        "days"
-    ).textContent = days;
-
-
-    document.getElementById(
-        "hours"
-    ).textContent = hours;
-
-
-    document.getElementById(
-        "minutes"
-    ).textContent = minutes;
-
-
-    document.getElementById(
-        "seconds"
-    ).textContent = seconds;
 
 }
 
@@ -497,5 +669,6 @@ setInterval(
 </script>
 
 </body>
+
 </html>
 
