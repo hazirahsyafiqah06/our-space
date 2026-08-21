@@ -28,14 +28,12 @@ async function loadNotes() {
 
     if (error) {
         console.error(error);
-        notesContainer.innerHTML =
-            "<p>Failed to load notes.</p>";
+        notesContainer.innerHTML = "<p>Failed to load notes.</p>";
         return;
     }
 
     if (!data || data.length === 0) {
-        notesContainer.innerHTML =
-            "<p>No notes yet ❤️</p>";
+        notesContainer.innerHTML = "<p>No notes yet ❤️</p>";
         return;
     }
 
@@ -49,7 +47,26 @@ async function loadNotes() {
 
         noteElement.innerHTML = `
             <h3>${escapeHTML(note.title)}</h3>
+
             <p>${escapeHTML(note.content)}</p>
+
+            <small>
+                ${new Date(note.created_at).toLocaleString()}
+            </small>
+
+            <div class="note-buttons">
+
+                <button onclick="editNote(${note.id})">
+                    ✏️ Edit
+                </button>
+
+                <button
+                    class="delete-btn"
+                    onclick="deleteNote(${note.id})">
+                    🗑️ Delete
+                </button>
+
+            </div>
         `;
 
         notesContainer.appendChild(noteElement);
@@ -99,6 +116,102 @@ async function addNote() {
     contentInput.value = "";
 
     alert("Note saved ❤️");
+
+    loadNotes();
+}
+
+
+// ==========================================
+// EDIT NOTE
+// ==========================================
+
+async function editNote(id) {
+
+    const { data, error } = await supabaseClient
+        .from("notes")
+        .select("*")
+        .eq("id", id)
+        .single();
+
+    if (error) {
+
+        console.error(error);
+
+        alert("Unable to find note.");
+
+        return;
+    }
+
+    const newTitle = prompt(
+        "Edit title:",
+        data.title
+    );
+
+    if (newTitle === null) {
+        return;
+    }
+
+    const newContent = prompt(
+        "Edit note:",
+        data.content
+    );
+
+    if (newContent === null) {
+        return;
+    }
+
+    const { error: updateError } = await supabaseClient
+        .from("notes")
+        .update({
+            title: newTitle,
+            content: newContent
+        })
+        .eq("id", id);
+
+    if (updateError) {
+
+        console.error(updateError);
+
+        alert("Failed to update note.");
+
+        return;
+    }
+
+    alert("Note updated ❤️");
+
+    loadNotes();
+}
+
+
+// ==========================================
+// DELETE NOTE
+// ==========================================
+
+async function deleteNote(id) {
+
+    const confirmDelete = confirm(
+        "Delete this note? 🥺"
+    );
+
+    if (!confirmDelete) {
+        return;
+    }
+
+    const { error } = await supabaseClient
+        .from("notes")
+        .delete()
+        .eq("id", id);
+
+    if (error) {
+
+        console.error(error);
+
+        alert("Failed to delete note.");
+
+        return;
+    }
+
+    alert("Note deleted 🗑️");
 
     loadNotes();
 }
