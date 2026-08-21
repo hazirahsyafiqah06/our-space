@@ -276,3 +276,50 @@ section {
         font-size: 16px;
     }
 }
+.anniversary {
+    margin-top: 25px;
+    text-align: center;
+}
+
+.anniversary > p {
+    color: #999;
+    font-size: 13px;
+}
+
+#countdown {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.countdown-box {
+    background: white;
+    padding: 12px;
+    min-width: 65px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.countdown-box strong {
+    display: block;
+    font-size: 20px;
+    color: #e75480;
+}
+
+.countdown-box span {
+    font-size: 10px;
+    color: #999;
+}
+
+@media (max-width: 600px) {
+
+    .countdown-box {
+        min-width: 55px;
+        padding: 10px 5px;
+    }
+
+    .countdown-box strong {
+        font-size: 17px;
+    }
+
+}
