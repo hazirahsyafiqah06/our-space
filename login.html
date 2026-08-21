@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Our Space - Login ❤️</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-family: Arial, sans-serif;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #fff5f8,
+                    #ffe4ed
+                );
+
+            padding: 20px;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-card {
+            background: white;
+
+            padding: 35px 25px;
+
+            border-radius: 25px;
+
+            box-shadow:
+                0 10px 35px
+                rgba(0, 0, 0, 0.10);
+
+            text-align: center;
+        }
+
+        .heart {
+            font-size: 55px;
+            margin-bottom: 5px;
+        }
+
+        h1 {
+            margin: 5px 0 8px;
+
+            color: #e75480;
+        }
+
+        .subtitle {
+            color: #999;
+            font-size: 14px;
+
+            margin-bottom: 25px;
+        }
+
+        input {
+            width: 100%;
+
+            padding: 14px;
+
+            margin-bottom: 15px;
+
+            border: 1px solid #ddd;
+
+            border-radius: 13px;
+
+            font-size: 15px;
+
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #e75480;
+        }
+
+        .login-btn {
+            width: 100%;
+
+            padding: 14px;
+
+            border: none;
+
+            border-radius: 13px;
+
+            background: #e75480;
+
+            color: white;
+
+            font-size: 16px;
+
+            cursor: pointer;
+        }
+
+        .login-btn:hover {
+            opacity: 0.9;
+        }
+
+        #message {
+            margin-top: 15px;
+
+            font-size: 14px;
+        }
+
+        .footer {
+            margin-top: 25px;
+
+            color: #aaa;
+
+            font-size: 12px;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="login-container">
+
+    <div class="login-card">
+
+        <div class="heart">
+            💕
+        </div>
+
+        <h1>
+            Our Space
+        </h1>
+
+        <p class="subtitle">
+            Only for us ❤️
+        </p>
+
+
+        <input
+            type="email"
+            id="email"
+            placeholder="Email"
+            autocomplete="email"
+        >
+
+
+        <input
+            type="password"
+            id="password"
+            placeholder="Password"
+            autocomplete="current-password"
+        >
+
+
+        <button
+            class="login-btn"
+            onclick="login()">
+
+            ❤️ Login
+
+        </button>
+
+
+        <p id="message"></p>
+
+
+        <p class="footer">
+            Nur Hazirah ❤️ Zulkarnain
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- SUPABASE -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<script>
+
+const SUPABASE_URL =
+    "https://ognpydprqxxwjdnophxq.supabase.co";
+
+
+const SUPABASE_KEY =
+    "PASTE_ANON_PUBLIC_KEY_AWAK_DI_SINI";
+
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+
+async function login() {
+
+    const email =
+        document
+            .getElementById("email")
+            .value
+            .trim();
+
+
+    const password =
+        document
+            .getElementById("password")
+            .value;
+
+
+    const message =
+        document.getElementById(
+            "message"
+        );
+
+
+    if (!email || !password) {
+
+        message.style.color =
+            "#e75480";
+
+        message.textContent =
+            "Please enter email and password ❤️";
+
+        return;
+    }
+
+
+    message.style.color =
+        "#999";
+
+    message.textContent =
+        "Logging in...";
+
+
+
+    const { data, error } =
+        await supabaseClient.auth
+            .signInWithPassword({
+
+                email: email,
+
+                password: password
+
+            });
+
+
+    if (error) {
+
+        console.error(error);
+
+        message.style.color =
+            "#e75480";
+
+        message.textContent =
+            error.message;
+
+        return;
+    }
+
+
+    message.style.color =
+        "#4caf50";
+
+    message.textContent =
+        "Login successful ❤️";
+
+
+    setTimeout(() => {
+
+        window.location.href =
+            "index.html";
+
+    }, 700);
+
+}
+
+</script>
+
+
+</body>
+
+</html>
