@@ -30,6 +30,20 @@
             WELCOME TO
         </p>
 
+        <!-- =========================
+             LOGGED IN USER
+        ========================== -->
+
+        <p id="welcomeUser" style="
+            color:#e75480;
+            font-size:15px;
+            font-weight:bold;
+            margin:8px 0 15px;
+        ">
+            Welcome ❤️
+        </p>
+
+
         <h1>
             💕 Our Space
         </h1>
@@ -324,8 +338,7 @@ const AUTH_SUPABASE_URL =
     "https://ognpydprqxxwjdnophxq.supabase.co";
 
 
-// PASTE THE SAME CURRENT PUBLISHABLE / ANON KEY
-// THAT YOU USED IN login.html
+// SAME KEY AS login.html
 
 const AUTH_SUPABASE_KEY =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9nbnB5ZHBycXh4d2pkbm9waHhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcyOTM3NzIsImV4cCI6MjEwMjg2OTc3Mn0.GEboyNWovkJ7U9zXAWtzcQ7iddISbQuoLSirBJfFkrM";
@@ -370,7 +383,9 @@ async function checkLogin() {
         data.session;
 
 
+    // ======================================
     // USER NOT LOGGED IN
+    // ======================================
 
     if (!session) {
 
@@ -382,12 +397,43 @@ async function checkLogin() {
     }
 
 
+    // ======================================
     // USER IS LOGGED IN
+    // ======================================
 
     console.log(
         "Logged in user:",
         session.user
     );
+
+
+    // ======================================
+    // GET USERNAME
+    // ======================================
+
+    const savedUsername =
+        localStorage.getItem(
+            "ourSpaceUsername"
+        );
+
+
+    const welcomeUser =
+        document.getElementById(
+            "welcomeUser"
+        );
+
+
+    if (
+        welcomeUser &&
+        savedUsername
+    ) {
+
+        welcomeUser.textContent =
+            "Welcome back, " +
+            savedUsername +
+            " ❤️";
+
+    }
 
 }
 
@@ -465,7 +511,9 @@ function countdown() {
 
     if (distance <= 0) {
 
-        document.getElementById("countdown").innerHTML = `
+        document.getElementById(
+            "countdown"
+        ).innerHTML = `
 
             <p style="
                 color:#e75480;
@@ -509,20 +557,24 @@ function countdown() {
         );
 
 
-    document.getElementById("days")
-        .textContent = days;
+    document.getElementById(
+        "days"
+    ).textContent = days;
 
 
-    document.getElementById("hours")
-        .textContent = hours;
+    document.getElementById(
+        "hours"
+    ).textContent = hours;
 
 
-    document.getElementById("minutes")
-        .textContent = minutes;
+    document.getElementById(
+        "minutes"
+    ).textContent = minutes;
 
 
-    document.getElementById("seconds")
-        .textContent = seconds;
+    document.getElementById(
+        "seconds"
+    ).textContent = seconds;
 
 }
 
