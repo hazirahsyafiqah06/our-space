@@ -128,8 +128,79 @@
 
 </section>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./script.js"></script>
+
+<script>
+function startCountdown() {
+
+    const countdown = document.getElementById("countdown");
+
+    if (!countdown) {
+        console.log("Countdown element not found");
+        return;
+    }
+
+    function update() {
+
+        const target = new Date("2027-01-18T00:00:00").getTime();
+        const now = new Date().getTime();
+
+        const distance = target - now;
+
+        if (distance <= 0) {
+            countdown.innerHTML = "💕 Happy Anniversary! 💕";
+            return;
+        }
+
+        const days = Math.floor(
+            distance / (1000 * 60 * 60 * 24)
+        );
+
+        const hours = Math.floor(
+            (distance / (1000 * 60 * 60)) % 24
+        );
+
+        const minutes = Math.floor(
+            (distance / (1000 * 60)) % 60
+        );
+
+        const seconds = Math.floor(
+            (distance / 1000) % 60
+        );
+
+        countdown.innerHTML = `
+            <div class="countdown-box">
+                <strong>${days}</strong>
+                <span>Days</span>
+            </div>
+
+            <div class="countdown-box">
+                <strong>${hours}</strong>
+                <span>Hours</span>
+            </div>
+
+            <div class="countdown-box">
+                <strong>${minutes}</strong>
+                <span>Minutes</span>
+            </div>
+
+            <div class="countdown-box">
+                <strong>${seconds}</strong>
+                <span>Seconds</span>
+            </div>
+        `;
+    }
+
+    update();
+
+    setInterval(update, 1000);
+}
+
+startCountdown();
+</script>
 
 </body>
 </html>
+
+
