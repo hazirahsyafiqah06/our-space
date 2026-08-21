@@ -42,6 +42,31 @@
         </div>
 
     </div>
+    <hr>
+
+<section class="gallery-section">
+
+    <h2>📸 Our Gallery</h2>
+
+    <input
+        type="file"
+        id="imageInput"
+        accept="image/*"
+    >
+
+    <input
+        type="text"
+        id="caption"
+        placeholder="Caption for this photo..."
+    >
+
+    <button onclick="uploadImage()">
+        📸 Upload Photo
+    </button>
+
+    <div id="gallery"></div>
+
+</section>
 
    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
