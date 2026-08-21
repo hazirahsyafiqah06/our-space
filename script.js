@@ -1,13 +1,14 @@
 
-// ======================================================
-// SUPABASE CONFIG
-// ======================================================
+// ==========================================
+// SUPABASE
+// ==========================================
 
 const SUPABASE_URL =
     "https://ognpydprqxxwjdnophxq.supabase.co";
 
 const SUPABASE_KEY =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9nbnB5ZHBycXh4d2pkbm9waHhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcyOTM3NzIsImV4cCI6MjEwMjg2OTc3Mn0.GEboyNWovkJ7U9zXAWtzcQ7iddISbQuoLSirBJfFkrM";
+
 
 const supabaseClient =
     window.supabase.createClient(
@@ -16,9 +17,9 @@ const supabaseClient =
     );
 
 
-// ======================================================
-// USER IDS
-// ======================================================
+// ==========================================
+// USER IDs
+// ==========================================
 
 const HAZIRAH_ID =
     "fd76923c-6b95-4668-b020-32ff37192990";
@@ -27,64 +28,87 @@ const ZULKARNAIN_ID =
     "327adb82-7b8b-4e01-be1d-2802a334e6db";
 
 
-const USER_NAMES = {
+// ==========================================
+// RELATIONSHIP COUNTER
+// ==========================================
 
-    [HAZIRAH_ID]:
-        "Nur Hazirah",
+function updateRelationshipCounter() {
 
-    [ZULKARNAIN_ID]:
-        "Zulkarnain"
+    const startDate =
+        new Date("2021-01-18T00:00:00");
 
-};
+    const today =
+        new Date();
 
+    let years =
+        today.getFullYear() -
+        startDate.getFullYear();
 
-// ======================================================
-// CURRENT USER
-// ======================================================
+    let months =
+        today.getMonth() -
+        startDate.getMonth();
 
-let currentUser = null;
-
-
-// ======================================================
-// GET CURRENT LOGIN USER
-// ======================================================
-
-async function getCurrentUser() {
-
-    const {
-        data,
-        error
-    } = await supabaseClient.auth.getUser();
+    let days =
+        today.getDate() -
+        startDate.getDate();
 
 
-    if (error || !data.user) {
+    if (days < 0) {
 
-        console.error(
-            "Unable to get user:",
-            error
-        );
+        months--;
 
-        return null;
+        const previousMonth =
+            new Date(
+                today.getFullYear(),
+                today.getMonth(),
+                0
+            );
+
+        days +=
+            previousMonth.getDate();
+
     }
 
 
-    currentUser = data.user;
+    if (months < 0) {
+
+        years--;
+
+        months += 12;
+
+    }
 
 
-    return currentUser;
+    document.getElementById("years")
+        .textContent = years;
+
+    document.getElementById("months")
+        .textContent = months;
+
+    document.getElementById("journeyDays")
+        .textContent = days;
 
 }
 
 
-// ======================================================
+updateRelationshipCounter();
+
+
+// Update every minute
+setInterval(
+    updateRelationshipCounter,
+    60000
+);
+
+
+// ==========================================
 // NOTES
-// ======================================================
+// ==========================================
 
 async function loadNotes() {
 
     const notesContainer =
         document.getElementById("notes");
-
 
     if (!notesContainer) return;
 
@@ -92,12 +116,13 @@ async function loadNotes() {
     const {
         data,
         error
-    } = await supabaseClient
-        .from("notes")
-        .select("*")
-        .order("created_at", {
-            ascending: false
-        });
+    } =
+        await supabaseClient
+            .from("notes")
+            .select("*")
+            .order("created_at", {
+                ascending: false
+            });
 
 
     if (error) {
@@ -120,7 +145,7 @@ async function loadNotes() {
     if (!data || data.length === 0) {
 
         notesContainer.innerHTML =
-            "<p>No notes yet ❤️</p>";
+            "<p class='empty-message'>No notes yet ❤️</p>";
 
         return;
     }
@@ -131,8 +156,8 @@ async function loadNotes() {
         const div =
             document.createElement("div");
 
-
-        div.className = "note";
+        div.className =
+            "note";
 
 
         div.innerHTML = `
@@ -153,6 +178,7 @@ async function loadNotes() {
                 </button>
 
                 <button
+                    class="delete-note"
                     onclick="deleteNote(${note.id})">
                     🗑️ Delete
                 </button>
@@ -169,20 +195,21 @@ async function loadNotes() {
 }
 
 
-// ======================================================
+// ==========================================
 // ADD NOTE
-// ======================================================
+// ==========================================
 
 async function addNote() {
 
     const title =
         document.getElementById("title")
-            .value.trim();
-
+            .value
+            .trim();
 
     const content =
         document.getElementById("content")
-            .value.trim();
+            .value
+            .trim();
 
 
     if (!title || !content) {
@@ -197,14 +224,15 @@ async function addNote() {
 
     const {
         error
-    } = await supabaseClient
-        .from("notes")
-        .insert([
-            {
-                title: title,
-                content: content
-            }
-        ]);
+    } =
+        await supabaseClient
+            .from("notes")
+            .insert([
+                {
+                    title: title,
+                    content: content
+                }
+            ]);
 
 
     if (error) {
@@ -222,7 +250,6 @@ async function addNote() {
     document.getElementById("title")
         .value = "";
 
-
     document.getElementById("content")
         .value = "";
 
@@ -232,25 +259,30 @@ async function addNote() {
 }
 
 
-// ======================================================
+// ==========================================
 // EDIT NOTE
-// ======================================================
+// ==========================================
 
 async function editNote(id) {
 
     const {
         data,
         error
-    } = await supabaseClient
-        .from("notes")
-        .select("*")
-        .eq("id", id)
-        .single();
+    } =
+        await supabaseClient
+            .from("notes")
+            .select("*")
+            .eq("id", id)
+            .single();
 
 
     if (error) {
 
         console.error(error);
+
+        alert(
+            "Unable to find note."
+        );
 
         return;
     }
@@ -278,20 +310,19 @@ async function editNote(id) {
 
     const {
         error: updateError
-    } = await supabaseClient
-        .from("notes")
-        .update({
-            title: title,
-            content: content
-        })
-        .eq("id", id);
+    } =
+        await supabaseClient
+            .from("notes")
+            .update({
+                title: title.trim(),
+                content: content.trim()
+            })
+            .eq("id", id);
 
 
     if (updateError) {
 
-        console.error(
-            updateError
-        );
+        console.error(updateError);
 
         alert(
             "Failed to update note."
@@ -306,9 +337,9 @@ async function editNote(id) {
 }
 
 
-// ======================================================
+// ==========================================
 // DELETE NOTE
-// ======================================================
+// ==========================================
 
 async function deleteNote(id) {
 
@@ -324,10 +355,11 @@ async function deleteNote(id) {
 
     const {
         error
-    } = await supabaseClient
-        .from("notes")
-        .delete()
-        .eq("id", id);
+    } =
+        await supabaseClient
+            .from("notes")
+            .delete()
+            .eq("id", id);
 
 
     if (error) {
@@ -347,32 +379,450 @@ async function deleteNote(id) {
 }
 
 
-// ======================================================
-// GALLERY
-// ======================================================
+// ==========================================
+// SECRET MESSAGE
+// ==========================================
 
-async function loadGallery() {
+async function sendSecretMessage() {
 
-    const gallery =
-        document.getElementById("gallery");
+    const messageInput =
+        document.getElementById(
+            "secretMessage"
+        );
+
+    const receiverSelect =
+        document.getElementById(
+            "receiverSelect"
+        );
 
 
-    if (!gallery) return;
+    const message =
+        messageInput.value.trim();
+
+    const receiverId =
+        receiverSelect.value;
 
 
-    gallery.innerHTML =
-        "<p>Loading photos...</p>";
+    if (!message) {
+
+        alert(
+            "Write a message first ❤️"
+        );
+
+        return;
+    }
+
+
+    const {
+        data: sessionData
+    } =
+        await supabaseClient.auth.getSession();
+
+
+    const session =
+        sessionData.session;
+
+
+    if (!session) {
+
+        alert(
+            "Please login first."
+        );
+
+        window.location.href =
+            "login.html";
+
+        return;
+    }
+
+
+    const senderId =
+        session.user.id;
+
+
+    const {
+        error
+    } =
+        await supabaseClient
+            .from("secret_message")
+            .insert([
+                {
+                    sender_id: senderId,
+                    receiver_id: receiverId,
+                    message: message
+                }
+            ]);
+
+
+    if (error) {
+
+        console.error(
+            "Send message error:",
+            error
+        );
+
+        alert(
+            "Message failed to send.\n\n" +
+            error.message
+        );
+
+        return;
+    }
+
+
+    messageInput.value = "";
+
+
+    alert(
+        "Message sent successfully 💌"
+    );
+
+
+    loadSecretMessages();
+
+}
+
+
+// ==========================================
+// LOAD SECRET MESSAGES
+// ==========================================
+
+async function loadSecretMessages() {
+
+    const container =
+        document.getElementById(
+            "secretMessages"
+        );
+
+
+    if (!container) return;
+
+
+    const {
+        data: sessionData
+    } =
+        await supabaseClient.auth.getSession();
+
+
+    const session =
+        sessionData.session;
+
+
+    if (!session) return;
+
+
+    const currentUserId =
+        session.user.id;
 
 
     const {
         data,
         error
-    } = await supabaseClient
-        .from("gallery")
-        .select("*")
-        .order("created_at", {
-            ascending: false
-        });
+    } =
+        await supabaseClient
+            .from("secret_message")
+            .select("*")
+            .or(
+                `sender_id.eq.${currentUserId},receiver_id.eq.${currentUserId}`
+            )
+            .order("create_at", {
+                ascending: false
+            });
+
+
+    if (error) {
+
+        console.error(
+            "Secret message error:",
+            error
+        );
+
+        container.innerHTML = `
+            <p class="empty-message">
+                Failed to load messages.
+            </p>
+        `;
+
+        return;
+    }
+
+
+    container.innerHTML = "";
+
+
+    if (!data || data.length === 0) {
+
+        container.innerHTML = `
+            <p class="empty-message">
+                No messages yet ❤️
+            </p>
+        `;
+
+        return;
+    }
+
+
+    data.forEach(item => {
+
+        const div =
+            document.createElement("div");
+
+
+        const isMine =
+            item.sender_id === currentUserId;
+
+
+        div.className =
+            "secret-message " +
+            (
+                isMine
+                    ? "mine"
+                    : "theirs"
+            );
+
+
+        const senderName =
+            item.sender_id === HAZIRAH_ID
+                ? "Hazirah ❤️"
+                : "Zulkarnain ❤️";
+
+
+        const date =
+            item.create_at
+                ? new Date(
+                    item.create_at
+                ).toLocaleString(
+                    "en-MY",
+                    {
+                        dateStyle: "medium",
+                        timeStyle: "short"
+                    }
+                )
+                : "";
+
+
+        div.innerHTML = `
+
+            <div class="message-header">
+
+                <span class="message-sender">
+                    ${isMine ? "You 💕" : senderName}
+                </span>
+
+                <span class="message-date">
+                    ${date}
+                </span>
+
+            </div>
+
+
+            <p class="message-text">
+                ${escapeHTML(item.message)}
+            </p>
+
+
+            ${
+                isMine
+                ? `
+                    <div class="message-buttons">
+
+                        <button
+                            onclick="editSecretMessage(${item.id})">
+                            ✏️ Edit
+                        </button>
+
+                        <button
+                            class="delete-message"
+                            onclick="deleteSecretMessage(${item.id})">
+                            🗑️ Delete
+                        </button>
+
+                    </div>
+                `
+                : ""
+            }
+
+        `;
+
+
+        container.appendChild(div);
+
+    });
+
+}
+
+
+// ==========================================
+// EDIT SECRET MESSAGE
+// ==========================================
+
+async function editSecretMessage(id) {
+
+    const {
+        data: sessionData
+    } =
+        await supabaseClient.auth.getSession();
+
+
+    const session =
+        sessionData.session;
+
+
+    if (!session) return;
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("secret_message")
+            .select("*")
+            .eq("id", id)
+            .eq("sender_id", session.user.id)
+            .single();
+
+
+    if (error) {
+
+        console.error(error);
+
+        alert(
+            "Unable to find message."
+        );
+
+        return;
+    }
+
+
+    const newMessage =
+        prompt(
+            "Edit your message:",
+            data.message
+        );
+
+
+    if (
+        newMessage === null ||
+        !newMessage.trim()
+    ) {
+
+        return;
+    }
+
+
+    const {
+        error: updateError
+    } =
+        await supabaseClient
+            .from("secret_message")
+            .update({
+                message: newMessage.trim()
+            })
+            .eq("id", id)
+            .eq("sender_id", session.user.id);
+
+
+    if (updateError) {
+
+        console.error(
+            updateError
+        );
+
+        alert(
+            "Failed to edit message."
+        );
+
+        return;
+    }
+
+
+    loadSecretMessages();
+
+}
+
+
+// ==========================================
+// DELETE SECRET MESSAGE
+// ==========================================
+
+async function deleteSecretMessage(id) {
+
+    if (
+        !confirm(
+            "Delete this message? 🥺"
+        )
+    ) {
+
+        return;
+    }
+
+
+    const {
+        data: sessionData
+    } =
+        await supabaseClient.auth.getSession();
+
+
+    const session =
+        sessionData.session;
+
+
+    if (!session) return;
+
+
+    const {
+        error
+    } =
+        await supabaseClient
+            .from("secret_message")
+            .delete()
+            .eq("id", id)
+            .eq("sender_id", session.user.id);
+
+
+    if (error) {
+
+        console.error(error);
+
+        alert(
+            "Failed to delete message."
+        );
+
+        return;
+    }
+
+
+    loadSecretMessages();
+
+}
+
+
+// ==========================================
+// GALLERY
+// ==========================================
+
+async function loadGallery() {
+
+    const gallery =
+        document.getElementById(
+            "gallery"
+        );
+
+
+    if (!gallery) return;
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("gallery")
+            .select("*")
+            .order("created_at", {
+                ascending: false
+            });
 
 
     if (error) {
@@ -395,7 +845,7 @@ async function loadGallery() {
     if (!data || data.length === 0) {
 
         gallery.innerHTML =
-            "<p>No photos yet 📸❤️</p>";
+            "<p class='empty-message'>No photos yet 📸❤️</p>";
 
         return;
     }
@@ -439,9 +889,9 @@ async function loadGallery() {
 }
 
 
-// ======================================================
+// ==========================================
 // UPLOAD IMAGE
-// ======================================================
+// ==========================================
 
 async function uploadImage() {
 
@@ -449,7 +899,6 @@ async function uploadImage() {
         document.getElementById(
             "imageInput"
         );
-
 
     const captionInput =
         document.getElementById(
@@ -484,8 +933,7 @@ async function uploadImage() {
 
 
     if (
-        file.size >
-        5 * 1024 * 1024
+        file.size > 5 * 1024 * 1024
     ) {
 
         alert(
@@ -507,23 +955,22 @@ async function uploadImage() {
 
     const {
         error: uploadError
-    } = await supabaseClient
-        .storage
-        .from("gallery")
-        .upload(
-            fileName,
-            file
-        );
+    } =
+        await supabaseClient
+            .storage
+            .from("gallery")
+            .upload(
+                fileName,
+                file
+            );
 
 
     if (uploadError) {
 
-        console.error(
-            uploadError
-        );
+        console.error(uploadError);
 
         alert(
-            "Upload failed: " +
+            "Upload failed:\n" +
             uploadError.message
         );
 
@@ -533,32 +980,31 @@ async function uploadImage() {
 
     const {
         data: urlData
-    } = supabaseClient
-        .storage
-        .from("gallery")
-        .getPublicUrl(
-            fileName
-        );
+    } =
+        supabaseClient
+            .storage
+            .from("gallery")
+            .getPublicUrl(
+                fileName
+            );
 
 
     const imageUrl =
         urlData.publicUrl;
 
 
-    const caption =
-        captionInput.value.trim();
-
-
     const {
         error: databaseError
-    } = await supabaseClient
-        .from("gallery")
-        .insert([
-            {
-                image_url: imageUrl,
-                caption: caption
-            }
-        ]);
+    } =
+        await supabaseClient
+            .from("gallery")
+            .insert([
+                {
+                    image_url: imageUrl,
+                    caption:
+                        captionInput.value.trim()
+                }
+            ]);
 
 
     if (databaseError) {
@@ -589,9 +1035,9 @@ async function uploadImage() {
 }
 
 
-// ======================================================
+// ==========================================
 // DELETE IMAGE
-// ======================================================
+// ==========================================
 
 async function deleteImage(id) {
 
@@ -608,11 +1054,12 @@ async function deleteImage(id) {
     const {
         data,
         error
-    } = await supabaseClient
-        .from("gallery")
-        .select("image_url")
-        .eq("id", id)
-        .single();
+    } =
+        await supabaseClient
+            .from("gallery")
+            .select("image_url")
+            .eq("id", id)
+            .single();
 
 
     if (error) {
@@ -645,10 +1092,11 @@ async function deleteImage(id) {
 
     const {
         error: deleteError
-    } = await supabaseClient
-        .from("gallery")
-        .delete()
-        .eq("id", id);
+    } =
+        await supabaseClient
+            .from("gallery")
+            .delete()
+            .eq("id", id);
 
 
     if (deleteError) {
@@ -666,498 +1114,9 @@ async function deleteImage(id) {
 }
 
 
-// ======================================================
-// SECRET MESSAGE
-// ======================================================
-
-async function loadSecretMessages() {
-
-    const container =
-        document.getElementById(
-            "secretMessages"
-        );
-
-
-    if (!container) return;
-
-
-    if (!currentUser) {
-
-        await getCurrentUser();
-
-    }
-
-
-    if (!currentUser) {
-
-        container.innerHTML = `
-            <p class="empty-message">
-                Please login first ❤️
-            </p>
-        `;
-
-        return;
-    }
-
-
-    const {
-        data,
-        error
-    } = await supabaseClient
-        .from("secret_message")
-        .select("*")
-        .or(
-            `sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`
-        )
-        .order("create_at", {
-            ascending: true
-        });
-
-
-    if (error) {
-
-        console.error(
-            "Secret message error:",
-            error
-        );
-
-        container.innerHTML = `
-            <p class="empty-message">
-                Failed to load messages.
-            </p>
-        `;
-
-        return;
-    }
-
-
-    container.innerHTML = "";
-
-
-    if (!data || data.length === 0) {
-
-        container.innerHTML = `
-            <p class="empty-message">
-                No secret messages yet 💕<br>
-                Be the first to send one ❤️
-            </p>
-        `;
-
-        return;
-    }
-
-
-    data.forEach(message => {
-
-        const isMine =
-            message.sender_id ===
-            currentUser.id;
-
-
-        const card =
-            document.createElement("div");
-
-
-        card.className =
-            "secret-message-card " +
-            (
-                isMine
-                    ? "mine"
-                    : "theirs"
-            );
-
-
-        const senderName =
-            USER_NAMES[
-                message.sender_id
-            ] ||
-            "Our Love";
-
-
-        const formattedDate =
-            formatMessageDate(
-                message.create_at
-            );
-
-
-        let actions = "";
-
-
-        if (isMine) {
-
-            actions = `
-
-                <div class="message-actions">
-
-                    <button
-                        class="edit-message-btn"
-                        onclick="editSecretMessage(${message.id})">
-                        ✏️ Edit
-                    </button>
-
-                    <button
-                        class="delete-message-btn"
-                        onclick="deleteSecretMessage(${message.id})">
-                        🗑️ Delete
-                    </button>
-
-                </div>
-
-            `;
-
-        }
-
-
-        card.innerHTML = `
-
-            <div class="message-bubble">
-
-                <div class="message-top">
-
-                    <span class="message-sender">
-                        ${escapeHTML(senderName)}
-                    </span>
-
-                    <span class="message-time">
-                        ${formattedDate}
-                    </span>
-
-                </div>
-
-                <p class="message-text">
-                    ${escapeHTML(message.message)}
-                </p>
-
-                ${actions}
-
-            </div>
-
-        `;
-
-
-        container.appendChild(card);
-
-    });
-
-}
-
-
-// ======================================================
-// SEND SECRET MESSAGE
-// ======================================================
-
-async function sendSecretMessage() {
-
-    if (!currentUser) {
-
-        await getCurrentUser();
-
-    }
-
-
-    if (!currentUser) {
-
-        alert(
-            "Please login first ❤️"
-        );
-
-        return;
-    }
-
-
-    const messageInput =
-        document.getElementById(
-            "secretMessage"
-        );
-
-
-    const sendButton =
-        document.getElementById(
-            "sendMessageBtn"
-        );
-
-
-    const message =
-        messageInput.value.trim();
-
-
-    if (!message) {
-
-        alert(
-            "Please write a message first ❤️"
-        );
-
-        return;
-    }
-
-
-    let receiverId;
-
-
-    if (
-        currentUser.id ===
-        HAZIRAH_ID
-    ) {
-
-        receiverId =
-            ZULKARNAIN_ID;
-
-    } else if (
-        currentUser.id ===
-        ZULKARNAIN_ID
-    ) {
-
-        receiverId =
-            HAZIRAH_ID;
-
-    } else {
-
-        alert(
-            "This account is not part of Our Space ❤️"
-        );
-
-        return;
-    }
-
-
-    sendButton.disabled = true;
-
-    sendButton.textContent =
-        "Sending... 💕";
-
-
-    const {
-        error
-    } = await supabaseClient
-        .from("secret_message")
-        .insert([
-            {
-                sender_id:
-                    currentUser.id,
-
-                receiver_id:
-                    receiverId,
-
-                message:
-                    message
-            }
-        ]);
-
-
-    if (error) {
-
-        console.error(
-            "Send message error:",
-            error
-        );
-
-        alert(
-            "Message failed to send:\n" +
-            error.message
-        );
-
-        sendButton.disabled = false;
-
-        sendButton.textContent =
-            "💌 Send Message";
-
-        return;
-    }
-
-
-    messageInput.value = "";
-
-
-    sendButton.disabled = false;
-
-    sendButton.textContent =
-        "💌 Send Message";
-
-
-    await loadSecretMessages();
-
-}
-
-
-// ======================================================
-// EDIT SECRET MESSAGE
-// ======================================================
-
-async function editSecretMessage(id) {
-
-    const {
-        data,
-        error
-    } = await supabaseClient
-        .from("secret_message")
-        .select("*")
-        .eq("id", id)
-        .single();
-
-
-    if (error) {
-
-        console.error(error);
-
-        alert(
-            "Unable to find message."
-        );
-
-        return;
-    }
-
-
-    if (
-        data.sender_id !==
-        currentUser.id
-    ) {
-
-        alert(
-            "You can only edit your own message."
-        );
-
-        return;
-    }
-
-
-    const newMessage =
-        prompt(
-            "Edit your message:",
-            data.message
-        );
-
-
-    if (newMessage === null) {
-
-        return;
-    }
-
-
-    const cleanedMessage =
-        newMessage.trim();
-
-
-    if (!cleanedMessage) {
-
-        alert(
-            "Message cannot be empty."
-        );
-
-        return;
-    }
-
-
-    const {
-        error: updateError
-    } = await supabaseClient
-        .from("secret_message")
-        .update({
-            message:
-                cleanedMessage
-        })
-        .eq(
-            "id",
-            id
-        );
-
-
-    if (updateError) {
-
-        console.error(
-            updateError
-        );
-
-        alert(
-            "Failed to edit message."
-        );
-
-        return;
-    }
-
-
-    loadSecretMessages();
-
-}
-
-
-// ======================================================
-// DELETE SECRET MESSAGE
-// ======================================================
-
-async function deleteSecretMessage(id) {
-
-    if (
-        !confirm(
-            "Delete this message? 🥺"
-        )
-    ) {
-
-        return;
-    }
-
-
-    const {
-        error
-    } = await supabaseClient
-        .from("secret_message")
-        .delete()
-        .eq(
-            "id",
-            id
-        );
-
-
-    if (error) {
-
-        console.error(
-            error
-        );
-
-        alert(
-            "Failed to delete message."
-        );
-
-        return;
-    }
-
-
-    loadSecretMessages();
-
-}
-
-
-// ======================================================
-// FORMAT MESSAGE DATE
-// ======================================================
-
-function formatMessageDate(dateString) {
-
-    if (!dateString) {
-        return "";
-    }
-
-
-    const date =
-        new Date(dateString);
-
-
-    return date.toLocaleString(
-        "en-MY",
-        {
-            day: "2-digit",
-            month: "short",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit"
-        }
-    );
-
-}
-
-
-// ======================================================
+// ==========================================
 // SECURITY
-// ======================================================
+// ==========================================
 
 function escapeHTML(text) {
 
@@ -1168,7 +1127,7 @@ function escapeHTML(text) {
 
 
     div.textContent =
-        text;
+        text ?? "";
 
 
     return div.innerHTML;
@@ -1176,9 +1135,9 @@ function escapeHTML(text) {
 }
 
 
-// ======================================================
+// ==========================================
 // NAVIGATION
-// ======================================================
+// ==========================================
 
 function showSection(sectionId) {
 
@@ -1186,11 +1145,11 @@ function showSection(sectionId) {
 
         "notes-section",
 
+        "message-section",
+
         "gallery-section",
 
-        "memories-section",
-
-        "messages-section"
+        "memories-section"
 
     ];
 
@@ -1198,9 +1157,7 @@ function showSection(sectionId) {
     sections.forEach(id => {
 
         const section =
-            document.getElementById(
-                id
-            );
+            document.getElementById(id);
 
 
         if (section) {
@@ -1214,39 +1171,20 @@ function showSection(sectionId) {
 
     });
 
-
-    if (
-        sectionId ===
-        "messages-section"
-    ) {
-
-        loadSecretMessages();
-
-    }
-
 }
 
 
-// ======================================================
+// ==========================================
 // START
-// ======================================================
+// ==========================================
 
-async function startApp() {
+loadNotes();
 
-    await getCurrentUser();
+loadSecretMessages();
 
-    loadNotes();
+loadGallery();
 
-    loadGallery();
-
-    loadSecretMessages();
-
-    showSection(
-        "notes-section"
-    );
-
-}
-
-
-startApp();
+showSection(
+    "notes-section"
+);
 
