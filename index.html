@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -20,6 +19,7 @@
 
 <div class="container">
 
+
     <!-- =========================
          HERO
     ========================== -->
@@ -30,19 +30,9 @@
             WELCOME TO
         </p>
 
-        <!-- =========================
-             LOGGED IN USER
-        ========================== -->
-
-        <p id="welcomeUser" style="
-            color:#e75480;
-            font-size:15px;
-            font-weight:bold;
-            margin:8px 0 15px;
-        ">
+        <p id="welcomeUser" class="welcome-user">
             Welcome ❤️
         </p>
-
 
         <h1>
             💕 Our Space
@@ -131,24 +121,11 @@
          LOGOUT
     ========================== -->
 
-    <div style="
-        text-align:center;
-        margin:15px 0 20px;
-    ">
+    <div class="logout-area">
 
         <button
             onclick="logout()"
-            style="
-                border:none;
-                background:#fff;
-                color:#e75480;
-                padding:10px 18px;
-                border-radius:12px;
-                cursor:pointer;
-                box-shadow:0 3px 12px rgba(0,0,0,0.08);
-                font-size:14px;
-            "
-        >
+            class="logout-btn">
 
             🚪 Logout
 
@@ -165,7 +142,7 @@
 
         <button onclick="showSection('notes-section')">
 
-            📝 Notes
+            💌 Messages
 
         </button>
 
@@ -179,7 +156,7 @@
 
         <button onclick="showSection('memories-section')">
 
-            💌 Memories
+            💕 Memories
 
         </button>
 
@@ -187,42 +164,89 @@
 
 
     <!-- =========================
-         NOTE FORM
-    ========================== -->
-
-    <div class="note-form">
-
-        <input
-            type="text"
-            id="title"
-            placeholder="Note title..."
-        >
-
-        <textarea
-            id="content"
-            placeholder="Write something..."
-        ></textarea>
-
-        <button onclick="addNote()">
-
-            + Save Note
-
-        </button>
-
-    </div>
-
-
-    <!-- =========================
-         NOTES
+         MESSAGE SECTION
     ========================== -->
 
     <section id="notes-section">
 
         <h2>
-            📝 Our Notes
+            💌 Our Messages
         </h2>
 
-        <div id="notes"></div>
+
+        <!-- =========================
+             WRITE MESSAGE
+        ========================== -->
+
+        <div class="message-form">
+
+            <div class="message-label">
+                💕 Write a message
+            </div>
+
+
+            <input
+                type="text"
+                id="title"
+                placeholder="Message title..."
+            >
+
+
+            <textarea
+                id="content"
+                placeholder="Write something for your love... ❤️"
+            ></textarea>
+
+
+            <button
+                onclick="sendMessage()"
+                class="send-message-btn">
+
+                💌 Send Message
+
+            </button>
+
+        </div>
+
+
+        <!-- =========================
+             INBOX
+        ========================== -->
+
+        <div class="message-heading">
+
+            💌 Messages For You
+
+        </div>
+
+
+        <div id="receivedMessages">
+
+            <p class="empty-message">
+                Loading messages... ❤️
+            </p>
+
+        </div>
+
+
+        <!-- =========================
+             SENT
+        ========================== -->
+
+        <div class="message-heading sent-heading">
+
+            💕 Messages You Sent
+
+        </div>
+
+
+        <div id="sentMessages">
+
+            <p class="empty-message">
+                Loading messages... ❤️
+            </p>
+
+        </div>
 
     </section>
 
@@ -328,17 +352,15 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 
-<script>
+<!-- =========================
+     AUTH + PAGE
+========================= -->
 
-// ==========================================
-// SUPABASE CONFIG
-// ==========================================
+<script>
 
 const AUTH_SUPABASE_URL =
     "https://ognpydprqxxwjdnophxq.supabase.co";
 
-
-// SAME KEY AS login.html
 
 const AUTH_SUPABASE_KEY =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9nbnB5ZHBycXh4d2pkbm9waHhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcyOTM3NzIsImV4cCI6MjEwMjg2OTc3Mn0.GEboyNWovkJ7U9zXAWtzcQ7iddISbQuoLSirBJfFkrM";
@@ -350,10 +372,6 @@ const authClient =
         AUTH_SUPABASE_KEY
     );
 
-
-// ==========================================
-// PROTECT THIS PAGE
-// ==========================================
 
 async function checkLogin() {
 
@@ -375,7 +393,6 @@ async function checkLogin() {
             "login.html";
 
         return;
-
     }
 
 
@@ -383,35 +400,22 @@ async function checkLogin() {
         data.session;
 
 
-    // ======================================
-    // USER NOT LOGGED IN
-    // ======================================
-
     if (!session) {
 
         window.location.href =
             "login.html";
 
         return;
-
     }
 
 
-    // ======================================
-    // USER IS LOGGED IN
-    // ======================================
-
     console.log(
-        "Logged in user:",
-        session.user
+        "Logged in:",
+        session.user.id
     );
 
 
-    // ======================================
-    // GET USERNAME
-    // ======================================
-
-    const savedUsername =
+    const username =
         localStorage.getItem(
             "ourSpaceUsername"
         );
@@ -425,13 +429,25 @@ async function checkLogin() {
 
     if (
         welcomeUser &&
-        savedUsername
+        username
     ) {
 
         welcomeUser.textContent =
             "Welcome back, " +
-            savedUsername +
+            username +
             " ❤️";
+
+    }
+
+
+    // Load messages after login
+
+    if (
+        typeof loadMessages ===
+        "function"
+    ) {
+
+        loadMessages();
 
     }
 
@@ -440,10 +456,6 @@ async function checkLogin() {
 
 checkLogin();
 
-
-// ==========================================
-// LOGOUT
-// ==========================================
 
 async function logout() {
 
@@ -465,7 +477,6 @@ async function logout() {
         );
 
         return;
-
     }
 
 
@@ -483,20 +494,22 @@ async function logout() {
 
 
 <!-- =========================
-     YOUR ORIGINAL SCRIPT
+     ORIGINAL SCRIPT
 ========================= -->
 
 <script src="./script.js"></script>
 
 
 <!-- =========================
-     ANNIVERSARY COUNTDOWN
+     ANNIVERSARY
 ========================= -->
 
 <script>
 
 const targetDate =
-    new Date("2027-01-18T00:00:00").getTime();
+    new Date(
+        "2027-01-18T00:00:00"
+    ).getTime();
 
 
 function countdown() {
@@ -515,17 +528,13 @@ function countdown() {
             "countdown"
         ).innerHTML = `
 
-            <p style="
-                color:#e75480;
-                font-weight:bold;
-            ">
+            <p class="happy-anniversary">
                 💕 Happy Anniversary! 💕
             </p>
 
         `;
 
         return;
-
     }
 
 
@@ -593,4 +602,3 @@ setInterval(
 </body>
 
 </html>
-
