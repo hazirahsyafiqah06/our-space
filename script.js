@@ -343,6 +343,7 @@ async function loadGallery() {
             <img
                 src="${photo.image_url}"
                 alt="Memory"
+                onclick="openImage('${photo.image_url}')"
             >
 
             <p>
