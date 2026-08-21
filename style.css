@@ -15,21 +15,120 @@ body {
     margin: 40px auto;
 }
 
+/* =========================
+   HERO
+========================= */
+
+.hero {
+    text-align: center;
+    padding: 35px 20px;
+}
+
+.small-title {
+    font-size: 12px;
+    letter-spacing: 3px;
+    color: #999;
+    margin-bottom: 8px;
+}
+
 h1 {
     text-align: center;
     color: #e75480;
+    margin: 5px 0 10px;
 }
 
-.subtitle {
-    text-align: center;
-    color: #888;
+.couple-name {
+    font-size: 18px;
+    color: #e75480;
+    margin: 10px 0;
 }
+
+.since {
+    color: #999;
+    font-size: 14px;
+}
+
+
+/* =========================
+   ANNIVERSARY
+========================= */
+
+.anniversary {
+    margin-top: 25px;
+    text-align: center;
+}
+
+.anniversary > p {
+    color: #999;
+    font-size: 13px;
+    margin-bottom: 12px;
+}
+
+#countdown {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.countdown-box {
+    background: white;
+    padding: 12px;
+    min-width: 65px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.countdown-box strong {
+    display: block;
+    font-size: 20px;
+    color: #e75480;
+}
+
+.countdown-box span {
+    font-size: 10px;
+    color: #999;
+}
+
+
+/* =========================
+   NAVIGATION
+========================= */
+
+.navigation {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.navigation button {
+    background: white;
+    color: #e75480;
+    border: 1px solid #f3c1d1;
+}
+
+.navigation button:hover {
+    background: #fff0f5;
+}
+
+
+/* =========================
+   SECTIONS
+========================= */
+
+section {
+    margin-bottom: 40px;
+}
+
+
+/* =========================
+   NOTE FORM
+========================= */
 
 .note-form {
     background: white;
     padding: 20px;
     border-radius: 20px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
     margin-bottom: 30px;
 }
 
@@ -63,6 +162,11 @@ button:hover {
     opacity: 0.9;
 }
 
+
+/* =========================
+   NOTES
+========================= */
+
 #notes {
     display: flex;
     flex-direction: column;
@@ -73,7 +177,7 @@ button:hover {
     background: white;
     padding: 20px;
     border-radius: 18px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
 }
 
 .note h3 {
@@ -85,28 +189,7 @@ button:hover {
     white-space: pre-wrap;
 }
 
-@media (max-width: 600px) {
-
-    .container {
-        width: 92%;
-        margin: 25px auto;
-    }
-
-    h1 {
-        font-size: 28px;
-    }
-
-    .note-form,
-    .note {
-        padding: 16px;
-    }
-
-    input,
-    textarea,
-    button {
-        font-size: 14px;
-    }
-    .note-buttons {
+.note-buttons {
     display: flex;
     gap: 10px;
     margin-top: 15px;
@@ -126,25 +209,10 @@ button:hover {
     font-size: 12px;
 }
 
-@media (max-width: 600px) {
 
-    .note-buttons {
-        flex-direction: column;
-    }
-
-    .note-buttons button {
-        width: 100%;
-    }
-
-}
-    .gallery-section {
-    margin-top: 40px;
-}
-
-.gallery-section input[type="file"] {
-    background: white;
-    padding: 12px;
-}
+/* =========================
+   GALLERY
+========================= */
 
 #gallery {
     display: grid;
@@ -157,7 +225,7 @@ button:hover {
     background: white;
     padding: 10px;
     border-radius: 18px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
     overflow: hidden;
 }
 
@@ -177,59 +245,10 @@ button:hover {
     background: #999;
 }
 
-@media (max-width: 600px) {
 
-    #gallery {
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-    }
-
-    .gallery-item img {
-        height: 150px;
-    }
-
-}
-}
-.hero {
-    text-align: center;
-    padding: 35px 20px;
-}
-
-.small-title {
-    font-size: 12px;
-    letter-spacing: 3px;
-    color: #999;
-}
-
-.couple-name {
-    font-size: 18px;
-    color: #e75480;
-}
-
-.since {
-    color: #999;
-    font-size: 14px;
-}
-
-.navigation {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 30px;
-}
-
-.navigation button {
-    background: white;
-    color: #e75480;
-    border: 1px solid #f3c1d1;
-}
-
-.navigation button:hover {
-    background: #fff0f5;
-}
-
-section {
-    margin-bottom: 40px;
-}
+/* =========================
+   MEMORIES
+========================= */
 
 .memory {
     display: flex;
@@ -239,7 +258,7 @@ section {
     padding: 18px;
     border-radius: 18px;
     margin-bottom: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 
 .memory span {
@@ -256,7 +275,40 @@ section {
     color: #777;
 }
 
+
+/* =========================
+   MOBILE
+========================= */
+
 @media (max-width: 600px) {
+
+    .container {
+        width: 92%;
+        margin: 25px auto;
+    }
+
+    h1 {
+        font-size: 28px;
+    }
+
+    .hero {
+        padding: 25px 10px;
+    }
+
+    .couple-name {
+        font-size: 16px;
+    }
+
+    .note-form,
+    .note {
+        padding: 16px;
+    }
+
+    input,
+    textarea,
+    button {
+        font-size: 14px;
+    }
 
     .navigation {
         display: grid;
@@ -268,50 +320,26 @@ section {
         padding: 10px 5px;
     }
 
-    .hero {
-        padding: 25px 10px;
+    .note-buttons {
+        flex-direction: column;
     }
 
-    .couple-name {
-        font-size: 16px;
+    .note-buttons button {
+        width: 100%;
     }
-}
-.anniversary {
-    margin-top: 25px;
-    text-align: center;
-}
 
-.anniversary > p {
-    color: #999;
-    font-size: 13px;
-}
+    #gallery {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
 
-#countdown {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-}
+    .gallery-item img {
+        height: 150px;
+    }
 
-.countdown-box {
-    background: white;
-    padding: 12px;
-    min-width: 65px;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-}
-
-.countdown-box strong {
-    display: block;
-    font-size: 20px;
-    color: #e75480;
-}
-
-.countdown-box span {
-    font-size: 10px;
-    color: #999;
-}
-
-@media (max-width: 600px) {
+    #countdown {
+        gap: 6px;
+    }
 
     .countdown-box {
         min-width: 55px;
@@ -322,4 +350,7 @@ section {
         font-size: 17px;
     }
 
+    .countdown-box span {
+        font-size: 9px;
+    }
 }
