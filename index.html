@@ -139,44 +139,37 @@
 <script src="./script.js"></script>
 
 <script>
-function startCountdown() {
+const targetDate = new Date("2027-01-18T00:00:00").getTime();
 
-    const countdown = document.getElementById("countdown");
+function countdown() {
 
-    if (!countdown) {
-        console.log("Countdown element not found");
-        return;
-    }
+    const now = new Date().getTime();
 
-    function update() {
+    const distance = targetDate - now;
 
-        const target = new Date("2027-01-18T00:00:00").getTime();
-        const now = new Date().getTime();
+    const days = Math.floor(
+        distance / (1000 * 60 * 60 * 24)
+    );
 
-        const distance = target - now;
+    const hours = Math.floor(
+        (distance / (1000 * 60 * 60)) % 24
+    );
 
-        if (distance <= 0) {
-            countdown.innerHTML = "💕 Happy Anniversary! 💕";
-            return;
-        }
+    const minutes = Math.floor(
+        (distance / (1000 * 60)) % 60
+    );
 
-        const days = Math.floor(
-            distance / (1000 * 60 * 60 * 24)
-        );
+    const seconds = Math.floor(
+        (distance / 1000) % 60
+    );
 
-        const hours = Math.floor(
-            (distance / (1000 * 60 * 60)) % 24
-        );
+    document.getElementById("countdown").innerHTML = `
+        <div style="
+            display:flex;
+            justify-content:center;
+            gap:10px;
+        ">
 
-        const minutes = Math.floor(
-            (distance / (1000 * 60)) % 60
-        );
-
-        const seconds = Math.floor(
-            (distance / 1000) % 60
-        );
-
-        countdown.innerHTML = `
             <div class="countdown-box">
                 <strong>${days}</strong>
                 <span>Days</span>
@@ -196,18 +189,15 @@ function startCountdown() {
                 <strong>${seconds}</strong>
                 <span>Seconds</span>
             </div>
-        `;
-    }
 
-    update();
-
-    setInterval(update, 1000);
+        </div>
+    `;
 }
 
-startCountdown();
+countdown();
+
+setInterval(countdown, 1000);
 </script>
 
 </body>
 </html>
-
-
