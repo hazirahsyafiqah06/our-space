@@ -119,6 +119,227 @@ async function addNote() {
 
     loadNotes();
 }
+// ==========================================
+// GALLERY - LOAD IMAGES
+// ==========================================
+
+async function loadGallery() {
+
+    const galleryContainer = document.getElementById("gallery");
+
+    galleryContainer.innerHTML = "<p>Loading photos...</p>";
+
+    const { data, error } = await supabaseClient
+        .from("gallery")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+    if (error) {
+        console.error(error);
+        galleryContainer.innerHTML =
+            "<p>Failed to load gallery.</p>";
+        return;
+    }
+
+    if (!data || data.length === 0) {
+        galleryContainer.innerHTML =
+            "<p>No photos yet 📸❤️</p>";
+        return;
+    }
+
+    galleryContainer.innerHTML = "";
+
+    data.forEach(photo => {
+
+        const item = document.createElement("div");
+
+        item.className = "gallery-item";
+
+        item.innerHTML = `
+            <img
+                src="${photo.image_url}"
+                alt="Our memory"
+            >
+
+            <p>${escapeHTML(photo.caption || "")}</p>
+
+            <button onclick="deleteImage(${photo.id}, '${photo.image_url}')">
+                🗑️ Delete
+            </button>
+        `;
+
+        galleryContainer.appendChild(item);
+
+    });
+}
+
+
+// ==========================================
+// GALLERY - UPLOAD IMAGE
+// ==========================================
+
+async function uploadImage() {
+
+    const fileInput = document.getElementById("imageInput");
+    const captionInput = document.getElementById("caption");
+
+    const file = fileInput.files[0];
+    const caption = captionInput.value.trim();
+
+    if (!file) {
+
+        alert("Please choose a photo 📸");
+
+        return;
+    }
+
+    // Check file type
+    if (!file.type.startsWith("image/")) {
+
+        alert("Please upload an image file.");
+
+        return;
+    }
+
+    // Limit image size to 5 MB
+    if (file.size > 5 * 1024 * 1024) {
+
+        alert("Image must be smaller than 5 MB.");
+
+        return;
+    }
+
+    const fileName =
+        Date.now() + "_" + file.name.replace(/\s+/g, "_");
+
+
+    // Upload to Supabase Storage
+    const { error: uploadError } =
+        await supabaseClient
+            .storage
+            .from("gallery")
+            .upload(fileName, file);
+
+    if (uploadError) {
+
+        console.error(uploadError);
+
+        alert("Failed to upload image.");
+
+        return;
+    }
+
+
+    // Get public URL
+    const { data: publicURL } =
+        supabaseClient
+            .storage
+            .from("gallery")
+            .getPublicUrl(fileName);
+
+    const imageUrl = publicURL.publicUrl;
+
+
+    // Save URL into database
+    const { error: databaseError } =
+        await supabaseClient
+            .from("gallery")
+            .insert([
+                {
+                    image_url: imageUrl,
+                    caption: caption
+                }
+            ]);
+
+    if (databaseError) {
+
+        console.error(databaseError);
+
+        alert("Image uploaded but failed to save information.");
+
+        return;
+    }
+
+
+    // Reset form
+    fileInput.value = "";
+    captionInput.value = "";
+
+    alert("Photo uploaded successfully ❤️");
+
+    loadGallery();
+}
+
+
+// ==========================================
+// GALLERY - DELETE IMAGE
+// ==========================================
+
+async function deleteImage(id, imageUrl) {
+
+    const confirmDelete = confirm(
+        "Delete this photo? 🥺"
+    );
+
+    if (!confirmDelete) {
+        return;
+    }
+
+
+    // Get file name from URL
+    const fileName =
+        decodeURIComponent(
+            imageUrl.split("/").pop()
+        );
+
+
+    // Delete from Storage
+    const { error: storageError } =
+        await supabaseClient
+            .storage
+            .from("gallery")
+            .remove([fileName]);
+
+
+    if (storageError) {
+
+        console.error(storageError);
+
+        alert("Failed to delete image.");
+
+        return;
+    }
+
+
+    // Delete from database
+    const { error: databaseError } =
+        await supabaseClient
+            .from("gallery")
+            .delete()
+            .eq("id", id);
+
+
+    if (databaseError) {
+
+        console.error(databaseError);
+
+        alert("Image deleted from storage but database failed.");
+
+        return;
+    }
+
+
+    alert("Photo deleted 🗑️");
+
+    loadGallery();
+}
+
+
+// ==========================================
+// START GALLERY
+// ==========================================
+
+loadGallery();
 
 
 // ==========================================
