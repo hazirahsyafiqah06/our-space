@@ -340,12 +340,11 @@ async function loadGallery() {
 
         div.innerHTML = `
 
-            <img
+           <img
                 src="${photo.image_url}"
                 alt="Memory"
-                onclick="openImage('${photo.image_url}')"
             >
-
+               
             <p>
                 ${escapeHTML(
                     photo.caption || ""
