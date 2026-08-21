@@ -106,4 +106,35 @@ button:hover {
     button {
         font-size: 14px;
     }
+    .note-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.note-buttons button {
+    width: auto;
+    flex: 1;
+}
+
+.delete-btn {
+    background: #999;
+}
+
+.note small {
+    color: #999;
+    font-size: 12px;
+}
+
+@media (max-width: 600px) {
+
+    .note-buttons {
+        flex-direction: column;
+    }
+
+    .note-buttons button {
+        width: 100%;
+    }
+
+}
 }
