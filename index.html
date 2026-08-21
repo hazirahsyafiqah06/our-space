@@ -13,9 +13,36 @@
 
     <div class="container">
 
-        <h1>💕 Our Space</h1>
-        <p class="subtitle">Our little place ❤️</p>
+      <div class="hero">
 
+    <p class="small-title">WELCOME TO</p>
+
+    <h1>💕 Our Space</h1>
+
+    <p class="couple-name">
+        Nur Hazirah ❤️ Zulkarnain
+    </p>
+
+    <p class="since">
+        Together since 18 January 2021
+    </p>
+
+</div>
+        <nav class="navigation">
+
+    <button onclick="showSection('notes-section')">
+        📝 Notes
+    </button>
+
+    <button onclick="showSection('gallery-section')">
+        📸 Gallery
+    </button>
+
+    <button onclick="showSection('memories-section')">
+        💌 Memories
+    </button>
+
+</nav>
         <div class="note-form">
 
             <input
@@ -35,16 +62,34 @@
 
         </div>
 
-        <h2>📝 Our Notes</h2>
+        <section id="notes-section">
 
-        <div id="notes">
-            <p>Loading notes...</p>
-        </div>
+    <h2>📝 Our Notes</h2>
+
+    <div class="note-form">
+
+        <input
+            type="text"
+            id="title"
+            placeholder="Note title..."
+        >
+
+        <textarea
+            id="content"
+            placeholder="Write something for your baby... ❤️"
+        ></textarea>
+
+        <button onclick="addNote()">
+            + Save Note
+        </button>
 
     </div>
-    <hr>
 
-<section class="gallery-section">
+    <div id="notes"></div>
+
+</section>
+
+<section id="gallery-section">
 
     <h2>📸 Our Gallery</h2>
 
@@ -65,6 +110,33 @@
     </button>
 
     <div id="gallery"></div>
+
+</section>
+        <section id="memories-section">
+
+    <h2>💌 Our Memories</h2>
+
+    <div class="memory">
+
+        <span>❤️</span>
+
+        <div>
+            <h3>18 January 2021</h3>
+            <p>The beginning of our story.</p>
+        </div>
+
+    </div>
+
+    <div class="memory">
+
+        <span>💕</span>
+
+        <div>
+            <h3>Our First Memory</h3>
+            <p>More memories coming soon...</p>
+        </div>
+
+    </div>
 
 </section>
 
