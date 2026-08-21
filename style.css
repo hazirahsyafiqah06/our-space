@@ -350,6 +350,66 @@ button:hover {
         font-size: 17px;
     }
 
+    /* ==========================================
+   ANNIVERSARY COUNTDOWN
+========================================== */
+
+.anniversary {
+    margin-top: 25px;
+    text-align: center;
+}
+
+.anniversary > p {
+    color: #999;
+    font-size: 13px;
+    margin-bottom: 12px;
+}
+
+#countdown {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.countdown-box {
+    background: white;
+    width: 70px;
+    padding: 12px 5px;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+}
+
+.countdown-box strong {
+    display: block;
+    color: #e75480;
+    font-size: 22px;
+}
+
+.countdown-box span {
+    color: #999;
+    font-size: 10px;
+}
+
+@media (max-width: 600px) {
+
+    #countdown {
+        gap: 6px;
+    }
+
+    .countdown-box {
+        width: 60px;
+        padding: 10px 3px;
+    }
+
+    .countdown-box strong {
+        font-size: 18px;
+    }
+
+    .countdown-box span {
+        font-size: 9px;
+    }
+}
+
     .countdown-box span {
         font-size: 9px;
     }
