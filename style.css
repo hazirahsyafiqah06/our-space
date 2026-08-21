@@ -1,4 +1,4 @@
-
+```css
 * {
     box-sizing: border-box;
 }
@@ -14,15 +14,17 @@ body {
     color: #333;
 }
 
+
 /* =========================
-   MAIN CONTAINER
+   CONTAINER
 ========================= */
 
 .container {
     width: 92%;
     max-width: 760px;
-    margin: 30px auto 50px;
+    margin: 30px auto 60px;
 }
+
 
 /* =========================
    HERO
@@ -34,38 +36,37 @@ body {
 }
 
 .small-title {
+    margin: 0 0 8px;
     font-size: 12px;
     letter-spacing: 3px;
     color: #999;
-    margin: 0 0 8px;
 }
 
-#welcomeUser {
+.welcome-user {
+    margin: 8px 0 15px;
     color: #e75480;
     font-size: 15px;
     font-weight: bold;
-    margin: 8px 0 15px;
 }
 
 h1 {
-    text-align: center;
-    color: #e75480;
     margin: 5px 0 10px;
+    color: #e75480;
     font-size: 32px;
 }
 
 .couple-name {
-    font-size: 18px;
-    color: #e75480;
     margin: 10px 0;
-    font-weight: 500;
+    color: #e75480;
+    font-size: 18px;
 }
 
 .since {
+    margin: 0;
     color: #999;
     font-size: 14px;
-    margin: 0;
 }
+
 
 /* =========================
    COUNTDOWN
@@ -77,9 +78,9 @@ h1 {
 }
 
 .anniversary > p {
+    margin: 0 0 14px;
     color: #999;
     font-size: 13px;
-    margin: 0 0 14px;
 }
 
 #countdown {
@@ -87,16 +88,18 @@ h1 {
     justify-content: center;
     align-items: stretch;
     gap: 10px;
-    width: 100%;
 }
 
 .countdown-box {
-    background: #fff;
     width: 75px;
     min-height: 70px;
-    padding: 12px 6px;
+    padding: 12px 5px;
+
+    background: white;
     border-radius: 16px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+
+    box-shadow:
+        0 4px 15px rgba(0,0,0,0.06);
 
     display: flex;
     flex-direction: column;
@@ -105,18 +108,21 @@ h1 {
 }
 
 .countdown-box strong {
-    display: block;
-    font-size: 22px;
     color: #e75480;
-    line-height: 1.2;
+    font-size: 22px;
 }
 
 .countdown-box span {
-    display: block;
     margin-top: 4px;
-    font-size: 10px;
     color: #999;
+    font-size: 10px;
 }
+
+.anniversary-message {
+    color: #e75480 !important;
+    font-weight: bold;
+}
+
 
 /* =========================
    LOGOUT
@@ -130,27 +136,35 @@ h1 {
 .logout-btn {
     width: auto;
     min-width: 110px;
-    background: #fff;
-    color: #e75480;
     padding: 10px 18px;
+
+    background: white;
+    color: #e75480;
+
     border-radius: 12px;
-    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+
+    box-shadow:
+        0 3px 12px rgba(0,0,0,0.08);
+
     font-size: 14px;
 }
 
+
 /* =========================
-   BUTTON GENERAL
+   GENERAL BUTTON
 ========================= */
 
 button {
-    width: 100%;
-    padding: 12px;
     border: none;
     border-radius: 12px;
+    padding: 12px;
+
     background: #e75480;
     color: white;
+
     font-size: 15px;
     cursor: pointer;
+
     transition: 0.2s ease;
 }
 
@@ -158,6 +172,7 @@ button:hover {
     opacity: 0.9;
     transform: translateY(-1px);
 }
+
 
 /* =========================
    NAVIGATION
@@ -167,72 +182,97 @@ button:hover {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 10px;
-    margin-bottom: 25px;
+
+    margin-bottom: 28px;
 }
 
 .navigation button {
-    background: #fff;
-    color: #e75480;
-    border: 1px solid #f3c1d1;
     min-height: 46px;
+
+    background: white;
+    color: #e75480;
+
+    border: 1px solid #f3c1d1;
 }
 
 .navigation button:hover {
     background: #fff0f5;
 }
 
+
 /* =========================
-   NOTE FORM
+   SECTION HEADER
 ========================= */
 
-.note-form {
-    background: #fff;
-    padding: 22px;
+.section-header {
+    margin-bottom: 18px;
+}
+
+.section-header h2 {
+    margin: 0 0 5px;
+    color: #e75480;
+    font-size: 23px;
+}
+
+.section-header p {
+    margin: 0;
+    color: #999;
+    font-size: 13px;
+}
+
+
+/* =========================
+   MESSAGE FORM
+========================= */
+
+.message-form {
+    padding: 20px;
+    margin-bottom: 28px;
+
+    background: white;
     border-radius: 20px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.07);
-    margin-bottom: 30px;
+
+    box-shadow:
+        0 5px 20px rgba(0,0,0,0.07);
 }
 
 input,
 textarea {
     width: 100%;
     display: block;
-    padding: 12px 14px;
-    margin: 0 0 12px;
-    border: 1px solid #ddd;
+
+    padding: 13px 14px;
+    margin-bottom: 12px;
+
+    border: 1px solid #e3e3e3;
     border-radius: 12px;
+
     font-family: Arial, sans-serif;
-    font-size: 15px;
+    font-size: 14px;
+
     outline: none;
 }
 
 input:focus,
 textarea:focus {
     border-color: #e75480;
-    box-shadow: 0 0 0 3px rgba(231, 84, 128, 0.08);
+
+    box-shadow:
+        0 0 0 3px rgba(231,84,128,0.08);
 }
 
 textarea {
-    min-height: 120px;
+    min-height: 110px;
     resize: vertical;
 }
 
-/* =========================
-   SECTION
-========================= */
-
-section {
-    margin-bottom: 40px;
+.send-btn {
+    width: 100%;
 }
 
-section h2 {
-    color: #e75480;
-    margin: 0 0 18px;
-    font-size: 23px;
-}
 
 /* =========================
-   NOTES
+   MESSAGE AREA
 ========================= */
 
 #notes {
@@ -241,51 +281,174 @@ section h2 {
     gap: 15px;
 }
 
-.note {
-    background: #fff;
-    padding: 20px;
+.loading-message,
+.empty-message {
+    padding: 25px;
+
+    background: white;
     border-radius: 18px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+
+    text-align: center;
+    color: #999;
+
+    box-shadow:
+        0 4px 15px rgba(0,0,0,0.05);
 }
 
-.note h3 {
-    margin: 0 0 10px;
-    color: #e75480;
-    font-size: 18px;
-}
 
-.note p {
-    margin: 0;
-    line-height: 1.6;
-    white-space: pre-wrap;
-    color: #555;
-}
+/* =========================
+   MESSAGE CARD
+========================= */
 
-.note-buttons {
+.message-row {
+    width: 100%;
     display: flex;
-    gap: 10px;
-    margin-top: 15px;
 }
 
-.note-buttons button {
-    flex: 1;
+.message-row.mine {
+    justify-content: flex-end;
+}
+
+.message-row.partner {
+    justify-content: flex-start;
+}
+
+.message-card {
+    width: 78%;
+    max-width: 560px;
+
+    padding: 17px;
+
+    background: white;
+    border-radius: 20px;
+
+    box-shadow:
+        0 5px 18px rgba(0,0,0,0.07);
+
+    position: relative;
+}
+
+
+/* MY MESSAGE */
+
+.message-row.mine .message-card {
+    background: #ffe1eb;
+    border-bottom-right-radius: 6px;
+}
+
+
+/* PARTNER MESSAGE */
+
+.message-row.partner .message-card {
+    background: white;
+    border-bottom-left-radius: 6px;
+}
+
+
+/* =========================
+   MESSAGE HEADER
+========================= */
+
+.message-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 10px;
+
+    margin-bottom: 8px;
+}
+
+.sender-name {
+    color: #e75480;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.message-time {
+    color: #aaa;
+    font-size: 10px;
+    white-space: nowrap;
+}
+
+
+/* =========================
+   MESSAGE TITLE
+========================= */
+
+.message-title {
+    margin: 0 0 8px;
+
+    color: #333;
+    font-size: 17px;
+    font-weight: bold;
+
+    word-break: break-word;
+}
+
+
+/* =========================
+   MESSAGE CONTENT
+========================= */
+
+.message-content {
+    margin: 0;
+
+    color: #555;
+
+    font-size: 14px;
+    line-height: 1.6;
+
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+
+/* =========================
+   MESSAGE ACTIONS
+========================= */
+
+.message-actions {
+    display: flex;
+    justify-content: flex-end;
+
+    gap: 8px;
+
+    margin-top: 14px;
+}
+
+.message-actions button {
+    width: auto;
+
+    padding: 7px 12px;
+
+    font-size: 12px;
+}
+
+.edit-btn {
+    background: #e75480;
 }
 
 .delete-btn {
-    background: #999;
+    background: #aaa;
 }
+
 
 /* =========================
    GALLERY FORM
 ========================= */
 
-#gallery-section > input {
-    background: #fff;
+.gallery-form {
+    padding: 20px;
+    margin-bottom: 25px;
+
+    background: white;
+    border-radius: 20px;
+
+    box-shadow:
+        0 5px 20px rgba(0,0,0,0.07);
 }
 
-#gallery-section > button {
-    margin-bottom: 5px;
-}
 
 /* =========================
    GALLERY
@@ -295,38 +458,49 @@ section h2 {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 15px;
-    margin-top: 20px;
 }
 
 .gallery-item {
-    background: #fff;
-    padding: 10px;
-    border-radius: 18px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
     overflow: hidden;
+
+    padding: 10px;
+
+    background: white;
+    border-radius: 18px;
+
+    box-shadow:
+        0 4px 15px rgba(0,0,0,0.06);
 }
 
 .gallery-item img {
     display: block;
+
     width: 100%;
     height: 220px;
+
     object-fit: cover;
+
     border-radius: 12px;
 }
 
 .gallery-item p {
     margin: 10px 2px;
-    color: #666;
-    font-size: 14px;
-    line-height: 1.4;
+
     min-height: 20px;
+
+    color: #666;
+    font-size: 13px;
+    line-height: 1.4;
 }
 
 .gallery-item button {
+    width: 100%;
+
     background: #999;
-    font-size: 14px;
-    padding: 10px;
+
+    font-size: 13px;
 }
+
 
 /* =========================
    MEMORIES
@@ -335,21 +509,22 @@ section h2 {
 .memory {
     display: flex;
     align-items: center;
+
     gap: 15px;
-    background: #fff;
+
     padding: 18px;
-    border-radius: 18px;
     margin-bottom: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+
+    background: white;
+    border-radius: 18px;
+
+    box-shadow:
+        0 4px 15px rgba(0,0,0,0.05);
 }
 
 .memory span {
     flex: 0 0 auto;
     font-size: 28px;
-}
-
-.memory div {
-    min-width: 0;
 }
 
 .memory h3 {
@@ -361,8 +536,10 @@ section h2 {
 .memory p {
     margin: 0;
     color: #777;
+    font-size: 14px;
     line-height: 1.5;
 }
+
 
 /* =========================
    MOBILE
@@ -391,6 +568,7 @@ section h2 {
         font-size: 13px;
     }
 
+
     /* COUNTDOWN */
 
     #countdown {
@@ -400,7 +578,7 @@ section h2 {
     .countdown-box {
         width: calc(25% - 5px);
         min-width: 0;
-        min-height: 65px;
+        min-height: 63px;
         padding: 9px 3px;
     }
 
@@ -412,43 +590,55 @@ section h2 {
         font-size: 9px;
     }
 
+
     /* NAVIGATION */
 
     .navigation {
-        gap: 7px;
+        gap: 6px;
     }
 
     .navigation button {
+        padding: 10px 4px;
+        font-size: 12px;
+    }
+
+
+    /* MESSAGE FORM */
+
+    .message-form,
+    .gallery-form {
+        padding: 16px;
+    }
+
+
+    /* MESSAGE CARD */
+
+    .message-card {
+        width: 88%;
+        padding: 15px;
+    }
+
+    .message-title {
+        font-size: 16px;
+    }
+
+    .message-content {
         font-size: 13px;
-        padding: 10px 5px;
-        min-height: 44px;
     }
 
-    /* FORM */
-
-    .note-form {
-        padding: 16px;
+    .message-top {
+        align-items: flex-start;
     }
 
-    input,
-    textarea,
-    button {
-        font-size: 14px;
+    .message-actions {
+        justify-content: flex-end;
     }
 
-    /* NOTES */
-
-    .note {
-        padding: 16px;
+    .message-actions button {
+        padding: 7px 10px;
+        font-size: 11px;
     }
 
-    .note-buttons {
-        flex-direction: column;
-    }
-
-    .note-buttons button {
-        width: 100%;
-    }
 
     /* GALLERY */
 
@@ -459,7 +649,6 @@ section h2 {
 
     .gallery-item {
         padding: 8px;
-        border-radius: 15px;
     }
 
     .gallery-item img {
@@ -469,13 +658,13 @@ section h2 {
 
     .gallery-item p {
         font-size: 12px;
-        margin: 8px 2px;
     }
 
     .gallery-item button {
-        font-size: 12px;
-        padding: 9px 5px;
+        font-size: 11px;
+        padding: 9px 4px;
     }
+
 
     /* MEMORIES */
 
@@ -497,27 +686,19 @@ section h2 {
     }
 }
 
+
 /* =========================
    VERY SMALL PHONE
 ========================= */
 
 @media (max-width: 380px) {
 
-    .container {
-        width: 94%;
-    }
-
     h1 {
         font-size: 25px;
     }
 
-    .navigation {
-        gap: 5px;
-    }
-
     .navigation button {
-        font-size: 11px;
-        padding: 9px 3px;
+        font-size: 10px;
     }
 
     .countdown-box {
@@ -528,8 +709,8 @@ section h2 {
         font-size: 16px;
     }
 
-    .countdown-box span {
-        font-size: 8px;
+    .message-card {
+        width: 92%;
     }
 
     #gallery {
@@ -540,4 +721,4 @@ section h2 {
         height: 125px;
     }
 }
-
+```
