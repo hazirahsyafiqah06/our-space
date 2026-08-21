@@ -704,3 +704,55 @@ loadGallery();
 showSection(
     "notes-section"
 );
+// ==========================================
+// IMAGE FULLSCREEN
+// ==========================================
+
+function openImage(imageUrl) {
+
+    const modal =
+        document.getElementById(
+            "imageModal"
+        );
+
+    const modalImage =
+        document.getElementById(
+            "modalImage"
+        );
+
+    if (!modal || !modalImage) {
+        return;
+    }
+
+    modalImage.src = imageUrl;
+
+    modal.classList.add(
+        "active"
+    );
+}
+
+
+function closeImage() {
+
+    const modal =
+        document.getElementById(
+            "imageModal"
+        );
+
+    const modalImage =
+        document.getElementById(
+            "modalImage"
+        );
+
+    if (!modal) {
+        return;
+    }
+
+    modal.classList.remove(
+        "active"
+    );
+
+    if (modalImage) {
+        modalImage.src = "";
+    }
+}
