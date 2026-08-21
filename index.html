@@ -3,7 +3,6 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
 
     <meta name="viewport"
@@ -11,9 +10,7 @@
 
     <title>Our Space ❤️</title>
 
-    <link rel="stylesheet"
-          href="style.css">
-
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -89,12 +86,8 @@
 
     <div class="logout-area">
 
-        <button
-            onclick="logout()"
-            class="logout-btn">
-
+        <button onclick="logout()" class="logout-btn">
             🚪 Logout
-
         </button>
 
     </div>
@@ -106,80 +99,55 @@
 
     <nav class="navigation">
 
-        <button
-            onclick="showSection('notes-section')">
-
-            💌 Messages
-
+        <button onclick="showSection('notes-section')">
+            📝 Notes
         </button>
 
-        <button
-            onclick="showSection('gallery-section')">
-
+        <button onclick="showSection('gallery-section')">
             📸 Gallery
-
         </button>
 
-        <button
-            onclick="showSection('memories-section')">
+        <button onclick="showSection('memories-section')">
+            💌 Memories
+        </button>
 
-            💕 Memories
-
+        <button onclick="showSection('messages-section')">
+            💬 Secret
         </button>
 
     </nav>
 
 
     <!-- =========================
-         MESSAGES
+         NOTES
     ========================== -->
 
     <section id="notes-section">
 
-        <div class="section-header">
+        <div class="section-card">
 
-            <h2>
-                💌 Our Messages
-            </h2>
+            <h2>📝 Our Notes</h2>
 
-            <p>
-                A little message from me to you ❤️
-            </p>
+            <div class="note-form">
 
-        </div>
+                <input
+                    type="text"
+                    id="title"
+                    placeholder="Note title..."
+                >
 
+                <textarea
+                    id="content"
+                    placeholder="Write something..."
+                ></textarea>
 
-        <!-- MESSAGE FORM -->
+                <button onclick="addNote()">
+                    + Save Note
+                </button>
 
-        <div class="message-form">
-
-            <input
-                type="text"
-                id="title"
-                placeholder="Message title...">
-
-            <textarea
-                id="content"
-                placeholder="Write a message for your love..."></textarea>
-
-            <button
-                onclick="addNote()"
-                class="send-btn">
-
-                💌 Send Message
-
-            </button>
-
-        </div>
-
-
-        <!-- MESSAGES -->
-
-        <div id="notes">
-
-            <div class="loading-message">
-                Loading messages... 💕
             </div>
+
+            <div id="notes"></div>
 
         </div>
 
@@ -192,42 +160,33 @@
 
     <section id="gallery-section">
 
-        <div class="section-header">
+        <div class="section-card">
 
-            <h2>
-                📸 Our Gallery
-            </h2>
+            <h2>📸 Our Gallery</h2>
 
-            <p>
-                Our favourite moments together ❤️
-            </p>
+            <div class="upload-card">
 
-        </div>
+                <input
+                    type="file"
+                    id="imageInput"
+                    accept="image/*"
+                >
 
+                <input
+                    type="text"
+                    id="caption"
+                    placeholder="Caption for this photo..."
+                >
 
-        <div class="gallery-form">
+                <button onclick="uploadImage()">
+                    📸 Upload Photo
+                </button>
 
-            <input
-                type="file"
-                id="imageInput"
-                accept="image/*">
+            </div>
 
-            <input
-                type="text"
-                id="caption"
-                placeholder="Caption for this photo...">
-
-            <button
-                onclick="uploadImage()">
-
-                📸 Upload Photo
-
-            </button>
+            <div id="gallery"></div>
 
         </div>
-
-
-        <div id="gallery"></div>
 
     </section>
 
@@ -238,54 +197,86 @@
 
     <section id="memories-section">
 
-        <div class="section-header">
+        <div class="section-card">
 
-            <h2>
-                💕 Our Memories
-            </h2>
+            <h2>💌 Our Memories</h2>
 
-            <p>
-                The story of us ❤️
-            </p>
+            <div class="memory">
 
-        </div>
+                <span>❤️</span>
 
+                <div>
+                    <h3>18 January 2021</h3>
 
-        <div class="memory">
+                    <p>
+                        The beginning of our story.
+                    </p>
+                </div>
 
-            <span>
-                ❤️
-            </span>
+            </div>
 
-            <div>
+            <div class="memory">
 
-                <h3>
-                    18 January 2021
-                </h3>
+                <span>💕</span>
 
-                <p>
-                    The beginning of our story.
-                </p>
+                <div>
+                    <h3>Our First Memory</h3>
+
+                    <p>
+                        More memories coming soon...
+                    </p>
+                </div>
 
             </div>
 
         </div>
 
+    </section>
 
-        <div class="memory">
 
-            <span>
-                💕
-            </span>
+    <!-- =========================
+         SECRET MESSAGE
+    ========================== -->
 
-            <div>
+    <section id="messages-section">
 
-                <h3>
-                    Our First Memory
-                </h3>
+        <div class="section-card message-section-card">
 
-                <p>
-                    More memories coming soon...
+            <h2>
+                💬 Secret Messages
+            </h2>
+
+            <p class="message-subtitle">
+                A little place just for us ❤️
+            </p>
+
+
+            <!-- SEND MESSAGE -->
+
+            <div class="message-form">
+
+                <textarea
+                    id="secretMessage"
+                    placeholder="Write a secret message for your love... ❤️"
+                    maxlength="1000"
+                ></textarea>
+
+                <button
+                    id="sendMessageBtn"
+                    onclick="sendSecretMessage()"
+                >
+                    💌 Send Message
+                </button>
+
+            </div>
+
+
+            <!-- MESSAGE LIST -->
+
+            <div id="secretMessages">
+
+                <p class="loading-message">
+                    Loading messages... 💕
                 </p>
 
             </div>
@@ -303,10 +294,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-
-<!-- =========================
-     AUTH
-========================= -->
 
 <script>
 
@@ -328,35 +315,21 @@ async function checkLogin() {
     const {
         data,
         error
-    } =
-        await authClient.auth.getSession();
+    } = await authClient.auth.getSession();
 
 
-    if (error) {
-
-        console.error(
-            "Session error:",
-            error
-        );
+    if (error || !data.session) {
 
         window.location.href =
             "login.html";
 
         return;
+
     }
 
 
     const session =
         data.session;
-
-
-    if (!session) {
-
-        window.location.href =
-            "login.html";
-
-        return;
-    }
 
 
     console.log(
@@ -365,52 +338,26 @@ async function checkLogin() {
     );
 
 
+    const savedUsername =
+        localStorage.getItem(
+            "ourSpaceUsername"
+        );
+
+
     const welcomeUser =
         document.getElementById(
             "welcomeUser"
         );
 
 
-    const userId =
-        session.user.id;
+    if (welcomeUser && savedUsername) {
 
-
-    let username =
-        "Love";
-
-
-    if (
-        userId ===
-        "fd76923c-6b95-4668-b020-32ff37192990"
-    ) {
-
-        username =
-            "Nur Hazirah";
+        welcomeUser.textContent =
+            "Welcome back, " +
+            savedUsername +
+            " ❤️";
 
     }
-
-
-    if (
-        userId ===
-        "327adb82-7b8b-4e01-be1d-2802a334e6db"
-    ) {
-
-        username =
-            "Zulkarnain";
-
-    }
-
-
-    welcomeUser.textContent =
-        "Welcome back, " +
-        username +
-        " ❤️";
-
-
-    localStorage.setItem(
-        "ourSpaceUsername",
-        username
-    );
 
 }
 
@@ -422,22 +369,17 @@ async function logout() {
 
     const {
         error
-    } =
-        await authClient.auth.signOut();
+    } = await authClient.auth.signOut();
 
 
     if (error) {
-
-        console.error(
-            "Logout error:",
-            error
-        );
 
         alert(
             "Unable to logout. Please try again."
         );
 
         return;
+
     }
 
 
@@ -468,16 +410,13 @@ async function logout() {
 <script>
 
 const targetDate =
-    new Date(
-        "2027-01-18T00:00:00"
-    ).getTime();
+    new Date("2027-01-18T00:00:00").getTime();
 
 
 function countdown() {
 
     const now =
         new Date().getTime();
-
 
     const distance =
         targetDate - now;
@@ -488,14 +427,13 @@ function countdown() {
         document.getElementById(
             "countdown"
         ).innerHTML = `
-
-            <p class="anniversary-message">
+            <p class="happy-anniversary">
                 💕 Happy Anniversary! 💕
             </p>
-
         `;
 
         return;
+
     }
 
 
@@ -558,8 +496,6 @@ setInterval(
 
 </script>
 
-
 </body>
-
 </html>
 
