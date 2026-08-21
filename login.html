@@ -246,23 +246,16 @@
      SUPABASE
 ========================== -->
 
+```html
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-
 <script>
-
-
-// ==========================================
-// SUPABASE CONFIG
-// ==========================================
 
 const SUPABASE_URL =
     "https://ognpydprqxxwjdnophxq.supabase.co";
 
-
 const SUPABASE_KEY =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzIiwicmVmIjoib2ducG5wZHBycXh4d2pkbm9waHhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcyOTM3NzIsImV4cCI6MjEwMjg2OTc3Mn0.GEboyNWovkJ7U9zXAWtzcQ7iddISbQuoLSirBJfFkrM";
-
 
 const supabaseClient =
     window.supabase.createClient(
@@ -271,18 +264,21 @@ const supabaseClient =
     );
 
 
-
 // ==========================================
 // LOGIN
 // ==========================================
 
 async function login() {
 
-    const usernameInput =
-        document.getElementById("username");
+    const username =
+        document.getElementById("username")
+        .value
+        .trim()
+        .toLowerCase();
 
-    const passwordInput =
-        document.getElementById("password");
+    const password =
+        document.getElementById("password")
+        .value;
 
     const message =
         document.getElementById("message");
@@ -291,24 +287,13 @@ async function login() {
         document.getElementById("loginButton");
 
 
-    const username =
-        usernameInput.value
-            .trim()
-            .toLowerCase();
-
-
-    const password =
-        passwordInput.value;
-
-
     // ======================================
     // CHECK INPUT
     // ======================================
 
     if (!username || !password) {
 
-        message.style.color =
-            "#e75480";
+        message.style.color = "#e75480";
 
         message.textContent =
             "Please enter username and password ❤️";
@@ -317,28 +302,21 @@ async function login() {
     }
 
 
-    // ======================================
-    // DISABLE BUTTON
-    // ======================================
-
     button.disabled = true;
 
     button.textContent =
         "Logging in...";
 
-
-    message.style.color =
-        "#999";
+    message.style.color = "#999";
 
     message.textContent =
-        "Checking your account...";
+        "Checking account...";
 
 
     try {
 
-
         // ==================================
-        // FIND USERNAME IN PROFILES
+        // FIND USERNAME
         // ==================================
 
         const {
@@ -346,29 +324,21 @@ async function login() {
             error: profileError
         } =
             await supabaseClient
-
                 .from("profiles")
-
                 .select("id, username, email")
-
                 .eq("username", username)
-
                 .maybeSingle();
 
-
-        // ==================================
-        // PROFILE ERROR
-        // ==================================
 
         if (profileError) {
 
             console.error(
-                "Profile error:",
+                "PROFILE ERROR:",
                 profileError
             );
 
             throw new Error(
-                "Unable to access account. Please try again."
+                profileError.message
             );
         }
 
@@ -385,27 +355,30 @@ async function login() {
         }
 
 
+        console.log(
+            "Profile found:",
+            profile
+        );
+
+
         // ==================================
-        // EMAIL NOT FOUND
+        // CHECK EMAIL
         // ==================================
 
         if (!profile.email) {
 
             throw new Error(
-                "This account is not configured correctly."
+                "No email is connected to this username."
             );
         }
 
 
         // ==================================
-        // SUPABASE AUTH LOGIN
+        // LOGIN AUTH
         // ==================================
 
-        message.style.color =
-            "#999";
-
         message.textContent =
-            "Logging in...";
+            "Checking password...";
 
 
         const {
@@ -415,44 +388,35 @@ async function login() {
             await supabaseClient.auth
                 .signInWithPassword({
 
-                    email:
-                        profile.email,
+                    email: profile.email,
 
-                    password:
-                        password
+                    password: password
 
                 });
 
 
-        // ==================================
-        // AUTH ERROR
-        // ==================================
-
         if (authError) {
 
             console.error(
-                "Authentication error:",
+                "AUTH ERROR:",
                 authError
             );
 
             throw new Error(
-                "Wrong username or password ❤️"
+                authError.message
             );
         }
 
 
         // ==================================
-        // LOGIN SUCCESS
+        // SUCCESS
         // ==================================
 
         console.log(
-            "Login successful:",
+            "LOGIN SUCCESS:",
             authData.user
         );
 
-
-        // Save username locally
-        // for displaying on the website
 
         localStorage.setItem(
             "ourSpaceUsername",
@@ -472,10 +436,10 @@ async function login() {
 
 
         // ==================================
-        // REDIRECT
+        // GO TO MAIN PAGE
         // ==================================
 
-        setTimeout(function () {
+        setTimeout(() => {
 
             window.location.href =
                 "index.html";
@@ -486,7 +450,7 @@ async function login() {
     } catch (error) {
 
         console.error(
-            "Login error:",
+            "LOGIN ERROR:",
             error
         );
 
@@ -508,9 +472,8 @@ async function login() {
 }
 
 
-
 // ==========================================
-// ENTER KEY LOGIN
+// ENTER KEY
 // ==========================================
 
 function handleEnter(event) {
@@ -523,11 +486,6 @@ function handleEnter(event) {
 
 }
 
-
 </script>
-
-
 </body>
-
 </html>
-
