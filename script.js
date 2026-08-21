@@ -1,10 +1,6 @@
-// =====================================================
-// SUPABASE CONFIG
-// =====================================================
 
 const SUPABASE_URL =
     "https://ognpydprqxxwjdnophxq.supabase.co";
-
 
 const SUPABASE_KEY =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9nbnB5ZHBycXh4d2pkbm9waHhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcyOTM3NzIsImV4cCI6MjEwMjg2OTc3Mn0.GEboyNWovkJ7U9zXAWtzcQ7iddISbQuoLSirBJfFkrM";
@@ -17,32 +13,20 @@ const supabaseClient =
     );
 
 
-// =====================================================
-// OUR TWO USERS
-// =====================================================
+/* =====================================================
+   USER IDs
+===================================================== */
 
 const HAZIRAH_ID =
     "fd76923c-6b95-4668-b020-32ff37192990";
-
 
 const ZULKARNAIN_ID =
     "327adb82-7b8b-4e01-be1d-2802a334e6db";
 
 
-const USER_NAMES = {
-
-    [HAZIRAH_ID]:
-        "Nur Hazirah",
-
-    [ZULKARNAIN_ID]:
-        "Zulkarnain"
-
-};
-
-
-// =====================================================
-// GET CURRENT USER
-// =====================================================
+/* =====================================================
+   GET CURRENT USER
+===================================================== */
 
 async function getCurrentUser() {
 
@@ -53,7 +37,7 @@ async function getCurrentUser() {
         await supabaseClient.auth.getUser();
 
 
-    if (error) {
+    if (error || !data.user) {
 
         console.error(
             "User error:",
@@ -68,338 +52,264 @@ async function getCurrentUser() {
 }
 
 
+/* =====================================================
+   USER NAME
+===================================================== */
 
-// =====================================================
-// LOVE MESSAGES
-// =====================================================
+function getUserName(userId) {
 
-async function loadMessages() {
+    if (userId === HAZIRAH_ID) {
 
-    const receivedContainer =
-        document.getElementById(
-            "receivedMessages"
-        );
-
-
-    const sentContainer =
-        document.getElementById(
-            "sentMessages"
-        );
-
-
-    if (
-        !receivedContainer ||
-        !sentContainer
-    ) {
-
-        return;
-    }
-
-
-    const user =
-        await getCurrentUser();
-
-
-    if (!user) {
-
-        return;
-    }
-
-
-    // ---------------------------------------------
-    // RECEIVED
-    // ---------------------------------------------
-
-    const {
-        data: received,
-        error: receivedError
-    } =
-        await supabaseClient
-            .from("love_messages")
-            .select("*")
-            .eq(
-                "receiver_id",
-                user.id
-            )
-            .order(
-                "created_at",
-                {
-                    ascending: false
-                }
-            );
-
-
-    if (receivedError) {
-
-        console.error(
-            "Received messages error:",
-            receivedError
-        );
-
-
-        receivedContainer.innerHTML =
-            "<p>Failed to load messages.</p>";
-
-    } else {
-
-        receivedContainer.innerHTML =
-            "";
-
-
-        if (
-            !received ||
-            received.length === 0
-        ) {
-
-            receivedContainer.innerHTML = `
-
-                <div class="empty-message">
-                    No messages yet 💕
-                </div>
-
-            `;
-
-        } else {
-
-            received.forEach(
-                message => {
-
-                    receivedContainer.appendChild(
-                        createMessageCard(
-                            message,
-                            false
-                        )
-                    );
-
-                }
-            );
-
-        }
+        return "Nur Hazirah";
 
     }
 
 
-    // ---------------------------------------------
-    // SENT
-    // ---------------------------------------------
+    if (userId === ZULKARNAIN_ID) {
 
-    const {
-        data: sent,
-        error: sentError
-    } =
-        await supabaseClient
-            .from("love_messages")
-            .select("*")
-            .eq(
-                "sender_id",
-                user.id
-            )
-            .order(
-                "created_at",
-                {
-                    ascending: false
-                }
-            );
-
-
-    if (sentError) {
-
-        console.error(
-            "Sent messages error:",
-            sentError
-        );
-
-
-        sentContainer.innerHTML =
-            "<p>Failed to load messages.</p>";
-
-    } else {
-
-        sentContainer.innerHTML =
-            "";
-
-
-        if (
-            !sent ||
-            sent.length === 0
-        ) {
-
-            sentContainer.innerHTML = `
-
-                <div class="empty-message">
-                    You haven't sent any messages yet 💌
-                </div>
-
-            `;
-
-        } else {
-
-            sent.forEach(
-                message => {
-
-                    sentContainer.appendChild(
-                        createMessageCard(
-                            message,
-                            true
-                        )
-                    );
-
-                }
-            );
-
-        }
+        return "Zulkarnain";
 
     }
 
+
+    return "Our Love";
 }
 
 
+/* =====================================================
+   FORMAT DATE
+===================================================== */
 
-// =====================================================
-// CREATE MESSAGE CARD
-// =====================================================
+function formatDate(dateString) {
 
-function createMessageCard(
-    message,
-    isSent
-) {
-
-    const div =
-        document.createElement(
-            "div"
-        );
-
-
-    div.className =
-        isSent
-            ? "message-card sent-message"
-            : "message-card received-message";
-
-
-    const senderName =
-        USER_NAMES[
-            message.sender_id
-        ] ||
-        "Someone";
-
-
-    const receiverName =
-        USER_NAMES[
-            message.receiver_id
-        ] ||
-        "Someone";
+    if (!dateString) return "";
 
 
     const date =
-        new Date(
-            message.created_at
-        );
+        new Date(dateString);
 
 
-    const formattedDate =
-        date.toLocaleString(
-            "en-MY",
-            {
-                dateStyle: "medium",
-                timeStyle: "short"
-            }
-        );
-
-
-    div.innerHTML = `
-
-        <div class="message-top">
-
-            <span class="message-from">
-
-                ${
-                    isSent
-                        ? "To ❤️ " + receiverName
-                        : "From ❤️ " + senderName
-                }
-
-            </span>
-
-
-            <span class="message-date">
-
-                ${formattedDate}
-
-            </span>
-
-        </div>
-
-
-        <h3>
-
-            ${escapeHTML(
-                message.title
-            )}
-
-        </h3>
-
-
-        <p class="message-content">
-
-            ${escapeHTML(
-                message.content
-            )}
-
-        </p>
-
-
-        ${
-            isSent
-                ? `
-
-                <div class="message-buttons">
-
-                    <button
-                        onclick="editMessage(${message.id})">
-
-                        ✏️ Edit
-
-                    </button>
-
-
-                    <button
-                        onclick="deleteMessage(${message.id})">
-
-                        🗑️ Delete
-
-                    </button>
-
-                </div>
-
-                `
-                : ""
+    return date.toLocaleString(
+        "en-MY",
+        {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit"
         }
+    );
+}
 
+
+/* =====================================================
+   NOTES / MESSAGES
+===================================================== */
+
+async function loadNotes() {
+
+    const notesContainer =
+        document.getElementById("notes");
+
+
+    if (!notesContainer) return;
+
+
+    notesContainer.innerHTML = `
+        <div class="loading-message">
+            Loading messages... 💕
+        </div>
     `;
 
 
-    return div;
+    const currentUser =
+        await getCurrentUser();
+
+
+    if (!currentUser) return;
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("notes")
+            .select("*")
+            .order(
+                "created_at",
+                {
+                    ascending: true
+                }
+            );
+
+
+    if (error) {
+
+        console.error(
+            "Notes error:",
+            error
+        );
+
+
+        notesContainer.innerHTML = `
+            <div class="empty-message">
+                Failed to load messages 😢
+            </div>
+        `;
+
+        return;
+    }
+
+
+    notesContainer.innerHTML = "";
+
+
+    if (!data || data.length === 0) {
+
+        notesContainer.innerHTML = `
+            <div class="empty-message">
+                💕 No messages yet.<br>
+                Be the first to send one!
+            </div>
+        `;
+
+        return;
+    }
+
+
+    data.forEach(note => {
+
+        const isMine =
+            note.user_id === currentUser.id;
+
+
+        const row =
+            document.createElement("div");
+
+
+        row.className =
+            isMine
+                ? "message-row mine"
+                : "message-row partner";
+
+
+        const sender =
+            getUserName(
+                note.user_id
+            );
+
+
+        const title =
+            escapeHTML(
+                note.title || "A little message ❤️"
+            );
+
+
+        const content =
+            escapeHTML(
+                note.content || ""
+            );
+
+
+        const date =
+            formatDate(
+                note.created_at
+            );
+
+
+        row.innerHTML = `
+
+            <div class="message-card">
+
+                <div class="message-top">
+
+                    <span class="sender-name">
+
+                        ${
+                            isMine
+                                ? "You ❤️"
+                                : sender + " 💕"
+                        }
+
+                    </span>
+
+                    <span class="message-time">
+
+                        ${date}
+
+                    </span>
+
+                </div>
+
+
+                <h3 class="message-title">
+
+                    ${title}
+
+                </h3>
+
+
+                <p class="message-content">
+
+                    ${content}
+
+                </p>
+
+
+                ${
+                    isMine
+                        ? `
+
+                        <div class="message-actions">
+
+                            <button
+                                class="edit-btn"
+                                onclick="editNote(${note.id})">
+
+                                ✏️ Edit
+
+                            </button>
+
+
+                            <button
+                                class="delete-btn"
+                                onclick="deleteNote(${note.id})">
+
+                                🗑️ Delete
+
+                            </button>
+
+                        </div>
+
+                        `
+                        : ""
+                }
+
+            </div>
+
+        `;
+
+
+        notesContainer.appendChild(row);
+
+    });
 
 }
 
 
+/* =====================================================
+   ADD MESSAGE
+===================================================== */
 
-// =====================================================
-// SEND MESSAGE
-// =====================================================
-
-async function sendMessage() {
+async function addNote() {
 
     const titleInput =
-        document.getElementById(
-            "title"
-        );
+        document.getElementById("title");
 
 
     const contentInput =
-        document.getElementById(
-            "content"
-        );
+        document.getElementById("content");
 
 
     const title =
@@ -410,102 +320,57 @@ async function sendMessage() {
         contentInput.value.trim();
 
 
-    if (
-        !title ||
-        !content
-    ) {
+    if (!content) {
 
         alert(
-            "Please write a title and message ❤️"
+            "Please write a message first ❤️"
         );
 
         return;
     }
 
 
-    const user =
+    const currentUser =
         await getCurrentUser();
 
 
-    if (!user) {
+    if (!currentUser) {
 
         alert(
             "Please login first."
         );
 
-        return;
-    }
-
-
-    // ---------------------------------------------
-    // DETERMINE RECEIVER
-    // ---------------------------------------------
-
-    let receiverId;
-
-
-    if (
-        user.id ===
-        HAZIRAH_ID
-    ) {
-
-        receiverId =
-            ZULKARNAIN_ID;
-
-    }
-
-    else if (
-        user.id ===
-        ZULKARNAIN_ID
-    ) {
-
-        receiverId =
-            HAZIRAH_ID;
-
-    }
-
-    else {
-
-        alert(
-            "This account is not registered as a couple account."
-        );
+        window.location.href =
+            "login.html";
 
         return;
     }
 
-
-    // ---------------------------------------------
-    // INSERT MESSAGE
-    // ---------------------------------------------
 
     const {
         error
     } =
         await supabaseClient
-            .from("love_messages")
+            .from("notes")
             .insert([
-
                 {
-                    sender_id:
-                        user.id,
-
-                    receiver_id:
-                        receiverId,
+                    user_id:
+                        currentUser.id,
 
                     title:
-                        title,
+                        title ||
+                        "A little message ❤️",
 
                     content:
                         content
                 }
-
             ]);
 
 
     if (error) {
 
         console.error(
-            "Send message error:",
+            "Add message error:",
             error
         );
 
@@ -519,97 +384,75 @@ async function sendMessage() {
     }
 
 
-    // ---------------------------------------------
-    // CLEAR FORM
-    // ---------------------------------------------
+    titleInput.value = "";
 
-    titleInput.value =
-        "";
+    contentInput.value = "";
 
 
-    contentInput.value =
-        "";
-
-
-    alert(
-        "Message sent successfully 💕"
-    );
-
-
-    loadMessages();
+    await loadNotes();
 
 }
 
 
+/* =====================================================
+   EDIT MESSAGE
+===================================================== */
 
-// =====================================================
-// EDIT MESSAGE
-// =====================================================
+async function editNote(id) {
 
-async function editMessage(id) {
+    const currentUser =
+        await getCurrentUser();
+
+
+    if (!currentUser) return;
+
 
     const {
         data,
         error
     } =
         await supabaseClient
-            .from("love_messages")
+            .from("notes")
             .select("*")
+            .eq("id", id)
             .eq(
-                "id",
-                id
+                "user_id",
+                currentUser.id
             )
             .single();
 
 
-    if (error) {
-
-        console.error(
-            error
-        );
+    if (error || !data) {
 
         alert(
-            "Unable to find message."
+            "You can only edit your own message ❤️"
         );
 
         return;
     }
 
 
-    const title =
+    const newTitle =
         prompt(
             "Edit message title:",
             data.title
         );
 
 
-    if (
-        title === null
-    ) {
-
-        return;
-    }
+    if (newTitle === null) return;
 
 
-    const content =
+    const newContent =
         prompt(
             "Edit your message:",
             data.content
         );
 
 
-    if (
-        content === null
-    ) {
-
-        return;
-    }
+    if (newContent === null) return;
 
 
-    if (
-        !title.trim() ||
-        !content.trim()
-    ) {
+    if (!newContent.trim()) {
 
         alert(
             "Message cannot be empty."
@@ -623,28 +466,29 @@ async function editMessage(id) {
         error: updateError
     } =
         await supabaseClient
-            .from("love_messages")
+            .from("notes")
             .update({
-
                 title:
-                    title.trim(),
+                    newTitle.trim() ||
+                    "A little message ❤️",
 
                 content:
-                    content.trim(),
-
-                updated_at:
-                    new Date().toISOString()
-
+                    newContent.trim()
             })
             .eq(
                 "id",
                 id
+            )
+            .eq(
+                "user_id",
+                currentUser.id
             );
 
 
     if (updateError) {
 
         console.error(
+            "Update error:",
             updateError
         );
 
@@ -657,17 +501,23 @@ async function editMessage(id) {
     }
 
 
-    loadMessages();
+    await loadNotes();
 
 }
 
 
+/* =====================================================
+   DELETE MESSAGE
+===================================================== */
 
-// =====================================================
-// DELETE MESSAGE
-// =====================================================
+async function deleteNote(id) {
 
-async function deleteMessage(id) {
+    const currentUser =
+        await getCurrentUser();
+
+
+    if (!currentUser) return;
+
 
     const confirmDelete =
         confirm(
@@ -675,29 +525,29 @@ async function deleteMessage(id) {
         );
 
 
-    if (
-        !confirmDelete
-    ) {
-
-        return;
-    }
+    if (!confirmDelete) return;
 
 
     const {
         error
     } =
         await supabaseClient
-            .from("love_messages")
+            .from("notes")
             .delete()
             .eq(
                 "id",
                 id
+            )
+            .eq(
+                "user_id",
+                currentUser.id
             );
 
 
     if (error) {
 
         console.error(
+            "Delete error:",
             error
         );
 
@@ -710,15 +560,14 @@ async function deleteMessage(id) {
     }
 
 
-    loadMessages();
+    await loadNotes();
 
 }
 
 
-
-// =====================================================
-// GALLERY
-// =====================================================
+/* =====================================================
+   GALLERY
+===================================================== */
 
 async function loadGallery() {
 
@@ -765,14 +614,10 @@ async function loadGallery() {
     }
 
 
-    gallery.innerHTML =
-        "";
+    gallery.innerHTML = "";
 
 
-    if (
-        !data ||
-        data.length === 0
-    ) {
+    if (!data || data.length === 0) {
 
         gallery.innerHTML =
             "<p>No photos yet 📸❤️</p>";
@@ -781,60 +626,57 @@ async function loadGallery() {
     }
 
 
-    data.forEach(
-        photo => {
+    data.forEach(photo => {
 
-            const div =
-                document.createElement(
-                    "div"
-                );
-
-
-            div.className =
-                "gallery-item";
-
-
-            div.innerHTML = `
-
-                <img
-                    src="${photo.image_url}"
-                    alt="Memory"
-                >
-
-
-                <p>
-
-                    ${escapeHTML(
-                        photo.caption || ""
-                    )}
-
-                </p>
-
-
-                <button
-                    onclick="deleteImage(${photo.id})">
-
-                    🗑️ Delete
-
-                </button>
-
-            `;
-
-
-            gallery.appendChild(
-                div
+        const div =
+            document.createElement(
+                "div"
             );
 
-        }
-    );
+
+        div.className =
+            "gallery-item";
+
+
+        div.innerHTML = `
+
+            <img
+                src="${escapeHTML(
+                    photo.image_url
+                )}"
+                alt="Memory"
+            >
+
+
+            <p>
+
+                ${escapeHTML(
+                    photo.caption || ""
+                )}
+
+            </p>
+
+
+            <button
+                onclick="deleteImage(${photo.id})">
+
+                🗑️ Delete
+
+            </button>
+
+        `;
+
+
+        gallery.appendChild(div);
+
+    });
 
 }
 
 
-
-// =====================================================
-// UPLOAD IMAGE
-// =====================================================
+/* =====================================================
+   UPLOAD IMAGE
+===================================================== */
 
 async function uploadImage() {
 
@@ -848,16 +690,6 @@ async function uploadImage() {
         document.getElementById(
             "caption"
         );
-
-
-    if (!fileInput) {
-
-        alert(
-            "Image input not found."
-        );
-
-        return;
-    }
 
 
     const file =
@@ -925,6 +757,7 @@ async function uploadImage() {
     if (uploadError) {
 
         console.error(
+            "Upload error:",
             uploadError
         );
 
@@ -963,7 +796,6 @@ async function uploadImage() {
         await supabaseClient
             .from("gallery")
             .insert([
-
                 {
                     image_url:
                         imageUrl,
@@ -971,13 +803,13 @@ async function uploadImage() {
                     caption:
                         caption
                 }
-
             ]);
 
 
     if (databaseError) {
 
         console.error(
+            "Database error:",
             databaseError
         );
 
@@ -990,12 +822,9 @@ async function uploadImage() {
     }
 
 
-    fileInput.value =
-        "";
+    fileInput.value = "";
 
-
-    captionInput.value =
-        "";
+    captionInput.value = "";
 
 
     alert(
@@ -1003,26 +832,24 @@ async function uploadImage() {
     );
 
 
-    loadGallery();
+    await loadGallery();
 
 }
 
 
-
-// =====================================================
-// DELETE IMAGE
-// =====================================================
+/* =====================================================
+   DELETE IMAGE
+===================================================== */
 
 async function deleteImage(id) {
 
-    if (
-        !confirm(
+    const confirmDelete =
+        confirm(
             "Delete this photo?"
-        )
-    ) {
+        );
 
-        return;
-    }
+
+    if (!confirmDelete) return;
 
 
     const {
@@ -1031,9 +858,7 @@ async function deleteImage(id) {
     } =
         await supabaseClient
             .from("gallery")
-            .select(
-                "image_url"
-            )
+            .select("image_url")
             .eq(
                 "id",
                 id
@@ -1041,11 +866,9 @@ async function deleteImage(id) {
             .single();
 
 
-    if (error) {
+    if (error || !data) {
 
-        console.error(
-            error
-        );
+        console.error(error);
 
         return;
     }
@@ -1089,19 +912,22 @@ async function deleteImage(id) {
             deleteError
         );
 
+        alert(
+            "Failed to delete photo."
+        );
+
         return;
     }
 
 
-    loadGallery();
+    await loadGallery();
 
 }
 
 
-
-// =====================================================
-// SECURITY
-// =====================================================
+/* =====================================================
+   SECURITY
+===================================================== */
 
 function escapeHTML(text) {
 
@@ -1116,60 +942,52 @@ function escapeHTML(text) {
 
 
     return div.innerHTML;
-
 }
 
 
-
-// =====================================================
-// NAVIGATION
-// =====================================================
+/* =====================================================
+   NAVIGATION
+===================================================== */
 
 function showSection(sectionId) {
 
     const sections = [
-
         "notes-section",
-
         "gallery-section",
-
         "memories-section"
-
     ];
 
 
-    sections.forEach(
-        id => {
+    sections.forEach(id => {
 
-            const section =
-                document.getElementById(
-                    id
-                );
+        const section =
+            document.getElementById(
+                id
+            );
 
 
-            if (section) {
+        if (!section) return;
 
-                section.style.display =
-                    id === sectionId
-                        ? "block"
-                        : "none";
 
-            }
+        section.style.display =
+            id === sectionId
+                ? "block"
+                : "none";
 
-        }
-    );
+    });
 
 }
 
 
+/* =====================================================
+   START
+===================================================== */
 
-// =====================================================
-// START
-// =====================================================
+loadNotes();
 
 loadGallery();
-
 
 showSection(
     "notes-section"
 );
+
