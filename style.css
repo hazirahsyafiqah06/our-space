@@ -1,0 +1,109 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #fff5f8;
+    color: #333;
+}
+
+.container {
+    width: 90%;
+    max-width: 700px;
+    margin: 40px auto;
+}
+
+h1 {
+    text-align: center;
+    color: #e75480;
+}
+
+.subtitle {
+    text-align: center;
+    color: #888;
+}
+
+.note-form {
+    background: white;
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    margin-bottom: 30px;
+}
+
+input,
+textarea {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 12px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    font-size: 15px;
+}
+
+textarea {
+    height: 120px;
+    resize: vertical;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 12px;
+    background: #e75480;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+#notes {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.note {
+    background: white;
+    padding: 20px;
+    border-radius: 18px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+}
+
+.note h3 {
+    margin-top: 0;
+    color: #e75480;
+}
+
+.note p {
+    white-space: pre-wrap;
+}
+
+@media (max-width: 600px) {
+
+    .container {
+        width: 92%;
+        margin: 25px auto;
+    }
+
+    h1 {
+        font-size: 28px;
+    }
+
+    .note-form,
+    .note {
+        padding: 16px;
+    }
+
+    input,
+    textarea,
+    button {
+        font-size: 14px;
+    }
+}
