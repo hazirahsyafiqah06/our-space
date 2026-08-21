@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 
@@ -113,6 +114,36 @@
 
 
     <!-- =========================
+         LOGOUT
+    ========================== -->
+
+    <div style="
+        text-align:center;
+        margin:15px 0 20px;
+    ">
+
+        <button
+            onclick="logout()"
+            style="
+                border:none;
+                background:#fff;
+                color:#e75480;
+                padding:10px 18px;
+                border-radius:12px;
+                cursor:pointer;
+                box-shadow:0 3px 12px rgba(0,0,0,0.08);
+                font-size:14px;
+            "
+        >
+
+            🚪 Logout
+
+        </button>
+
+    </div>
+
+
+    <!-- =========================
          NAVIGATION
     ========================== -->
 
@@ -215,7 +246,7 @@
 
 
         <div id="gallery"></div>
-    
+
     </section>
 
 
@@ -282,6 +313,133 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+
+<script>
+
+// ==========================================
+// SUPABASE CONFIG
+// ==========================================
+
+const AUTH_SUPABASE_URL =
+    "https://ognpydprqxxwjdnophxq.supabase.co";
+
+
+// PASTE THE SAME CURRENT PUBLISHABLE / ANON KEY
+// THAT YOU USED IN login.html
+
+const AUTH_SUPABASE_KEY =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9nbnB5ZHBycXh4d2pkbm9waHhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcyOTM3NzIsImV4cCI6MjEwMjg2OTc3Mn0.GEboyNWovkJ7U9zXAWtzcQ7iddISbQuoLSirBJfFkrM";
+
+
+const authClient =
+    window.supabase.createClient(
+        AUTH_SUPABASE_URL,
+        AUTH_SUPABASE_KEY
+    );
+
+
+// ==========================================
+// PROTECT THIS PAGE
+// ==========================================
+
+async function checkLogin() {
+
+    const {
+        data,
+        error
+    } =
+        await authClient.auth.getSession();
+
+
+    if (error) {
+
+        console.error(
+            "Session error:",
+            error
+        );
+
+        window.location.href =
+            "login.html";
+
+        return;
+
+    }
+
+
+    const session =
+        data.session;
+
+
+    // USER NOT LOGGED IN
+
+    if (!session) {
+
+        window.location.href =
+            "login.html";
+
+        return;
+
+    }
+
+
+    // USER IS LOGGED IN
+
+    console.log(
+        "Logged in user:",
+        session.user
+    );
+
+}
+
+
+checkLogin();
+
+
+// ==========================================
+// LOGOUT
+// ==========================================
+
+async function logout() {
+
+    const {
+        error
+    } =
+        await authClient.auth.signOut();
+
+
+    if (error) {
+
+        console.error(
+            "Logout error:",
+            error
+        );
+
+        alert(
+            "Unable to logout. Please try again."
+        );
+
+        return;
+
+    }
+
+
+    localStorage.removeItem(
+        "ourSpaceUsername"
+    );
+
+
+    window.location.href =
+        "login.html";
+
+}
+
+</script>
+
+
+<!-- =========================
+     YOUR ORIGINAL SCRIPT
+========================= -->
+
 <script src="./script.js"></script>
 
 
@@ -308,7 +466,7 @@ function countdown() {
     if (distance <= 0) {
 
         document.getElementById("countdown").innerHTML = `
-            
+
             <p style="
                 color:#e75480;
                 font-weight:bold;
@@ -383,3 +541,4 @@ setInterval(
 </body>
 
 </html>
+```
