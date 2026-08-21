@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 
@@ -85,10 +86,15 @@
             font-size: 15px;
 
             outline: none;
+
+            transition: 0.2s;
         }
 
         input:focus {
             border-color: #e75480;
+
+            box-shadow:
+                0 0 0 3px rgba(231, 84, 128, 0.10);
         }
 
         .login-btn {
@@ -107,10 +113,17 @@
             font-size: 16px;
 
             cursor: pointer;
+
+            transition: 0.2s;
         }
 
         .login-btn:hover {
             opacity: 0.9;
+        }
+
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
 
         #message {
@@ -119,6 +132,8 @@
             font-size: 14px;
 
             min-height: 20px;
+
+            line-height: 1.5;
         }
 
         .footer {
@@ -127,6 +142,22 @@
             color: #aaa;
 
             font-size: 12px;
+        }
+
+        @media (max-width: 500px) {
+
+            .login-card {
+                padding: 30px 20px;
+            }
+
+            .heart {
+                font-size: 48px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
         }
 
     </style>
@@ -154,27 +185,35 @@
         </p>
 
 
-        <!-- USERNAME -->
+        <!-- =========================
+             USERNAME
+        ========================== -->
 
         <input
             type="text"
             id="username"
             placeholder="👤 Username"
             autocomplete="username"
+            onkeydown="handleEnter(event)"
         >
 
 
-        <!-- PASSWORD -->
+        <!-- =========================
+             PASSWORD
+        ========================== -->
 
         <input
             type="password"
             id="password"
             placeholder="🔐 Password"
             autocomplete="current-password"
+            onkeydown="handleEnter(event)"
         >
 
 
-        <!-- LOGIN -->
+        <!-- =========================
+             LOGIN BUTTON
+        ========================== -->
 
         <button
             class="login-btn"
@@ -185,6 +224,10 @@
 
         </button>
 
+
+        <!-- =========================
+             MESSAGE
+        ========================== -->
 
         <p id="message"></p>
 
@@ -199,19 +242,26 @@
 
 
 
-<!-- SUPABASE -->
+<!-- =========================
+     SUPABASE
+========================== -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 
 <script>
 
+
+// ==========================================
+// SUPABASE CONFIG
+// ==========================================
+
 const SUPABASE_URL =
     "https://ognpydprqxxwjdnophxq.supabase.co";
 
 
 const SUPABASE_KEY =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9nbnB5ZHBycXh4d2pkbm9waHhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcyOTM3NzIsImV4cCI6MjEwMjg2OTc3Mn0.GEboyNWovkJ7U9zXAWtzcQ7iddISbQuoLSirBJfFkrM";
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzIiwicmVmIjoib2ducG5wZHBycXh4d2pkbm9waHhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcyOTM3NzIsImV4cCI6MjEwMjg2OTc3Mn0.GEboyNWovkJ7U9zXAWtzcQ7iddISbQuoLSirBJfFkrM";
 
 
 const supabaseClient =
@@ -222,33 +272,38 @@ const supabaseClient =
 
 
 
+// ==========================================
+// LOGIN
+// ==========================================
+
 async function login() {
 
-    const username =
-        document
-            .getElementById("username")
-            .value
-            .trim()
-            .toLowerCase();
+    const usernameInput =
+        document.getElementById("username");
 
-
-    const password =
-        document
-            .getElementById("password")
-            .value;
-
+    const passwordInput =
+        document.getElementById("password");
 
     const message =
         document.getElementById("message");
-
 
     const button =
         document.getElementById("loginButton");
 
 
-    // =========================
+    const username =
+        usernameInput.value
+            .trim()
+            .toLowerCase();
+
+
+    const password =
+        passwordInput.value;
+
+
+    // ======================================
     // CHECK INPUT
-    // =========================
+    // ======================================
 
     if (!username || !password) {
 
@@ -262,6 +317,10 @@ async function login() {
     }
 
 
+    // ======================================
+    // DISABLE BUTTON
+    // ======================================
+
     button.disabled = true;
 
     button.textContent =
@@ -272,26 +331,34 @@ async function login() {
         "#999";
 
     message.textContent =
-        "Please wait...";
+        "Checking your account...";
 
 
     try {
 
 
-        // =========================
-        // FIND USERNAME
-        // =========================
+        // ==================================
+        // FIND USERNAME IN PROFILES
+        // ==================================
 
         const {
             data: profile,
             error: profileError
         } =
             await supabaseClient
+
                 .from("profiles")
+
                 .select("id, username, email")
+
                 .eq("username", username)
+
                 .maybeSingle();
 
+
+        // ==================================
+        // PROFILE ERROR
+        // ==================================
 
         if (profileError) {
 
@@ -301,10 +368,14 @@ async function login() {
             );
 
             throw new Error(
-                "Unable to access account."
+                "Unable to access account. Please try again."
             );
         }
 
+
+        // ==================================
+        // USERNAME NOT FOUND
+        // ==================================
 
         if (!profile) {
 
@@ -314,52 +385,78 @@ async function login() {
         }
 
 
+        // ==================================
+        // EMAIL NOT FOUND
+        // ==================================
+
         if (!profile.email) {
 
             throw new Error(
-                "This username has no login email."
+                "This account is not configured correctly."
             );
         }
 
 
-        // =========================
-        // LOGIN SUPABASE AUTH
-        // =========================
+        // ==================================
+        // SUPABASE AUTH LOGIN
+        // ==================================
+
+        message.style.color =
+            "#999";
+
+        message.textContent =
+            "Logging in...";
+
 
         const {
-            data,
-            error
+            data: authData,
+            error: authError
         } =
             await supabaseClient.auth
                 .signInWithPassword({
 
-                    email: profile.email,
+                    email:
+                        profile.email,
 
-                    password: password
+                    password:
+                        password
 
                 });
 
 
-        if (error) {
+        // ==================================
+        // AUTH ERROR
+        // ==================================
+
+        if (authError) {
 
             console.error(
-                "Login error:",
-                error
+                "Authentication error:",
+                authError
             );
 
             throw new Error(
-                "Wrong password ❤️"
+                "Wrong username or password ❤️"
             );
         }
 
 
-        // =========================
-        // SUCCESS
-        // =========================
+        // ==================================
+        // LOGIN SUCCESS
+        // ==================================
 
         console.log(
-            "Logged in:",
-            data.user
+            "Login successful:",
+            authData.user
+        );
+
+
+        // Save username locally
+        // for displaying on the website
+
+        localStorage.setItem(
+            "ourSpaceUsername",
+            profile.username
         );
 
 
@@ -371,14 +468,14 @@ async function login() {
 
 
         button.textContent =
-            "❤️ Welcome";
+            "💕 Welcome";
 
 
-        // =========================
-        // GO TO WEBSITE
-        // =========================
+        // ==================================
+        // REDIRECT
+        // ==================================
 
-        setTimeout(() => {
+        setTimeout(function () {
 
             window.location.href =
                 "index.html";
@@ -388,7 +485,10 @@ async function login() {
 
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            "Login error:",
+            error
+        );
 
 
         message.style.color =
@@ -407,9 +507,27 @@ async function login() {
 
 }
 
+
+
+// ==========================================
+// ENTER KEY LOGIN
+// ==========================================
+
+function handleEnter(event) {
+
+    if (event.key === "Enter") {
+
+        login();
+
+    }
+
+}
+
+
 </script>
 
 
 </body>
 
 </html>
+```
