@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 
@@ -18,7 +19,6 @@
 <body>
 
 <div class="container">
-
 
     <!-- =========================
          HERO
@@ -46,10 +46,7 @@
             Together since 18 January 2021
         </p>
 
-
-        <!-- =========================
-             COUNTDOWN
-        ========================== -->
+        <!-- COUNTDOWN -->
 
         <div class="anniversary">
 
@@ -60,54 +57,23 @@
             <div id="countdown">
 
                 <div class="countdown-box">
-
-                    <strong id="days">
-                        0
-                    </strong>
-
-                    <span>
-                        Days
-                    </span>
-
+                    <strong id="days">0</strong>
+                    <span>Days</span>
                 </div>
 
-
                 <div class="countdown-box">
-
-                    <strong id="hours">
-                        0
-                    </strong>
-
-                    <span>
-                        Hours
-                    </span>
-
+                    <strong id="hours">0</strong>
+                    <span>Hours</span>
                 </div>
 
-
                 <div class="countdown-box">
-
-                    <strong id="minutes">
-                        0
-                    </strong>
-
-                    <span>
-                        Minutes
-                    </span>
-
+                    <strong id="minutes">0</strong>
+                    <span>Minutes</span>
                 </div>
 
-
                 <div class="countdown-box">
-
-                    <strong id="seconds">
-                        0
-                    </strong>
-
-                    <span>
-                        Seconds
-                    </span>
-
+                    <strong id="seconds">0</strong>
+                    <span>Seconds</span>
                 </div>
 
             </div>
@@ -117,22 +83,21 @@
     </div>
 
 
-    ```html
-<!-- =========================
-     LOGOUT
-========================= -->
+    <!-- =========================
+         LOGOUT
+    ========================== -->
 
-<div class="logout-area">
+    <div class="logout-area">
 
-    <button
-        onclick="logout()"
-        class="logout-btn"
-    >
-        🚪 Logout
-    </button>
+        <button
+            onclick="logout()"
+            class="logout-btn">
 
-</div>
-```
+            🚪 Logout
+
+        </button>
+
+    </div>
 
 
     <!-- =========================
@@ -141,21 +106,22 @@
 
     <nav class="navigation">
 
-        <button onclick="showSection('notes-section')">
+        <button
+            onclick="showSection('notes-section')">
 
             💌 Messages
 
         </button>
 
-
-        <button onclick="showSection('gallery-section')">
+        <button
+            onclick="showSection('gallery-section')">
 
             📸 Gallery
 
         </button>
 
-
-        <button onclick="showSection('memories-section')">
+        <button
+            onclick="showSection('memories-section')">
 
             💕 Memories
 
@@ -165,43 +131,40 @@
 
 
     <!-- =========================
-         MESSAGE SECTION
+         MESSAGES
     ========================== -->
 
     <section id="notes-section">
 
-        <h2>
-            💌 Our Messages
-        </h2>
+        <div class="section-header">
+
+            <h2>
+                💌 Our Messages
+            </h2>
+
+            <p>
+                A little message from me to you ❤️
+            </p>
+
+        </div>
 
 
-        <!-- =========================
-             WRITE MESSAGE
-        ========================== -->
+        <!-- MESSAGE FORM -->
 
         <div class="message-form">
-
-            <div class="message-label">
-                💕 Write a message
-            </div>
-
 
             <input
                 type="text"
                 id="title"
-                placeholder="Message title..."
-            >
-
+                placeholder="Message title...">
 
             <textarea
                 id="content"
-                placeholder="Write something for your love... ❤️"
-            ></textarea>
-
+                placeholder="Write a message for your love..."></textarea>
 
             <button
-                onclick="sendMessage()"
-                class="send-message-btn">
+                onclick="addNote()"
+                class="send-btn">
 
                 💌 Send Message
 
@@ -210,42 +173,13 @@
         </div>
 
 
-        <!-- =========================
-             INBOX
-        ========================== -->
+        <!-- MESSAGES -->
 
-        <div class="message-heading">
+        <div id="notes">
 
-            💌 Messages For You
-
-        </div>
-
-
-        <div id="receivedMessages">
-
-            <p class="empty-message">
-                Loading messages... ❤️
-            </p>
-
-        </div>
-
-
-        <!-- =========================
-             SENT
-        ========================== -->
-
-        <div class="message-heading sent-heading">
-
-            💕 Messages You Sent
-
-        </div>
-
-
-        <div id="sentMessages">
-
-            <p class="empty-message">
-                Loading messages... ❤️
-            </p>
+            <div class="loading-message">
+                Loading messages... 💕
+            </div>
 
         </div>
 
@@ -258,30 +192,39 @@
 
     <section id="gallery-section">
 
-        <h2>
-            📸 Our Gallery
-        </h2>
+        <div class="section-header">
+
+            <h2>
+                📸 Our Gallery
+            </h2>
+
+            <p>
+                Our favourite moments together ❤️
+            </p>
+
+        </div>
 
 
-        <input
-            type="file"
-            id="imageInput"
-            accept="image/*"
-        >
+        <div class="gallery-form">
 
+            <input
+                type="file"
+                id="imageInput"
+                accept="image/*">
 
-        <input
-            type="text"
-            id="caption"
-            placeholder="Caption for this photo..."
-        >
+            <input
+                type="text"
+                id="caption"
+                placeholder="Caption for this photo...">
 
+            <button
+                onclick="uploadImage()">
 
-        <button onclick="uploadImage()">
+                📸 Upload Photo
 
-            📸 Upload Photo
+            </button>
 
-        </button>
+        </div>
 
 
         <div id="gallery"></div>
@@ -295,9 +238,17 @@
 
     <section id="memories-section">
 
-        <h2>
-            💌 Our Memories
-        </h2>
+        <div class="section-header">
+
+            <h2>
+                💕 Our Memories
+            </h2>
+
+            <p>
+                The story of us ❤️
+            </p>
+
+        </div>
 
 
         <div class="memory">
@@ -354,7 +305,7 @@
 
 
 <!-- =========================
-     AUTH + PAGE
+     AUTH
 ========================= -->
 
 <script>
@@ -362,10 +313,8 @@
 const AUTH_SUPABASE_URL =
     "https://ognpydprqxxwjdnophxq.supabase.co";
 
-
 const AUTH_SUPABASE_KEY =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9nbnB5ZHBycXh4d2pkbm9waHhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcyOTM3NzIsImV4cCI6MjEwMjg2OTc3Mn0.GEboyNWovkJ7U9zXAWtzcQ7iddISbQuoLSirBJfFkrM";
-
 
 const authClient =
     window.supabase.createClient(
@@ -411,15 +360,9 @@ async function checkLogin() {
 
 
     console.log(
-        "Logged in:",
-        session.user.id
+        "Logged in user:",
+        session.user
     );
-
-
-    const username =
-        localStorage.getItem(
-            "ourSpaceUsername"
-        );
 
 
     const welcomeUser =
@@ -428,29 +371,46 @@ async function checkLogin() {
         );
 
 
+    const userId =
+        session.user.id;
+
+
+    let username =
+        "Love";
+
+
     if (
-        welcomeUser &&
+        userId ===
+        "fd76923c-6b95-4668-b020-32ff37192990"
+    ) {
+
+        username =
+            "Nur Hazirah";
+
+    }
+
+
+    if (
+        userId ===
+        "327adb82-7b8b-4e01-be1d-2802a334e6db"
+    ) {
+
+        username =
+            "Zulkarnain";
+
+    }
+
+
+    welcomeUser.textContent =
+        "Welcome back, " +
+        username +
+        " ❤️";
+
+
+    localStorage.setItem(
+        "ourSpaceUsername",
         username
-    ) {
-
-        welcomeUser.textContent =
-            "Welcome back, " +
-            username +
-            " ❤️";
-
-    }
-
-
-    // Load messages after login
-
-    if (
-        typeof loadMessages ===
-        "function"
-    ) {
-
-        loadMessages();
-
-    }
+    );
 
 }
 
@@ -495,14 +455,14 @@ async function logout() {
 
 
 <!-- =========================
-     ORIGINAL SCRIPT
+     MAIN SCRIPT
 ========================= -->
 
 <script src="./script.js"></script>
 
 
 <!-- =========================
-     ANNIVERSARY
+     COUNTDOWN
 ========================= -->
 
 <script>
@@ -529,7 +489,7 @@ function countdown() {
             "countdown"
         ).innerHTML = `
 
-            <p class="happy-anniversary">
+            <p class="anniversary-message">
                 💕 Happy Anniversary! 💕
             </p>
 
@@ -591,7 +551,6 @@ function countdown() {
 
 countdown();
 
-
 setInterval(
     countdown,
     1000
@@ -603,3 +562,4 @@ setInterval(
 </body>
 
 </html>
+```
