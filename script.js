@@ -419,3 +419,69 @@ function showSection(sectionId) {
 // ==========================================
 
 showSection("notes-section");
+
+// ==========================================
+// ANNIVERSARY COUNTDOWN
+// ==========================================
+
+function updateAnniversaryCountdown() {
+
+    const now = new Date();
+
+    let targetYear = now.getFullYear();
+
+    let targetDate = new Date(
+        targetYear,
+        0,
+        18,
+        0,
+        0,
+        0
+    );
+
+    // Kalau anniversary tahun ini dah lepas,
+    // kira ke tahun depan
+    if (now >= targetDate) {
+        targetDate = new Date(
+            targetYear + 1,
+            0,
+            18,
+            0,
+            0,
+            0
+        );
+    }
+
+    const difference =
+        targetDate.getTime() - now.getTime();
+
+    const days = Math.floor(
+        difference / (1000 * 60 * 60 * 24)
+    );
+
+    const hours = Math.floor(
+        (difference / (1000 * 60 * 60)) % 24
+    );
+
+    const minutes = Math.floor(
+        (difference / (1000 * 60)) % 60
+    );
+
+    const seconds = Math.floor(
+        (difference / 1000) % 60
+    );
+
+    document.getElementById("days").textContent = days;
+    document.getElementById("hours").textContent = hours;
+    document.getElementById("minutes").textContent = minutes;
+    document.getElementById("seconds").textContent = seconds;
+}
+
+
+// Start countdown
+updateAnniversaryCountdown();
+
+setInterval(
+    updateAnniversaryCountdown,
+    1000
+);
