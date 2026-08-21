@@ -1,236 +1,385 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
     <title>Our Space ❤️</title>
 
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet"
+          href="style.css">
+
 </head>
 
 <body>
 
-    <div id="test-countdown" style="
-        text-align:center;
-        background:white;
-        padding:20px;
-        margin:20px auto;
-        max-width:500px;
-        border-radius:20px;
-        box-shadow:0 4px 15px rgba(0,0,0,0.08);
-    ">
-        <p style="color:#999;">💕 Next Anniversary</p>
+<div class="container">
 
-        <div id="countdown"></div>
-    </div>
+    <!-- =========================
+         HERO
+    ========================== -->
 
-    <div class="container">
+    <div class="hero">
 
-      <div class="hero">
+        <p class="small-title">
+            WELCOME TO
+        </p>
 
-    <p class="small-title">WELCOME TO</p>
+        <h1>
+            💕 Our Space
+        </h1>
 
-    <h1>💕 Our Space</h1>
+        <p class="couple-name">
+            Nur Hazirah ❤️ Zulkarnain
+        </p>
 
-    <p class="couple-name">
-        Nur Hazirah ❤️ Zulkarnain
-    </p>
+        <p class="since">
+            Together since 18 January 2021
+        </p>
 
-    <p class="since">
-        Together since 18 January 2021
-    </p>
 
-    <!-- COUNTDOWN -->
-    <div class="anniversary">
+        <!-- =========================
+             COUNTDOWN
+        ========================== -->
 
-        <p>💕 Next Anniversary</p>
+        <div class="anniversary">
 
-        <div id="countdown">
+            <p>
+                💕 Next Anniversary
+            </p>
 
-            <div class="countdown-box">
-                <strong id="days">0</strong>
-                <span>Days</span>
-            </div>
+            <div id="countdown">
 
-            <div class="countdown-box">
-                <strong id="hours">0</strong>
-                <span>Hours</span>
-            </div>
+                <div class="countdown-box">
 
-            <div class="countdown-box">
-                <strong id="minutes">0</strong>
-                <span>Minutes</span>
-            </div>
+                    <strong id="days">
+                        0
+                    </strong>
 
-            <div class="countdown-box">
-                <strong id="seconds">0</strong>
-                <span>Seconds</span>
+                    <span>
+                        Days
+                    </span>
+
+                </div>
+
+
+                <div class="countdown-box">
+
+                    <strong id="hours">
+                        0
+                    </strong>
+
+                    <span>
+                        Hours
+                    </span>
+
+                </div>
+
+
+                <div class="countdown-box">
+
+                    <strong id="minutes">
+                        0
+                    </strong>
+
+                    <span>
+                        Minutes
+                    </span>
+
+                </div>
+
+
+                <div class="countdown-box">
+
+                    <strong id="seconds">
+                        0
+                    </strong>
+
+                    <span>
+                        Seconds
+                    </span>
+
+                </div>
+
             </div>
 
         </div>
 
     </div>
+
+
+    <!-- =========================
+         NAVIGATION
+    ========================== -->
+
+    <nav class="navigation">
+
+        <button onclick="showSection('notes-section')">
+
+            📝 Notes
+
+        </button>
+
+
+        <button onclick="showSection('gallery-section')">
+
+            📸 Gallery
+
+        </button>
+
+
+        <button onclick="showSection('memories-section')">
+
+            💌 Memories
+
+        </button>
+
+    </nav>
+
+
+    <!-- =========================
+         NOTE FORM
+    ========================== -->
+
+    <div class="note-form">
+
+        <input
+            type="text"
+            id="title"
+            placeholder="Note title..."
+        >
+
+        <textarea
+            id="content"
+            placeholder="Write something..."
+        ></textarea>
+
+        <button onclick="addNote()">
+
+            + Save Note
+
+        </button>
+
+    </div>
+
+
+    <!-- =========================
+         NOTES
+    ========================== -->
+
+    <section id="notes-section">
+
+        <h2>
+            📝 Our Notes
+        </h2>
+
+        <div id="notes"></div>
+
+    </section>
+
+
+    <!-- =========================
+         GALLERY
+    ========================== -->
+
+    <section id="gallery-section">
+
+        <h2>
+            📸 Our Gallery
+        </h2>
+
+
+        <input
+            type="file"
+            id="imageInput"
+            accept="image/*"
+        >
+
+
+        <input
+            type="text"
+            id="caption"
+            placeholder="Caption for this photo..."
+        >
+
+
+        <button onclick="uploadImage()">
+
+            📸 Upload Photo
+
+        </button>
+
+
+        <div id="gallery"></div>
+
+    </section>
+
+
+    <!-- =========================
+         MEMORIES
+    ========================== -->
+
+    <section id="memories-section">
+
+        <h2>
+            💌 Our Memories
+        </h2>
+
+
+        <div class="memory">
+
+            <span>
+                ❤️
+            </span>
+
+            <div>
+
+                <h3>
+                    18 January 2021
+                </h3>
+
+                <p>
+                    The beginning of our story.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="memory">
+
+            <span>
+                💕
+            </span>
+
+            <div>
+
+                <h3>
+                    Our First Memory
+                </h3>
+
+                <p>
+                    More memories coming soon...
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
 
 </div>
 
-</div>
-        <nav class="navigation">
 
-    <button onclick="showSection('notes-section')">
-        📝 Notes
-    </button>
+<!-- =========================
+     SUPABASE
+========================= -->
 
-    <button onclick="showSection('gallery-section')">
-        📸 Gallery
-    </button>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <button onclick="showSection('memories-section')">
-        💌 Memories
-    </button>
-
-</nav>
-        <div class="note-form">
-
-            <input
-                type="text"
-                id="title"
-                placeholder="Note title..."
-            >
-
-            <textarea
-                id="content"
-                placeholder="Write something..."
-            ></textarea>
-
-            <button onclick="addNote()">
-                + Save Note
-            </button>
-
-        </div>
-
-        <section id="notes-section">
-
-    <h2>📝 Our Notes</h2>
-
-    <div id="notes"></div>
-
-</section>
-
-<section id="gallery-section">
-
-    <h2>📸 Our Gallery</h2>
-
-    <input
-        type="file"
-        id="imageInput"
-        accept="image/*"
-    >
-
-    <input
-        type="text"
-        id="caption"
-        placeholder="Caption for this photo..."
-    >
-
-    <button onclick="uploadImage()">
-        📸 Upload Photo
-    </button>
-
-    <div id="gallery"></div>
-
-</section>
-        <section id="memories-section">
-
-    <h2>💌 Our Memories</h2>
-
-    <div class="memory">
-
-        <span>❤️</span>
-
-        <div>
-            <h3>18 January 2021</h3>
-            <p>The beginning of our story.</p>
-        </div>
-
-    </div>
-
-    <div class="memory">
-
-        <span>💕</span>
-
-        <div>
-            <h3>Our First Memory</h3>
-            <p>More memories coming soon...</p>
-        </div>
-
-    </div>
-
-</section>
-
-        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./script.js"></script>
 
+
+<!-- =========================
+     ANNIVERSARY COUNTDOWN
+========================= -->
+
 <script>
-const targetDate = new Date("2027-01-18T00:00:00").getTime();
+
+const targetDate =
+    new Date("2027-01-18T00:00:00").getTime();
+
 
 function countdown() {
 
-    const now = new Date().getTime();
+    const now =
+        new Date().getTime();
 
-    const distance = targetDate - now;
 
-    const days = Math.floor(
-        distance / (1000 * 60 * 60 * 24)
-    );
+    const distance =
+        targetDate - now;
 
-    const hours = Math.floor(
-        (distance / (1000 * 60 * 60)) % 24
-    );
 
-    const minutes = Math.floor(
-        (distance / (1000 * 60)) % 60
-    );
+    if (distance <= 0) {
 
-    const seconds = Math.floor(
-        (distance / 1000) % 60
-    );
+        document.getElementById("countdown").innerHTML = `
+            
+            <p style="
+                color:#e75480;
+                font-weight:bold;
+            ">
+                💕 Happy Anniversary! 💕
+            </p>
 
-    document.getElementById("countdown").innerHTML = `
-        <div style="
-            display:flex;
-            justify-content:center;
-            gap:10px;
-        ">
+        `;
 
-            <div class="countdown-box">
-                <strong>${days}</strong>
-                <span>Days</span>
-            </div>
+        return;
 
-            <div class="countdown-box">
-                <strong>${hours}</strong>
-                <span>Hours</span>
-            </div>
+    }
 
-            <div class="countdown-box">
-                <strong>${minutes}</strong>
-                <span>Minutes</span>
-            </div>
 
-            <div class="countdown-box">
-                <strong>${seconds}</strong>
-                <span>Seconds</span>
-            </div>
+    const days =
+        Math.floor(
+            distance /
+            (1000 * 60 * 60 * 24)
+        );
 
-        </div>
-    `;
+
+    const hours =
+        Math.floor(
+            (distance /
+            (1000 * 60 * 60)) % 24
+        );
+
+
+    const minutes =
+        Math.floor(
+            (distance /
+            (1000 * 60)) % 60
+        );
+
+
+    const seconds =
+        Math.floor(
+            (distance /
+            1000) % 60
+        );
+
+
+    document.getElementById("days")
+        .textContent = days;
+
+
+    document.getElementById("hours")
+        .textContent = hours;
+
+
+    document.getElementById("minutes")
+        .textContent = minutes;
+
+
+    document.getElementById("seconds")
+        .textContent = seconds;
+
 }
+
 
 countdown();
 
-setInterval(countdown, 1000);
+
+setInterval(
+    countdown,
+    1000
+);
+
 </script>
 
+
 </body>
+
 </html>
