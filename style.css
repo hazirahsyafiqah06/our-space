@@ -409,4 +409,163 @@ button:hover {
         font-size: 9px;
     }
 }
+    /* ==========================================
+   LOVE MESSAGES
+========================================== */
+
+.welcome-user {
+    color: #e75480;
+    font-size: 15px;
+    font-weight: bold;
+    margin: 8px 0 15px;
+}
+
+.logout-area {
+    text-align: center;
+    margin: 15px 0 20px;
+}
+
+.logout-btn {
+    width: auto;
+    border: none;
+    background: #fff;
+    color: #e75480;
+    padding: 10px 18px;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    font-size: 14px;
+}
+
+.message-form {
+    background: white;
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    margin-bottom: 30px;
+}
+
+.message-label {
+    color: #e75480;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.send-message-btn {
+    background: #e75480;
+}
+
+.message-heading {
+    color: #e75480;
+    font-size: 18px;
+    font-weight: bold;
+    margin: 25px 0 15px;
+}
+
+.sent-heading {
+    margin-top: 35px;
+}
+
+.message-card {
+    background: white;
+    padding: 20px;
+    border-radius: 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+}
+
+.received-message {
+    border-left: 5px solid #e75480;
+}
+
+.sent-message {
+    border-left: 5px solid #f3c1d1;
+}
+
+.message-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.message-from {
+    color: #e75480;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.message-date {
+    color: #aaa;
+    font-size: 11px;
+    text-align: right;
+}
+
+.message-card h3 {
+    color: #e75480;
+    margin: 8px 0 10px;
+}
+
+.message-content {
+    color: #555;
+    white-space: pre-wrap;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.message-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.message-buttons button {
+    width: auto;
+    flex: 1;
+    padding: 9px;
+    font-size: 13px;
+}
+
+.message-buttons button:last-child {
+    background: #999;
+}
+
+.empty-message {
+    background: white;
+    padding: 20px;
+    border-radius: 18px;
+    text-align: center;
+    color: #999;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media (max-width: 600px) {
+
+    .message-card {
+        padding: 16px;
+    }
+
+    .message-top {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .message-date {
+        text-align: left;
+    }
+
+    .message-buttons {
+        flex-direction: column;
+    }
+
+    .message-buttons button {
+        width: 100%;
+    }
+
+}
   
