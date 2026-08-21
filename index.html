@@ -14,11 +14,196 @@
     <link rel="stylesheet"
           href="style.css">
 
+    <style>
+
+        /* =========================
+           SECRET MESSAGE
+        ========================= */
+
+        .secret-section {
+            margin: 25px 0 40px;
+            text-align: center;
+        }
+
+        .secret-card {
+            background: linear-gradient(
+                135deg,
+                #fff,
+                #fff5f8
+            );
+
+            padding: 25px 20px;
+
+            border-radius: 22px;
+
+            box-shadow:
+                0 5px 20px
+                rgba(0, 0, 0, 0.08);
+
+            border: 1px solid #f8d4df;
+        }
+
+        .secret-icon {
+            font-size: 45px;
+            margin-bottom: 8px;
+        }
+
+        .secret-card h2 {
+            color: #e75480;
+            margin: 5px 0 8px;
+        }
+
+        .secret-card p {
+            color: #888;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .secret-btn {
+            margin-top: 12px;
+
+            background: #e75480;
+            color: white;
+
+            border: none;
+            border-radius: 14px;
+
+            padding: 13px 20px;
+
+            font-size: 15px;
+
+            cursor: pointer;
+
+            width: auto;
+        }
+
+        .secret-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* =========================
+           SECRET POPUP
+        ========================= */
+
+        .secret-popup {
+            display: none;
+
+            position: fixed;
+
+            top: 0;
+            left: 0;
+
+            width: 100%;
+            height: 100%;
+
+            background: rgba(0, 0, 0, 0.35);
+
+            z-index: 9999;
+
+            align-items: center;
+            justify-content: center;
+
+            padding: 20px;
+        }
+
+        .secret-popup-box {
+            width: 100%;
+            max-width: 430px;
+
+            background: white;
+
+            padding: 30px 25px;
+
+            border-radius: 25px;
+
+            text-align: center;
+
+            box-shadow:
+                0 15px 40px
+                rgba(0, 0, 0, 0.18);
+
+            animation: popup 0.25s ease;
+        }
+
+        .secret-popup-box .big-heart {
+            font-size: 55px;
+            margin-bottom: 10px;
+        }
+
+        .secret-popup-box h2 {
+            color: #e75480;
+            margin: 5px 0 15px;
+        }
+
+        .secret-message {
+            color: #666;
+
+            font-size: 15px;
+
+            line-height: 1.8;
+
+            white-space: pre-line;
+
+            margin-bottom: 20px;
+        }
+
+        .close-secret {
+            background: #f1a3bb;
+
+            color: white;
+
+            border: none;
+
+            border-radius: 12px;
+
+            padding: 11px 20px;
+
+            width: auto;
+
+            cursor: pointer;
+
+            font-size: 14px;
+        }
+
+        .close-secret:hover {
+            opacity: 0.9;
+        }
+
+        @keyframes popup {
+
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+        }
+
+        @media (max-width: 600px) {
+
+            .secret-popup-box {
+                padding: 25px 20px;
+            }
+
+            .secret-message {
+                font-size: 14px;
+            }
+
+        }
+
+    </style>
+
 </head>
 
 <body>
 
+
 <div class="container">
+
 
     <!-- =========================
          HERO
@@ -30,9 +215,8 @@
             WELCOME TO
         </p>
 
-        <!-- =========================
-             LOGGED IN USER
-        ========================== -->
+
+        <!-- LOGGED IN USER -->
 
         <p id="welcomeUser" style="
             color:#e75480;
@@ -48,24 +232,25 @@
             💕 Our Space
         </h1>
 
+
         <p class="couple-name">
             Zulkarnain ❤️ Nur Hazirah
         </p>
+
 
         <p class="since">
             Together since 18 January 2021
         </p>
 
 
-        <!-- =========================
-             COUNTDOWN
-        ========================== -->
+        <!-- COUNTDOWN -->
 
         <div class="anniversary">
 
             <p>
                 💕 Next Anniversary
             </p>
+
 
             <div id="countdown">
 
@@ -147,6 +332,7 @@
                 cursor:pointer;
                 box-shadow:0 3px 12px rgba(0,0,0,0.08);
                 font-size:14px;
+                width:auto;
             "
         >
 
@@ -164,26 +350,62 @@
     <nav class="navigation">
 
         <button onclick="showSection('notes-section')">
-
             📝 Notes
-
         </button>
 
 
         <button onclick="showSection('gallery-section')">
-
             📸 Gallery
-
         </button>
 
 
         <button onclick="showSection('memories-section')">
-
             💌 Memories
+        </button>
 
+
+        <button onclick="showSection('secret-section')">
+            🔐 Secret
         </button>
 
     </nav>
+
+
+    <!-- =========================
+         SECRET MESSAGE
+    ========================== -->
+
+    <section
+        id="secret-section"
+        class="secret-section"
+    >
+
+        <div class="secret-card">
+
+            <div class="secret-icon">
+                💌
+            </div>
+
+            <h2>
+                A Little Secret
+            </h2>
+
+            <p>
+                Ada sesuatu yang Hazirah nak bagitahu Zulkarnain...
+            </p>
+
+            <button
+                class="secret-btn"
+                onclick="openSecret()"
+            >
+
+                💕 Open Secret Message
+
+            </button>
+
+        </div>
+
+    </section>
 
 
     <!-- =========================
@@ -198,10 +420,12 @@
             placeholder="Note title..."
         >
 
+
         <textarea
             id="content"
             placeholder="Write something..."
         ></textarea>
+
 
         <button onclick="addNote()">
 
@@ -221,6 +445,7 @@
         <h2>
             📝 Our Notes
         </h2>
+
 
         <div id="notes"></div>
 
@@ -281,11 +506,13 @@
                 ❤️
             </span>
 
+
             <div>
 
                 <h3>
                     18 January 2021
                 </h3>
+
 
                 <p>
                     The beginning of our story.
@@ -302,11 +529,13 @@
                 💕
             </span>
 
+
             <div>
 
                 <h3>
                     Our First Memory
                 </h3>
+
 
                 <p>
                     More memories coming soon...
@@ -317,6 +546,68 @@
         </div>
 
     </section>
+
+
+</div>
+
+
+<!-- =========================
+     SECRET POPUP
+========================= -->
+
+<div
+    id="secretPopup"
+    class="secret-popup"
+>
+
+    <div class="secret-popup-box">
+
+        <div class="big-heart">
+            💕
+        </div>
+
+
+        <h2>
+            For Zulkarnain ❤️
+        </h2>
+
+
+        <div class="secret-message">
+
+Untuk awak yang saya sayang...
+
+Terima kasih sebab masih ada
+dan menjadi sebahagian daripada
+cerita kita sejak 18 January 2021.
+
+Mungkin saya tak selalu pandai
+nak tunjuk atau cakap semuanya,
+
+tapi saya hargai setiap masa,
+setiap kenangan,
+dan setiap perkara kecil
+yang kita lalui bersama.
+
+Saya harap "Our Space" ni
+akan jadi tempat kecil
+untuk kita simpan semua kenangan
+yang akan datang. ❤️
+
+I love you. 💕
+
+        </div>
+
+
+        <button
+            class="close-secret"
+            onclick="closeSecret()"
+        >
+
+            Close ❤️
+
+        </button>
+
+    </div>
 
 </div>
 
@@ -338,8 +629,6 @@ const AUTH_SUPABASE_URL =
     "https://ognpydprqxxwjdnophxq.supabase.co";
 
 
-// SAME KEY AS login.html
-
 const AUTH_SUPABASE_KEY =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9nbnB5ZHBycXh4d2pkbm9waHhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcyOTM3NzIsImV4cCI6MjEwMjg2OTc3Mn0.GEboyNWovkJ7U9zXAWtzcQ7iddISbQuoLSirBJfFkrM";
 
@@ -352,7 +641,7 @@ const authClient =
 
 
 // ==========================================
-// PROTECT THIS PAGE
+// PROTECT PAGE
 // ==========================================
 
 async function checkLogin() {
@@ -383,10 +672,6 @@ async function checkLogin() {
         data.session;
 
 
-    // ======================================
-    // USER NOT LOGGED IN
-    // ======================================
-
     if (!session) {
 
         window.location.href =
@@ -397,19 +682,11 @@ async function checkLogin() {
     }
 
 
-    // ======================================
-    // USER IS LOGGED IN
-    // ======================================
-
     console.log(
         "Logged in user:",
         session.user
     );
 
-
-    // ======================================
-    // GET USERNAME
-    // ======================================
 
     const savedUsername =
         localStorage.getItem(
@@ -479,11 +756,63 @@ async function logout() {
 
 }
 
+
+// ==========================================
+// SECRET MESSAGE
+// ==========================================
+
+function openSecret() {
+
+    const popup =
+        document.getElementById(
+            "secretPopup"
+        );
+
+
+    popup.style.display =
+        "flex";
+
+}
+
+
+function closeSecret() {
+
+    const popup =
+        document.getElementById(
+            "secretPopup"
+        );
+
+
+    popup.style.display =
+        "none";
+
+}
+
+
+// Close when clicking outside popup
+
+document
+    .getElementById("secretPopup")
+    .addEventListener(
+        "click",
+        function(event) {
+
+            if (
+                event.target === this
+            ) {
+
+                closeSecret();
+
+            }
+
+        }
+    );
+
 </script>
 
 
 <!-- =========================
-     YOUR ORIGINAL SCRIPT
+     ORIGINAL SCRIPT
 ========================= -->
 
 <script src="./script.js"></script>
@@ -496,7 +825,9 @@ async function logout() {
 <script>
 
 const targetDate =
-    new Date("2027-01-18T00:00:00").getTime();
+    new Date(
+        "2027-01-18T00:00:00"
+    ).getTime();
 
 
 function countdown() {
