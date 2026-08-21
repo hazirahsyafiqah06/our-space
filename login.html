@@ -1,4 +1,4 @@
-
+```html
 <!DOCTYPE html>
 <html lang="en">
 
@@ -20,20 +20,11 @@
         body {
             margin: 0;
             min-height: 100vh;
-
             display: flex;
             align-items: center;
             justify-content: center;
-
             font-family: Arial, sans-serif;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    #fff5f8,
-                    #ffe4ed
-                );
-
+            background: linear-gradient(135deg, #fff5f8, #ffe4ed);
             padding: 20px;
         }
 
@@ -44,15 +35,9 @@
 
         .login-card {
             background: white;
-
             padding: 35px 25px;
-
             border-radius: 25px;
-
-            box-shadow:
-                0 10px 35px
-                rgba(0, 0, 0, 0.10);
-
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.10);
             text-align: center;
         }
 
@@ -74,46 +59,29 @@
 
         input {
             width: 100%;
-
             padding: 14px;
-
             margin-bottom: 15px;
-
             border: 1px solid #ddd;
-
             border-radius: 13px;
-
             font-size: 15px;
-
             outline: none;
-
             transition: 0.2s;
         }
 
         input:focus {
             border-color: #e75480;
-
-            box-shadow:
-                0 0 0 3px rgba(231, 84, 128, 0.10);
+            box-shadow: 0 0 0 3px rgba(231, 84, 128, 0.10);
         }
 
         .login-btn {
             width: 100%;
-
             padding: 14px;
-
             border: none;
-
             border-radius: 13px;
-
             background: #e75480;
-
             color: white;
-
             font-size: 16px;
-
             cursor: pointer;
-
             transition: 0.2s;
         }
 
@@ -128,19 +96,14 @@
 
         #message {
             margin-top: 15px;
-
             font-size: 14px;
-
             min-height: 20px;
-
             line-height: 1.5;
         }
 
         .footer {
             margin-top: 25px;
-
             color: #aaa;
-
             font-size: 12px;
         }
 
@@ -185,10 +148,6 @@
         </p>
 
 
-        <!-- =========================
-             USERNAME
-        ========================== -->
-
         <input
             type="text"
             id="username"
@@ -197,10 +156,6 @@
             onkeydown="handleEnter(event)"
         >
 
-
-        <!-- =========================
-             PASSWORD
-        ========================== -->
 
         <input
             type="password"
@@ -211,10 +166,6 @@
         >
 
 
-        <!-- =========================
-             LOGIN BUTTON
-        ========================== -->
-
         <button
             class="login-btn"
             id="loginButton"
@@ -224,10 +175,6 @@
 
         </button>
 
-
-        <!-- =========================
-             MESSAGE
-        ========================== -->
 
         <p id="message"></p>
 
@@ -241,21 +188,40 @@
 </div>
 
 
+<!-- SUPABASE -->
 
-<!-- =========================
-     SUPABASE
-========================== -->
-
-```html
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
 
+
 const SUPABASE_URL =
     "https://ognpydprqxxwjdnophxq.supabase.co";
 
+
+/*
+================================================
+IMPORTANT
+
+PASTE YOUR CURRENT SUPABASE
+PUBLISHABLE / ANON KEY HERE.
+
+Get it from:
+
+Supabase
+→ Project Settings
+→ API
+→ Publishable key / anon key
+
+DO NOT USE:
+service_role
+secret key
+================================================
+*/
+
 const SUPABASE_KEY =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9nbnB5ZHBycXh4d2pkbm9waHhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcyOTM3NzIsImV4cCI6MjEwMjg2OTc3Mn0.GEboyNWovkJ7U9zXAWtzcQ7iddISbQuoLSirBJfFkrM";
+
 
 const supabaseClient =
     window.supabase.createClient(
@@ -271,17 +237,22 @@ const supabaseClient =
 async function login() {
 
     const username =
-        document.getElementById("username")
-        .value
-        .trim()
-        .toLowerCase();
+        document
+            .getElementById("username")
+            .value
+            .trim()
+            .toLowerCase();
+
 
     const password =
-        document.getElementById("password")
-        .value;
+        document
+            .getElementById("password")
+            .value;
+
 
     const message =
         document.getElementById("message");
+
 
     const button =
         document.getElementById("loginButton");
@@ -293,7 +264,8 @@ async function login() {
 
     if (!username || !password) {
 
-        message.style.color = "#e75480";
+        message.style.color =
+            "#e75480";
 
         message.textContent =
             "Please enter username and password ❤️";
@@ -307,13 +279,16 @@ async function login() {
     button.textContent =
         "Logging in...";
 
-    message.style.color = "#999";
+
+    message.style.color =
+        "#999";
 
     message.textContent =
         "Checking account...";
 
 
     try {
+
 
         // ==================================
         // FIND USERNAME
@@ -329,6 +304,10 @@ async function login() {
                 .eq("username", username)
                 .maybeSingle();
 
+
+        // ==================================
+        // PROFILE ERROR
+        // ==================================
 
         if (profileError) {
 
@@ -374,7 +353,7 @@ async function login() {
 
 
         // ==================================
-        // LOGIN AUTH
+        // LOGIN SUPABASE AUTH
         // ==================================
 
         message.textContent =
@@ -388,12 +367,18 @@ async function login() {
             await supabaseClient.auth
                 .signInWithPassword({
 
-                    email: profile.email,
+                    email:
+                        profile.email,
 
-                    password: password
+                    password:
+                        password
 
                 });
 
+
+        // ==================================
+        // AUTH ERROR
+        // ==================================
 
         if (authError) {
 
@@ -409,7 +394,7 @@ async function login() {
 
 
         // ==================================
-        // SUCCESS
+        // LOGIN SUCCESS
         // ==================================
 
         console.log(
@@ -436,10 +421,10 @@ async function login() {
 
 
         // ==================================
-        // GO TO MAIN PAGE
+        // REDIRECT
         // ==================================
 
-        setTimeout(() => {
+        setTimeout(function () {
 
             window.location.href =
                 "index.html";
@@ -486,6 +471,11 @@ function handleEnter(event) {
 
 }
 
+
 </script>
+
+
 </body>
+
 </html>
+```
