@@ -1,5 +1,10 @@
+```css
 * {
     box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
 }
 
 body {
@@ -9,10 +14,14 @@ body {
     color: #333;
 }
 
+/* =========================
+   MAIN CONTAINER
+========================= */
+
 .container {
-    width: 90%;
-    max-width: 700px;
-    margin: 40px auto;
+    width: 92%;
+    max-width: 760px;
+    margin: 30px auto 50px;
 }
 
 /* =========================
@@ -21,131 +30,117 @@ body {
 
 .hero {
     text-align: center;
-    padding: 35px 20px;
+    padding: 35px 20px 25px;
 }
 
 .small-title {
     font-size: 12px;
     letter-spacing: 3px;
     color: #999;
-    margin-bottom: 8px;
+    margin: 0 0 8px;
+}
+
+#welcomeUser {
+    color: #e75480;
+    font-size: 15px;
+    font-weight: bold;
+    margin: 8px 0 15px;
 }
 
 h1 {
     text-align: center;
     color: #e75480;
     margin: 5px 0 10px;
+    font-size: 32px;
 }
 
 .couple-name {
     font-size: 18px;
     color: #e75480;
     margin: 10px 0;
+    font-weight: 500;
 }
 
 .since {
     color: #999;
     font-size: 14px;
+    margin: 0;
 }
 
-
 /* =========================
-   ANNIVERSARY
+   COUNTDOWN
 ========================= */
 
 .anniversary {
-    margin-top: 25px;
+    margin-top: 28px;
     text-align: center;
 }
 
 .anniversary > p {
     color: #999;
     font-size: 13px;
-    margin-bottom: 12px;
+    margin: 0 0 14px;
 }
 
 #countdown {
     display: flex;
     justify-content: center;
+    align-items: stretch;
     gap: 10px;
+    width: 100%;
 }
 
 .countdown-box {
-    background: white;
-    padding: 12px;
-    min-width: 65px;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    background: #fff;
+    width: 75px;
+    min-height: 70px;
+    padding: 12px 6px;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .countdown-box strong {
     display: block;
-    font-size: 20px;
+    font-size: 22px;
     color: #e75480;
+    line-height: 1.2;
 }
 
 .countdown-box span {
+    display: block;
+    margin-top: 4px;
     font-size: 10px;
     color: #999;
 }
 
-
 /* =========================
-   NAVIGATION
+   LOGOUT
 ========================= */
 
-.navigation {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 30px;
+.logout-area {
+    text-align: center;
+    margin: 10px 0 25px;
 }
 
-.navigation button {
-    background: white;
+.logout-btn {
+    width: auto;
+    min-width: 110px;
+    background: #fff;
     color: #e75480;
-    border: 1px solid #f3c1d1;
-}
-
-.navigation button:hover {
-    background: #fff0f5;
-}
-
-
-/* =========================
-   SECTIONS
-========================= */
-
-section {
-    margin-bottom: 40px;
-}
-
-
-/* =========================
-   NOTE FORM
-========================= */
-
-.note-form {
-    background: white;
-    padding: 20px;
-    border-radius: 20px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-    margin-bottom: 30px;
-}
-
-input,
-textarea {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 12px;
-    border: 1px solid #ddd;
+    padding: 10px 18px;
     border-radius: 12px;
-    font-size: 15px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+    font-size: 14px;
 }
 
-textarea {
-    height: 120px;
-    resize: vertical;
-}
+/* =========================
+   BUTTON GENERAL
+========================= */
 
 button {
     width: 100%;
@@ -154,14 +149,87 @@ button {
     border-radius: 12px;
     background: #e75480;
     color: white;
-    font-size: 16px;
+    font-size: 15px;
     cursor: pointer;
+    transition: 0.2s ease;
 }
 
 button:hover {
     opacity: 0.9;
+    transform: translateY(-1px);
 }
 
+/* =========================
+   NAVIGATION
+========================= */
+
+.navigation {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+.navigation button {
+    background: #fff;
+    color: #e75480;
+    border: 1px solid #f3c1d1;
+    min-height: 46px;
+}
+
+.navigation button:hover {
+    background: #fff0f5;
+}
+
+/* =========================
+   NOTE FORM
+========================= */
+
+.note-form {
+    background: #fff;
+    padding: 22px;
+    border-radius: 20px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.07);
+    margin-bottom: 30px;
+}
+
+input,
+textarea {
+    width: 100%;
+    display: block;
+    padding: 12px 14px;
+    margin: 0 0 12px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    font-family: Arial, sans-serif;
+    font-size: 15px;
+    outline: none;
+}
+
+input:focus,
+textarea:focus {
+    border-color: #e75480;
+    box-shadow: 0 0 0 3px rgba(231, 84, 128, 0.08);
+}
+
+textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+/* =========================
+   SECTION
+========================= */
+
+section {
+    margin-bottom: 40px;
+}
+
+section h2 {
+    color: #e75480;
+    margin: 0 0 18px;
+    font-size: 23px;
+}
 
 /* =========================
    NOTES
@@ -174,19 +242,23 @@ button:hover {
 }
 
 .note {
-    background: white;
+    background: #fff;
     padding: 20px;
     border-radius: 18px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
 }
 
 .note h3 {
-    margin-top: 0;
+    margin: 0 0 10px;
     color: #e75480;
+    font-size: 18px;
 }
 
 .note p {
+    margin: 0;
+    line-height: 1.6;
     white-space: pre-wrap;
+    color: #555;
 }
 
 .note-buttons {
@@ -196,7 +268,6 @@ button:hover {
 }
 
 .note-buttons button {
-    width: auto;
     flex: 1;
 }
 
@@ -204,11 +275,17 @@ button:hover {
     background: #999;
 }
 
-.note small {
-    color: #999;
-    font-size: 12px;
+/* =========================
+   GALLERY FORM
+========================= */
+
+#gallery-section > input {
+    background: #fff;
 }
 
+#gallery-section > button {
+    margin-bottom: 5px;
+}
 
 /* =========================
    GALLERY
@@ -216,13 +293,13 @@ button:hover {
 
 #gallery {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 15px;
     margin-top: 20px;
 }
 
 .gallery-item {
-    background: white;
+    background: #fff;
     padding: 10px;
     border-radius: 18px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
@@ -230,6 +307,7 @@ button:hover {
 }
 
 .gallery-item img {
+    display: block;
     width: 100%;
     height: 220px;
     object-fit: cover;
@@ -237,14 +315,18 @@ button:hover {
 }
 
 .gallery-item p {
-    margin: 10px 0;
+    margin: 10px 2px;
     color: #666;
+    font-size: 14px;
+    line-height: 1.4;
+    min-height: 20px;
 }
 
 .gallery-item button {
     background: #999;
+    font-size: 14px;
+    padding: 10px;
 }
-
 
 /* =========================
    MEMORIES
@@ -254,7 +336,7 @@ button:hover {
     display: flex;
     align-items: center;
     gap: 15px;
-    background: white;
+    background: #fff;
     padding: 18px;
     border-radius: 18px;
     margin-bottom: 12px;
@@ -262,19 +344,25 @@ button:hover {
 }
 
 .memory span {
+    flex: 0 0 auto;
     font-size: 28px;
+}
+
+.memory div {
+    min-width: 0;
 }
 
 .memory h3 {
     margin: 0 0 5px;
     color: #e75480;
+    font-size: 17px;
 }
 
 .memory p {
     margin: 0;
     color: #777;
+    line-height: 1.5;
 }
-
 
 /* =========================
    MOBILE
@@ -284,23 +372,61 @@ button:hover {
 
     .container {
         width: 92%;
-        margin: 25px auto;
+        margin: 20px auto 40px;
+    }
+
+    .hero {
+        padding: 25px 5px 20px;
     }
 
     h1 {
         font-size: 28px;
     }
 
-    .hero {
-        padding: 25px 10px;
-    }
-
     .couple-name {
         font-size: 16px;
     }
 
-    .note-form,
-    .note {
+    .since {
+        font-size: 13px;
+    }
+
+    /* COUNTDOWN */
+
+    #countdown {
+        gap: 6px;
+    }
+
+    .countdown-box {
+        width: calc(25% - 5px);
+        min-width: 0;
+        min-height: 65px;
+        padding: 9px 3px;
+    }
+
+    .countdown-box strong {
+        font-size: 18px;
+    }
+
+    .countdown-box span {
+        font-size: 9px;
+    }
+
+    /* NAVIGATION */
+
+    .navigation {
+        gap: 7px;
+    }
+
+    .navigation button {
+        font-size: 13px;
+        padding: 10px 5px;
+        min-height: 44px;
+    }
+
+    /* FORM */
+
+    .note-form {
         padding: 16px;
     }
 
@@ -310,14 +436,10 @@ button:hover {
         font-size: 14px;
     }
 
-    .navigation {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-    }
+    /* NOTES */
 
-    .navigation button {
-        font-size: 13px;
-        padding: 10px 5px;
+    .note {
+        padding: 16px;
     }
 
     .note-buttons {
@@ -328,244 +450,94 @@ button:hover {
         width: 100%;
     }
 
+    /* GALLERY */
+
     #gallery {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 10px;
+    }
+
+    .gallery-item {
+        padding: 8px;
+        border-radius: 15px;
     }
 
     .gallery-item img {
         height: 150px;
+        border-radius: 10px;
     }
 
-    #countdown {
-        gap: 6px;
+    .gallery-item p {
+        font-size: 12px;
+        margin: 8px 2px;
     }
 
-    .countdown-box {
-        min-width: 55px;
-        padding: 10px 5px;
+    .gallery-item button {
+        font-size: 12px;
+        padding: 9px 5px;
     }
 
-    .countdown-box strong {
-        font-size: 17px;
+    /* MEMORIES */
+
+    .memory {
+        padding: 15px;
+        gap: 12px;
     }
 
-    /* ==========================================
-   ANNIVERSARY COUNTDOWN
-========================================== */
-
-.anniversary {
-    margin-top: 25px;
-    text-align: center;
-}
-
-.anniversary > p {
-    color: #999;
-    font-size: 13px;
-    margin-bottom: 12px;
-}
-
-#countdown {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-}
-
-.countdown-box {
-    background: white;
-    width: 70px;
-    padding: 12px 5px;
-    border-radius: 16px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
-}
-
-.countdown-box strong {
-    display: block;
-    color: #e75480;
-    font-size: 22px;
-}
-
-.countdown-box span {
-    color: #999;
-    font-size: 10px;
-}
-
-@media (max-width: 600px) {
-
-    #countdown {
-        gap: 6px;
+    .memory span {
+        font-size: 24px;
     }
 
-    .countdown-box {
-        width: 60px;
-        padding: 10px 3px;
+    .memory h3 {
+        font-size: 15px;
     }
 
-    .countdown-box strong {
-        font-size: 18px;
-    }
-
-    .countdown-box span {
-        font-size: 9px;
+    .memory p {
+        font-size: 13px;
     }
 }
-    /* ==========================================
-   LOVE MESSAGES
-========================================== */
 
-.welcome-user {
-    color: #e75480;
-    font-size: 15px;
-    font-weight: bold;
-    margin: 8px 0 15px;
-}
+/* =========================
+   VERY SMALL PHONE
+========================= */
 
-.logout-area {
-    text-align: center;
-    margin: 15px 0 20px;
-}
+@media (max-width: 380px) {
 
-.logout-btn {
-    width: auto;
-    border: none;
-    background: #fff;
-    color: #e75480;
-    padding: 10px 18px;
-    border-radius: 12px;
-    cursor: pointer;
-    box-shadow: 0 3px 12px rgba(0,0,0,0.08);
-    font-size: 14px;
-}
-
-.message-form {
-    background: white;
-    padding: 20px;
-    border-radius: 20px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-    margin-bottom: 30px;
-}
-
-.message-label {
-    color: #e75480;
-    font-weight: bold;
-    margin-bottom: 15px;
-}
-
-.send-message-btn {
-    background: #e75480;
-}
-
-.message-heading {
-    color: #e75480;
-    font-size: 18px;
-    font-weight: bold;
-    margin: 25px 0 15px;
-}
-
-.sent-heading {
-    margin-top: 35px;
-}
-
-.message-card {
-    background: white;
-    padding: 20px;
-    border-radius: 20px;
-    margin-bottom: 15px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
-}
-
-.received-message {
-    border-left: 5px solid #e75480;
-}
-
-.sent-message {
-    border-left: 5px solid #f3c1d1;
-}
-
-.message-top {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-    margin-bottom: 10px;
-}
-
-.message-from {
-    color: #e75480;
-    font-weight: bold;
-    font-size: 13px;
-}
-
-.message-date {
-    color: #aaa;
-    font-size: 11px;
-    text-align: right;
-}
-
-.message-card h3 {
-    color: #e75480;
-    margin: 8px 0 10px;
-}
-
-.message-content {
-    color: #555;
-    white-space: pre-wrap;
-    line-height: 1.6;
-    margin: 0;
-}
-
-.message-buttons {
-    display: flex;
-    gap: 10px;
-    margin-top: 15px;
-}
-
-.message-buttons button {
-    width: auto;
-    flex: 1;
-    padding: 9px;
-    font-size: 13px;
-}
-
-.message-buttons button:last-child {
-    background: #999;
-}
-
-.empty-message {
-    background: white;
-    padding: 20px;
-    border-radius: 18px;
-    text-align: center;
-    color: #999;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-}
-
-
-/* ==========================================
-   MOBILE
-========================================== */
-
-@media (max-width: 600px) {
-
-    .message-card {
-        padding: 16px;
+    .container {
+        width: 94%;
     }
 
-    .message-top {
-        flex-direction: column;
+    h1 {
+        font-size: 25px;
+    }
+
+    .navigation {
         gap: 5px;
     }
 
-    .message-date {
-        text-align: left;
+    .navigation button {
+        font-size: 11px;
+        padding: 9px 3px;
     }
 
-    .message-buttons {
-        flex-direction: column;
+    .countdown-box {
+        min-height: 60px;
     }
 
-    .message-buttons button {
-        width: 100%;
+    .countdown-box strong {
+        font-size: 16px;
     }
 
+    .countdown-box span {
+        font-size: 8px;
+    }
+
+    #gallery {
+        gap: 8px;
+    }
+
+    .gallery-item img {
+        height: 125px;
+    }
 }
-  
+```
