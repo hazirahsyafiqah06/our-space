@@ -1,10 +1,3 @@
-
-// ======================================================
-// OUR SPACE
-// script.js
-// ======================================================
-
-
 // ======================================================
 // SUPABASE CONFIG
 // ======================================================
@@ -12,17 +5,14 @@
 const SUPABASE_URL =
     "https://ognpydprqxxwjdnophxq.supabase.co";
 
-
 const SUPABASE_KEY =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9nbnB5ZHBycXh4d2pkbm9waHhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcyOTM3NzIsImV4cCI6MjEwMjg2OTc3Mn0.GEboyNWovkJ7U9zXAWtzcQ7iddISbQuoLSirBJfFkrM";
-
 
 const supabaseClient =
     window.supabase.createClient(
         SUPABASE_URL,
         SUPABASE_KEY
     );
-
 
 // ======================================================
 // USER IDS
@@ -31,10 +21,8 @@ const supabaseClient =
 const HAZIRAH_ID =
     "fd76923c-6b95-4668-b020-32ff37192990";
 
-
 const ZULKARNAIN_ID =
     "327adb82-7b8b-4e01-be1d-2802a334e6db";
-
 
 const USER_NAMES = {
 
@@ -46,13 +34,7 @@ const USER_NAMES = {
 
 };
 
-
 let currentUser = null;
-
-let allNotes = [];
-
-let allGallery = [];
-
 
 // ======================================================
 // RELATIONSHIP DATE
@@ -62,55 +44,6 @@ const relationshipStart =
     new Date(
         "2021-07-17T00:00:00"
     );
-
-
-// ======================================================
-// TOAST
-// ======================================================
-
-let toastTimer = null;
-
-
-function showToast(message) {
-
-    const toast =
-        document.getElementById(
-            "toast"
-        );
-
-
-    if (!toast)
-        return;
-
-
-    toast.textContent =
-        message;
-
-
-    toast.classList.add(
-        "show"
-    );
-
-
-    clearTimeout(
-        toastTimer
-    );
-
-
-    toastTimer =
-        setTimeout(
-            () => {
-
-                toast.classList.remove(
-                    "show"
-                );
-
-            },
-            2500
-        );
-
-}
-
 
 // ======================================================
 // GET CURRENT USER
@@ -123,7 +56,6 @@ async function getCurrentUser() {
         error
     } =
         await supabaseClient.auth.getUser();
-
 
     if (
         error ||
@@ -139,14 +71,11 @@ async function getCurrentUser() {
         return null;
     }
 
-
     currentUser =
         data.user;
 
-
     return currentUser;
 }
-
 
 // ======================================================
 // TOGETHER YEARS + DAYS
@@ -157,11 +86,9 @@ function updateTogetherTime() {
     const now =
         new Date();
 
-
     let years =
         now.getFullYear() -
         relationshipStart.getFullYear();
-
 
     const anniversaryThisYear =
         new Date(
@@ -169,7 +96,6 @@ function updateTogetherTime() {
             relationshipStart.getMonth(),
             relationshipStart.getDate()
         );
-
 
     if (
         now < anniversaryThisYear
@@ -179,22 +105,18 @@ function updateTogetherTime() {
 
     }
 
-
     const lastAnniversary =
         new Date(
             relationshipStart
         );
-
 
     lastAnniversary.setFullYear(
         relationshipStart.getFullYear() +
         years
     );
 
-
     const millisecondsPerDay =
         1000 * 60 * 60 * 24;
-
 
     const days =
         Math.floor(
@@ -205,18 +127,15 @@ function updateTogetherTime() {
             millisecondsPerDay
         );
 
-
     const yearsElement =
         document.getElementById(
             "togetherYears"
         );
 
-
     const daysElement =
         document.getElementById(
             "togetherDays"
         );
-
 
     if (yearsElement) {
 
@@ -224,7 +143,6 @@ function updateTogetherTime() {
             years;
 
     }
-
 
     if (daysElement) {
 
@@ -235,7 +153,6 @@ function updateTogetherTime() {
 
 }
 
-
 // ======================================================
 // ANNIVERSARY COUNTDOWN
 // ======================================================
@@ -244,7 +161,6 @@ function countdown() {
 
     const now =
         new Date();
-
 
     let nextAnniversary =
         new Date(
@@ -255,7 +171,6 @@ function countdown() {
             0,
             0
         );
-
 
     if (
         nextAnniversary <= now
@@ -273,22 +188,21 @@ function countdown() {
 
     }
 
-
     const distance =
         nextAnniversary -
         now;
 
+    if (distance <= 0) {
 
-    if (distance <= 0)
         return;
 
+    }
 
     const days =
         Math.floor(
             distance /
             (1000 * 60 * 60 * 24)
         );
-
 
     const hours =
         Math.floor(
@@ -298,7 +212,6 @@ function countdown() {
             ) % 24
         );
 
-
     const minutes =
         Math.floor(
             (
@@ -306,7 +219,6 @@ function countdown() {
                 (1000 * 60)
             ) % 60
         );
-
 
     const seconds =
         Math.floor(
@@ -316,52 +228,43 @@ function countdown() {
             ) % 60
         );
 
-
     const daysElement =
         document.getElementById(
             "days"
         );
-
 
     const hoursElement =
         document.getElementById(
             "hours"
         );
 
-
     const minutesElement =
         document.getElementById(
             "minutes"
         );
-
 
     const secondsElement =
         document.getElementById(
             "seconds"
         );
 
-
     if (daysElement)
         daysElement.textContent =
             days;
-
 
     if (hoursElement)
         hoursElement.textContent =
             hours;
 
-
     if (minutesElement)
         minutesElement.textContent =
             minutes;
-
 
     if (secondsElement)
         secondsElement.textContent =
             seconds;
 
 }
-
 
 // ======================================================
 // NOTES
@@ -374,10 +277,8 @@ async function loadNotes() {
             "notes"
         );
 
-
     if (!notesContainer)
         return;
-
 
     const {
         data,
@@ -393,7 +294,6 @@ async function loadNotes() {
                 }
             );
 
-
     if (error) {
 
         console.error(
@@ -401,221 +301,69 @@ async function loadNotes() {
             error
         );
 
-
-        notesContainer.innerHTML = `
-            <p class="empty-message">
-                Failed to load notes.
-            </p>
-        `;
+        notesContainer.innerHTML =
+            "<p>Failed to load notes.</p>";
 
         return;
     }
-
-
-    allNotes =
-        data || [];
-
-
-    renderNotes(
-        allNotes
-    );
-
-}
-
-
-// ======================================================
-// RENDER NOTES
-// ======================================================
-
-function renderNotes(
-    notes
-) {
-
-    const notesContainer =
-        document.getElementById(
-            "notes"
-        );
-
-
-    if (!notesContainer)
-        return;
-
 
     notesContainer.innerHTML =
         "";
 
-
     if (
-        !notes ||
-        notes.length === 0
+        !data ||
+        data.length === 0
     ) {
 
-        notesContainer.innerHTML = `
-            <p class="empty-message">
-                No notes yet ❤️
-            </p>
-        `;
+        notesContainer.innerHTML =
+            "<p>No notes yet ❤️</p>";
 
         return;
     }
 
+    data.forEach(note => {
 
-    notes.forEach(
-        note => {
-
-            const div =
-                document.createElement(
-                    "div"
-                );
-
-
-            div.className =
-                "note";
-
-
-            const noteDate =
-                note.created_at
-                    ? formatGalleryDate(
-                        note.created_at
-                    )
-                    : "";
-
-
-            div.innerHTML = `
-
-                <h3>
-                    ${escapeHTML(note.title)}
-                </h3>
-
-                <p>
-                    ${escapeHTML(note.content)}
-                </p>
-
-                ${
-                    noteDate
-                        ? `
-                            <span class="note-date">
-                                📅 ${escapeHTML(noteDate)}
-                            </span>
-                        `
-                        : ""
-                }
-
-                <div class="note-buttons">
-
-                    <button
-                        onclick="editNote(${note.id})">
-
-                        ✏️ Edit
-
-                    </button>
-
-
-                    <button
-                        onclick="deleteNote(${note.id})">
-
-                        🗑️ Delete
-
-                    </button>
-
-                </div>
-
-            `;
-
-
-            notesContainer.appendChild(
-                div
+        const div =
+            document.createElement(
+                "div"
             );
 
-        }
-    );
+        div.className =
+            "note";
 
-}
+        div.innerHTML = `
 
+            <h3>
+                ${escapeHTML(note.title)}
+            </h3>
 
-// ======================================================
-// FILTER NOTES
-// ======================================================
-
-function filterNotes() {
-
-    const input =
-        document.getElementById(
-            "noteSearch"
-        );
-
-
-    if (!input)
-        return;
-
-
-    const keyword =
-        input.value
-            .trim()
-            .toLowerCase();
-
-
-    if (!keyword) {
-
-        renderNotes(
-            allNotes
-        );
-
-        return;
-
-    }
-
-
-    const filtered =
-        allNotes.filter(
-            note => {
-
-                const title =
-                    String(
-                        note.title || ""
-                    ).toLowerCase();
-
-
-                const content =
-                    String(
-                        note.content || ""
-                    ).toLowerCase();
-
-
-                return (
-                    title.includes(keyword) ||
-                    content.includes(keyword)
-                );
-
-            }
-        );
-
-
-    if (filtered.length === 0) {
-
-        const notesContainer =
-            document.getElementById(
-                "notes"
-            );
-
-
-        notesContainer.innerHTML = `
-            <p class="empty-message">
-                No notes found 🔍
+            <p>
+                ${escapeHTML(note.content)}
             </p>
+
+            <div class="note-buttons">
+
+                <button
+                    onclick="editNote(${note.id})">
+                    ✏️ Edit
+                </button>
+
+                <button
+                    onclick="deleteNote(${note.id})">
+                    🗑️ Delete
+                </button>
+
+            </div>
+
         `;
 
-        return;
+        notesContainer.appendChild(
+            div
+        );
 
-    }
-
-
-    renderNotes(
-        filtered
-    );
+    });
 
 }
-
 
 // ======================================================
 // ADD NOTE
@@ -623,38 +371,29 @@ function filterNotes() {
 
 async function addNote() {
 
-    const titleInput =
-        document.getElementById(
-            "title"
-        );
-
-
-    const contentInput =
-        document.getElementById(
-            "content"
-        );
-
-
     const title =
-        titleInput.value.trim();
-
+        document
+            .getElementById("title")
+            .value
+            .trim();
 
     const content =
-        contentInput.value.trim();
-
+        document
+            .getElementById("content")
+            .value
+            .trim();
 
     if (
         !title ||
         !content
     ) {
 
-        showToast(
+        alert(
             "Please fill in the title and note ❤️"
         );
 
         return;
     }
-
 
     const {
         error
@@ -671,47 +410,34 @@ async function addNote() {
                 }
             ]);
 
-
     if (error) {
 
         console.error(error);
 
-        showToast(
+        alert(
             "Failed to save note."
         );
 
         return;
     }
 
+    document.getElementById(
+        "title"
+    ).value = "";
 
-    titleInput.value =
-        "";
+    document.getElementById(
+        "content"
+    ).value = "";
 
-
-    contentInput.value =
-        "";
-
-
-    updateNoteCounter();
-
-
-    showToast(
-        "Note saved ❤️"
-    );
-
-
-    await loadNotes();
+    loadNotes();
 
 }
-
 
 // ======================================================
 // EDIT NOTE
 // ======================================================
 
-async function editNote(
-    id
-) {
+async function editNote(id) {
 
     const {
         data,
@@ -720,24 +446,15 @@ async function editNote(
         await supabaseClient
             .from("notes")
             .select("*")
-            .eq(
-                "id",
-                id
-            )
+            .eq("id", id)
             .single();
-
 
     if (error) {
 
         console.error(error);
 
-        showToast(
-            "Unable to find note."
-        );
-
         return;
     }
-
 
     const title =
         prompt(
@@ -745,12 +462,10 @@ async function editNote(
             data.title
         );
 
-
     if (
         title === null
     )
         return;
-
 
     const content =
         prompt(
@@ -758,25 +473,10 @@ async function editNote(
             data.content
         );
 
-
     if (
         content === null
     )
         return;
-
-
-    if (
-        !title.trim() ||
-        !content.trim()
-    ) {
-
-        showToast(
-            "Title and note cannot be empty."
-        );
-
-        return;
-    }
-
 
     const {
         error: updateError
@@ -785,16 +485,15 @@ async function editNote(
             .from("notes")
             .update({
                 title:
-                    title.trim(),
+                    title,
 
                 content:
-                    content.trim()
+                    content
             })
             .eq(
                 "id",
                 id
             );
-
 
     if (updateError) {
 
@@ -802,31 +501,22 @@ async function editNote(
             updateError
         );
 
-        showToast(
+        alert(
             "Failed to update note."
         );
 
         return;
     }
 
-
-    showToast(
-        "Note updated ✨"
-    );
-
-
     loadNotes();
 
 }
-
 
 // ======================================================
 // DELETE NOTE
 // ======================================================
 
-async function deleteNote(
-    id
-) {
+async function deleteNote(id) {
 
     if (
         !confirm(
@@ -834,7 +524,6 @@ async function deleteNote(
         )
     )
         return;
-
 
     const {
         error
@@ -847,28 +536,20 @@ async function deleteNote(
                 id
             );
 
-
     if (error) {
 
         console.error(error);
 
-        showToast(
+        alert(
             "Failed to delete note."
         );
 
         return;
     }
 
-
-    showToast(
-        "Note deleted 🗑️"
-    );
-
-
     loadNotes();
 
 }
-
 
 // ======================================================
 // GALLERY
@@ -881,17 +562,14 @@ async function loadGallery() {
             "gallery"
         );
 
-
     if (!gallery)
         return;
-
 
     gallery.innerHTML = `
         <p class="gallery-loading">
             Loading our memories... 💕
         </p>
     `;
-
 
     const {
         data,
@@ -907,7 +585,6 @@ async function loadGallery() {
                 }
             );
 
-
     if (error) {
 
         console.error(
@@ -915,65 +592,20 @@ async function loadGallery() {
             error
         );
 
-
         gallery.innerHTML = `
-            <div class="gallery-empty">
-
-                <div class="empty-icon">
-                    😢
-                </div>
-
-                <strong>
-                    Failed to load gallery
-                </strong>
-
-                <p>
-                    ${escapeHTML(error.message)}
-                </p>
-
-            </div>
+            <p class="gallery-empty">
+                Failed to load gallery.
+            </p>
         `;
 
         return;
     }
 
-
-    allGallery =
-        data || [];
-
-
-    renderGallery(
-        allGallery
-    );
-
-}
-
-
-// ======================================================
-// RENDER GALLERY
-// ======================================================
-
-function renderGallery(
-    photos
-) {
-
-    const gallery =
-        document.getElementById(
-            "gallery"
-        );
-
-
-    if (!gallery)
-        return;
-
-
-    gallery.innerHTML =
-        "";
-
+    gallery.innerHTML = "";
 
     if (
-        !photos ||
-        photos.length === 0
+        !data ||
+        data.length === 0
     ) {
 
         gallery.innerHTML = `
@@ -1000,319 +632,89 @@ function renderGallery(
         return;
     }
 
+    data.forEach(photo => {
 
-    photos.forEach(
-        photo => {
+        const div =
+            document.createElement(
+                "div"
+            );
 
-            const div =
-                document.createElement(
-                    "div"
-                );
+        div.className =
+            "gallery-item";
 
+        const caption =
+            photo.caption ||
+            "A little memory ❤️";
 
-            div.className =
-                "gallery-item";
+        /*
+         * TARIKH + MASA UPLOAD
+         */
+        const date =
+            photo.created_at
+                ? formatGalleryDate(
+                    photo.created_at
+                )
+                : "Date unavailable";
 
+        div.innerHTML = `
 
-            const caption =
-                photo.caption ||
-                "A little memory ❤️";
+            <div
+                class="gallery-image-wrapper"
+                onclick="openLightbox(
+                    '${escapeJS(photo.image_url)}',
+                    '${escapeJS(caption)}',
+                    '${escapeJS(date)}'
+                )"
+            >
 
+                <img
+                    src="${escapeAttribute(photo.image_url)}"
+                    alt="Our Memory"
+                    loading="lazy"
+                >
 
-            const date =
-                photo.created_at
-                    ? formatGalleryDate(
-                        photo.created_at
-                    )
-                    : "Date unavailable";
+                <div class="photo-overlay">
 
-
-            div.innerHTML = `
-
-                <div
-                    class="gallery-image-wrapper"
-                    data-image-url="${escapeAttribute(photo.image_url)}"
-                    data-caption="${escapeAttribute(caption)}"
-                    data-date="${escapeAttribute(date)}">
-
-                    <img
-                        src="${escapeAttribute(photo.image_url)}"
-                        alt="Our Memory"
-                        loading="lazy">
-
-
-                    <div class="photo-overlay">
-
-                        <span class="view-photo">
-                            🔍 View Photo
-                        </span>
-
-                    </div>
-
-
-                    <span class="gallery-zoom">
-                        🔍
+                    <span class="view-photo">
+                        🔍 View Photo
                     </span>
 
                 </div>
 
-
-                <div class="gallery-caption">
-
-                    <p>
-                        ${escapeHTML(caption)}
-                    </p>
-
-
-                    <span class="gallery-date">
-                        📅 ${escapeHTML(date)}
-                    </span>
-
-
-                    <button
-                        class="gallery-delete"
-                        onclick="event.stopPropagation(); deleteImage(${photo.id})">
-
-                        🗑️ Delete
-
-                    </button>
-
-                </div>
-
-            `;
-
-
-            const imageWrapper =
-                div.querySelector(
-                    ".gallery-image-wrapper"
-                );
-
-
-            imageWrapper.addEventListener(
-                "click",
-                function() {
-
-                    openLightbox(
-                        photo.image_url,
-                        caption,
-                        date
-                    );
-
-                }
-            );
-
-
-            gallery.appendChild(
-                div
-            );
-
-        }
-    );
-
-}
-
-
-// ======================================================
-// FILTER GALLERY
-// ======================================================
-
-function filterGallery() {
-
-    const input =
-        document.getElementById(
-            "gallerySearch"
-        );
-
-
-    if (!input)
-        return;
-
-
-    const keyword =
-        input.value
-            .trim()
-            .toLowerCase();
-
-
-    if (!keyword) {
-
-        renderGallery(
-            allGallery
-        );
-
-        return;
-
-    }
-
-
-    const filtered =
-        allGallery.filter(
-            photo => {
-
-                const caption =
-                    String(
-                        photo.caption || ""
-                    ).toLowerCase();
-
-
-                return caption.includes(
-                    keyword
-                );
-
-            }
-        );
-
-
-    if (
-        filtered.length === 0
-    ) {
-
-        const gallery =
-            document.getElementById(
-                "gallery"
-            );
-
-
-        gallery.innerHTML = `
-
-            <div class="gallery-empty">
-
-                <div class="empty-icon">
+                <span class="gallery-zoom">
                     🔍
-                </div>
+                </span>
 
-                <strong>
-                    No memory found
-                </strong>
+            </div>
+
+            <div class="gallery-caption">
 
                 <p>
-                    Try another keyword ❤️
+                    ${escapeHTML(caption)}
                 </p>
+
+                <span class="gallery-date">
+                    📅 ${escapeHTML(date)}
+                </span>
+
+                <button
+                    class="gallery-delete"
+                    onclick="event.stopPropagation(); deleteImage(${photo.id})"
+                >
+                    🗑️ Delete
+                </button>
 
             </div>
 
         `;
 
-        return;
-
-    }
-
-
-    renderGallery(
-        filtered
-    );
-
-}
-
-
-// ======================================================
-// IMAGE PREVIEW
-// ======================================================
-
-function setupImagePreview() {
-
-    const input =
-        document.getElementById(
-            "imageInput"
+        gallery.appendChild(
+            div
         );
 
-
-    if (!input)
-        return;
-
-
-    input.addEventListener(
-        "change",
-        function() {
-
-            const file =
-                input.files[0];
-
-
-            const preview =
-                document.getElementById(
-                    "imagePreview"
-                );
-
-
-            const previewImage =
-                document.getElementById(
-                    "previewImage"
-                );
-
-
-            const previewName =
-                document.getElementById(
-                    "previewName"
-                );
-
-
-            if (!file) {
-
-                preview.classList.remove(
-                    "active"
-                );
-
-                previewImage.src =
-                    "";
-
-                previewName.textContent =
-                    "";
-
-                return;
-
-            }
-
-
-            if (
-                !file.type.startsWith(
-                    "image/"
-                )
-            ) {
-
-                showToast(
-                    "Please choose an image."
-                );
-
-                input.value =
-                    "";
-
-                return;
-
-            }
-
-
-            const reader =
-                new FileReader();
-
-
-            reader.onload =
-                function(event) {
-
-                    previewImage.src =
-                        event.target.result;
-
-
-                    previewName.textContent =
-                        file.name;
-
-
-                    preview.classList.add(
-                        "active"
-                    );
-
-                };
-
-
-            reader.readAsDataURL(
-                file
-            );
-
-        }
-    );
+    });
 
 }
-
 
 // ======================================================
 // UPLOAD IMAGE
@@ -1325,36 +727,25 @@ async function uploadImage() {
             "imageInput"
         );
 
-
     const captionInput =
         document.getElementById(
             "caption"
         );
 
-
-    const uploadButton =
-        document.querySelector(
-            ".upload-btn"
-        );
-
-
     if (!fileInput)
         return;
-
 
     const file =
         fileInput.files[0];
 
-
     if (!file) {
 
-        showToast(
+        alert(
             "Please choose a photo 📸"
         );
 
         return;
     }
-
 
     if (
         !file.type.startsWith(
@@ -1362,30 +753,27 @@ async function uploadImage() {
         )
     ) {
 
-        showToast(
+        alert(
             "Please select an image."
         );
 
         return;
     }
 
-
     if (
         file.size >
         5 * 1024 * 1024
     ) {
 
-        showToast(
+        alert(
             "Image must be smaller than 5MB."
         );
 
         return;
     }
 
-
     const caption =
         captionInput.value.trim();
-
 
     const safeName =
         file.name
@@ -1394,20 +782,10 @@ async function uploadImage() {
                 "_"
             );
 
-
     const fileName =
         Date.now() +
         "_" +
         safeName;
-
-
-    uploadButton.disabled =
-        true;
-
-
-    uploadButton.textContent =
-        "Uploading... 📸";
-
 
     const {
         error: uploadError
@@ -1420,7 +798,6 @@ async function uploadImage() {
                 file
             );
 
-
     if (uploadError) {
 
         console.error(
@@ -1428,24 +805,13 @@ async function uploadImage() {
             uploadError
         );
 
-
-        showToast(
-            "Upload failed: " +
+        alert(
+            "Upload failed:\n" +
             uploadError.message
         );
 
-
-        uploadButton.disabled =
-            false;
-
-
-        uploadButton.textContent =
-            "📸 Add to Our Gallery";
-
-
         return;
     }
-
 
     const {
         data: urlData
@@ -1457,10 +823,8 @@ async function uploadImage() {
                 fileName
             );
 
-
     const imageUrl =
         urlData.publicUrl;
-
 
     const {
         error: databaseError
@@ -1477,7 +841,6 @@ async function uploadImage() {
                 }
             ]);
 
-
     if (databaseError) {
 
         console.error(
@@ -1485,78 +848,32 @@ async function uploadImage() {
             databaseError
         );
 
-
-        showToast(
+        alert(
             "Image uploaded but database failed."
         );
-
-
-        uploadButton.disabled =
-            false;
-
-
-        uploadButton.textContent =
-            "📸 Add to Our Gallery";
-
 
         return;
     }
 
-
     fileInput.value =
         "";
-
 
     captionInput.value =
         "";
 
-
-    const preview =
-        document.getElementById(
-            "imagePreview"
-        );
-
-
-    preview.classList.remove(
-        "active"
-    );
-
-
-    document.getElementById(
-        "previewImage"
-    ).src = "";
-
-
-    document.getElementById(
-        "previewName"
-    ).textContent = "";
-
-
-    uploadButton.disabled =
-        false;
-
-
-    uploadButton.textContent =
-        "📸 Add to Our Gallery";
-
-
-    showToast(
+    alert(
         "Photo added to Our Gallery ❤️"
     );
 
-
-    await loadGallery();
+    loadGallery();
 
 }
-
 
 // ======================================================
 // DELETE IMAGE
 // ======================================================
 
-async function deleteImage(
-    id
-) {
+async function deleteImage(id) {
 
     if (
         !confirm(
@@ -1564,7 +881,6 @@ async function deleteImage(
         )
     )
         return;
-
 
     const {
         data,
@@ -1581,22 +897,19 @@ async function deleteImage(
             )
             .single();
 
-
     if (error) {
 
         console.error(error);
 
-        showToast(
+        alert(
             "Unable to find photo."
         );
 
         return;
     }
 
-
     const imageUrl =
         data.image_url;
-
 
     try {
 
@@ -1605,37 +918,21 @@ async function deleteImage(
                 imageUrl
             );
 
+        const path =
+            url.pathname.split(
+                "/storage/v1/object/public/gallery/"
+            )[1];
 
-        const marker =
-            "/storage/v1/object/public/gallery/";
+        if (path) {
 
-
-        const index =
-            url.pathname.indexOf(
-                marker
-            );
-
-
-        if (index !== -1) {
-
-            const path =
-                url.pathname.substring(
-                    index + marker.length
-                );
-
-
-            if (path) {
-
-                await supabaseClient
-                    .storage
-                    .from("gallery")
-                    .remove([
-                        decodeURIComponent(
-                            path
-                        )
-                    ]);
-
-            }
+            await supabaseClient
+                .storage
+                .from("gallery")
+                .remove([
+                    decodeURIComponent(
+                        path
+                    )
+                ]);
 
         }
 
@@ -1648,7 +945,6 @@ async function deleteImage(
 
     }
 
-
     const {
         error: deleteError
     } =
@@ -1660,30 +956,22 @@ async function deleteImage(
                 id
             );
 
-
     if (deleteError) {
 
         console.error(
             deleteError
         );
 
-        showToast(
+        alert(
             "Failed to delete photo."
         );
 
         return;
     }
 
-
-    showToast(
-        "Photo deleted 🗑️"
-    );
-
-
     loadGallery();
 
 }
-
 
 // ======================================================
 // LIGHTBOX
@@ -1700,82 +988,99 @@ function openLightbox(
             "lightbox"
         );
 
-
     const image =
         document.getElementById(
             "lightboxImage"
         );
-
 
     const captionElement =
         document.getElementById(
             "lightboxCaption"
         );
 
-
-    const dateElement =
-        document.getElementById(
-            "lightboxDate"
-        );
-
-
-    if (!lightbox)
-        return;
-
-
     image.src =
         imageUrl;
-
 
     captionElement.textContent =
         caption;
 
+    /*
+     * CREATE DATE ELEMENT
+     * AUTOMATICALLY
+     * JIKA HTML BELUM ADA
+     */
+
+    let dateElement =
+        document.getElementById(
+            "lightboxDate"
+        );
+
+    if (!dateElement) {
+
+        dateElement =
+            document.createElement(
+                "div"
+            );
+
+        dateElement.id =
+            "lightboxDate";
+
+        dateElement.className =
+            "lightbox-date";
+
+        captionElement
+            .insertAdjacentElement(
+                "afterend",
+                dateElement
+            );
+
+    }
 
     dateElement.textContent =
         "📅 Uploaded: " +
         date;
 
-
     lightbox.classList.add(
         "active"
     );
-
 
     document.body.style.overflow =
         "hidden";
 
 }
 
-
 // ======================================================
 // CLOSE LIGHTBOX
 // ======================================================
 
-function closeLightbox() {
+function closeLightbox(event) {
+
+    if (
+        event &&
+        event.target &&
+        event.target.id !==
+            "lightbox"
+    ) {
+
+        return;
+    }
 
     const lightbox =
         document.getElementById(
             "lightbox"
         );
 
-
-    if (!lightbox)
-        return;
-
-
     lightbox.classList.remove(
         "active"
     );
-
 
     document.body.style.overflow =
         "";
 
 }
 
-
 // ======================================================
-// ESCAPE KEY
+// ESCAPE KEY FOR LIGHTBOX
 // ======================================================
 
 document.addEventListener(
@@ -1786,16 +1091,34 @@ document.addEventListener(
             event.key === "Escape"
         ) {
 
-            closeLightbox();
+            const lightbox =
+                document.getElementById(
+                    "lightbox"
+                );
+
+            if (
+                lightbox &&
+                lightbox.classList.contains(
+                    "active"
+                )
+            ) {
+
+                lightbox.classList.remove(
+                    "active"
+                );
+
+                document.body.style.overflow =
+                    "";
+
+            }
 
         }
 
     }
 );
 
-
 // ======================================================
-// FORMAT DATE
+// GALLERY DATE
 // ======================================================
 
 function formatGalleryDate(
@@ -1805,12 +1128,10 @@ function formatGalleryDate(
     if (!dateString)
         return "Date unavailable";
 
-
     const date =
         new Date(
             dateString
         );
-
 
     return date.toLocaleString(
         "en-MY",
@@ -1837,7 +1158,6 @@ function formatGalleryDate(
 
 }
 
-
 // ======================================================
 // SECRET MESSAGE
 // ======================================================
@@ -1849,17 +1169,14 @@ async function loadSecretMessages() {
             "secretMessages"
         );
 
-
     if (!container)
         return;
-
 
     if (!currentUser) {
 
         await getCurrentUser();
 
     }
-
 
     if (!currentUser) {
 
@@ -1871,7 +1188,6 @@ async function loadSecretMessages() {
 
         return;
     }
-
 
     const {
         data,
@@ -1890,14 +1206,12 @@ async function loadSecretMessages() {
                 }
             );
 
-
     if (error) {
 
         console.error(
             "Secret message error:",
             error
         );
-
 
         container.innerHTML = `
             <p class="empty-message">
@@ -1908,10 +1222,8 @@ async function loadSecretMessages() {
         return;
     }
 
-
     container.innerHTML =
         "";
-
 
     if (
         !data ||
@@ -1928,7 +1240,6 @@ async function loadSecretMessages() {
         return;
     }
 
-
     data.forEach(
         message => {
 
@@ -1936,12 +1247,10 @@ async function loadSecretMessages() {
                 message.sender_id ===
                 currentUser.id;
 
-
             const card =
                 document.createElement(
                     "div"
                 );
-
 
             card.className =
                 "secret-message-card " +
@@ -1951,46 +1260,40 @@ async function loadSecretMessages() {
                         : "theirs"
                 );
 
-
             const senderName =
                 USER_NAMES[
                     message.sender_id
                 ] ||
                 "Our Love";
 
-
             const formattedDate =
                 formatMessageDate(
                     message.create_at
                 );
 
-
             let actions =
                 "";
-
 
             if (isMine) {
 
                 actions = `
 
                     <div
-                        class="message-actions">
+                        class="message-actions"
+                    >
 
                         <button
                             class="edit-message-btn"
-                            onclick="editSecretMessage(${message.id})">
-
+                            onclick="editSecretMessage(${message.id})"
+                        >
                             ✏️ Edit
-
                         </button>
-
 
                         <button
                             class="delete-message-btn"
-                            onclick="deleteSecretMessage(${message.id})">
-
+                            onclick="deleteSecretMessage(${message.id})"
+                        >
                             🗑️ Delete
-
                         </button>
 
                     </div>
@@ -1999,36 +1302,36 @@ async function loadSecretMessages() {
 
             }
 
-
             card.innerHTML = `
 
-                <div class="message-bubble">
+    <div
+        class="message-bubble"
+    >
 
-                    <div class="message-top">
+        <div class="message-top">
 
-                        <span class="message-sender">
-                            ${escapeHTML(senderName)}
-                        </span>
+            <span class="message-sender">
+                ${escapeHTML(senderName)}
+            </span>
 
-                    </div>
-
-
-                    <p class="message-text">
-                        ${escapeHTML(message.message)}
-                    </p>
+        </div>
 
 
-                    <span class="message-time">
-                        ${formattedDate}
-                    </span>
+        <p class="message-text">
+            ${escapeHTML(message.message)}
+        </p>
 
 
-                    ${actions}
+        <span class="message-time">
+            ${formattedDate}
+        </span>
 
-                </div>
 
-            `;
+        ${actions}
 
+    </div>
+
+`;
 
             container.appendChild(
                 card
@@ -2038,7 +1341,6 @@ async function loadSecretMessages() {
     );
 
 }
-
 
 // ======================================================
 // SEND SECRET MESSAGE
@@ -2052,45 +1354,38 @@ async function sendSecretMessage() {
 
     }
 
-
     if (!currentUser) {
 
-        showToast(
+        alert(
             "Please login first ❤️"
         );
 
         return;
     }
 
-
     const messageInput =
         document.getElementById(
             "secretMessage"
         );
-
 
     const sendButton =
         document.getElementById(
             "sendMessageBtn"
         );
 
-
     const message =
         messageInput.value.trim();
 
-
     if (!message) {
 
-        showToast(
+        alert(
             "Please write a message first ❤️"
         );
 
         return;
     }
 
-
     let receiverId;
-
 
     if (
         currentUser.id ===
@@ -2110,21 +1405,18 @@ async function sendSecretMessage() {
 
     } else {
 
-        showToast(
+        alert(
             "This account is not part of Our Space ❤️"
         );
 
         return;
     }
 
-
     sendButton.disabled =
         true;
 
-
     sendButton.textContent =
         "Sending... 💕";
-
 
     const {
         error
@@ -2144,7 +1436,6 @@ async function sendSecretMessage() {
                 }
             ]);
 
-
     if (error) {
 
         console.error(
@@ -2152,48 +1443,32 @@ async function sendSecretMessage() {
             error
         );
 
-
-        showToast(
-            "Message failed to send."
+        alert(
+            "Message failed to send:\n" +
+            error.message
         );
-
 
         sendButton.disabled =
             false;
 
-
         sendButton.textContent =
             "💌 Send Message";
-
 
         return;
     }
 
-
     messageInput.value =
         "";
-
-
-    updateMessageCounter();
-
 
     sendButton.disabled =
         false;
 
-
     sendButton.textContent =
         "💌 Send Message";
-
-
-    showToast(
-        "Message sent ❤️"
-    );
-
 
     await loadSecretMessages();
 
 }
-
 
 // ======================================================
 // EDIT SECRET MESSAGE
@@ -2216,32 +1491,28 @@ async function editSecretMessage(
             )
             .single();
 
-
     if (error) {
 
         console.error(error);
 
-        showToast(
+        alert(
             "Unable to find message."
         );
 
         return;
     }
 
-
     if (
-        !currentUser ||
         data.sender_id !==
         currentUser.id
     ) {
 
-        showToast(
+        alert(
             "You can only edit your own message."
         );
 
         return;
     }
-
 
     const newMessage =
         prompt(
@@ -2249,26 +1520,22 @@ async function editSecretMessage(
             data.message
         );
 
-
     if (
         newMessage === null
     )
         return;
 
-
     const cleanedMessage =
         newMessage.trim();
 
-
     if (!cleanedMessage) {
 
-        showToast(
+        alert(
             "Message cannot be empty."
         );
 
         return;
     }
-
 
     const {
         error: updateError
@@ -2284,30 +1551,22 @@ async function editSecretMessage(
                 id
             );
 
-
     if (updateError) {
 
         console.error(
             updateError
         );
 
-        showToast(
+        alert(
             "Failed to edit message."
         );
 
         return;
     }
 
-
-    showToast(
-        "Message updated ✨"
-    );
-
-
     loadSecretMessages();
 
 }
-
 
 // ======================================================
 // DELETE SECRET MESSAGE
@@ -2324,7 +1583,6 @@ async function deleteSecretMessage(
     )
         return;
 
-
     const {
         error
     } =
@@ -2336,28 +1594,20 @@ async function deleteSecretMessage(
                 id
             );
 
-
     if (error) {
 
         console.error(error);
 
-        showToast(
+        alert(
             "Failed to delete message."
         );
 
         return;
     }
 
-
-    showToast(
-        "Message deleted 🗑️"
-    );
-
-
     loadSecretMessages();
 
 }
-
 
 // ======================================================
 // FORMAT MESSAGE DATE
@@ -2370,12 +1620,10 @@ function formatMessageDate(
     if (!dateString)
         return "";
 
-
     const date =
         new Date(
             dateString
         );
-
 
     return date.toLocaleString(
         "en-MY",
@@ -2393,100 +1641,31 @@ function formatMessageDate(
                 "2-digit",
 
             minute:
-                "2-digit",
-
-            hour12:
-                true
+                "2-digit"
         }
     );
 
 }
 
-
-// ======================================================
-// NOTE COUNTER
-// ======================================================
-
-function updateNoteCounter() {
-
-    const input =
-        document.getElementById(
-            "content"
-        );
-
-
-    const counter =
-        document.getElementById(
-            "noteCounter"
-        );
-
-
-    if (!input || !counter)
-        return;
-
-
-    counter.textContent =
-        input.value.length +
-        " / 1000";
-
-}
-
-
-// ======================================================
-// MESSAGE COUNTER
-// ======================================================
-
-function updateMessageCounter() {
-
-    const input =
-        document.getElementById(
-            "secretMessage"
-        );
-
-
-    const counter =
-        document.getElementById(
-            "messageCounter"
-        );
-
-
-    if (!input || !counter)
-        return;
-
-
-    counter.textContent =
-        input.value.length +
-        " / 1000";
-
-}
-
-
 // ======================================================
 // SECURITY
 // ======================================================
 
-function escapeHTML(
-    text
-) {
+function escapeHTML(text) {
 
     const div =
         document.createElement(
             "div"
         );
 
-
     div.textContent =
         text;
-
 
     return div.innerHTML;
 
 }
 
-
-function escapeAttribute(
-    text
-) {
+function escapeAttribute(text) {
 
     return String(text)
         .replace(
@@ -2512,6 +1691,36 @@ function escapeAttribute(
 
 }
 
+/*
+ * Escape untuk JavaScript
+ * string dalam onclick Lightbox
+ */
+
+function escapeJS(text) {
+
+    return String(text)
+        .replace(
+            /\\/g,
+            "\\\\"
+        )
+        .replace(
+            /'/g,
+            "\\'"
+        )
+        .replace(
+            /"/g,
+            '\\"'
+        )
+        .replace(
+            /\n/g,
+            "\\n"
+        )
+        .replace(
+            /\r/g,
+            "\\r"
+        );
+
+}
 
 // ======================================================
 // NAVIGATION
@@ -2533,7 +1742,6 @@ function showSection(
 
     ];
 
-
     sections.forEach(
         id => {
 
@@ -2541,7 +1749,6 @@ function showSection(
                 document.getElementById(
                     id
                 );
-
 
             if (section) {
 
@@ -2555,64 +1762,6 @@ function showSection(
         }
     );
 
-
-    const navButtons = {
-
-        "notes-section":
-            "nav-notes",
-
-        "gallery-section":
-            "nav-gallery",
-
-        "memories-section":
-            "nav-memories",
-
-        "messages-section":
-            "nav-messages"
-
-    };
-
-
-    Object.values(
-        navButtons
-    ).forEach(
-        buttonId => {
-
-            const button =
-                document.getElementById(
-                    buttonId
-                );
-
-
-            if (button) {
-
-                button.classList.remove(
-                    "active"
-                );
-
-            }
-
-        }
-    );
-
-
-    const activeButton =
-        document.getElementById(
-            navButtons[
-                sectionId
-            ]
-        );
-
-
-    if (activeButton) {
-
-        activeButton.classList.add(
-            "active"
-        );
-
-    }
-
-
     if (
         sectionId ===
         "messages-section"
@@ -2621,7 +1770,6 @@ function showSection(
         loadSecretMessages();
 
     }
-
 
     if (
         sectionId ===
@@ -2632,108 +1780,7 @@ function showSection(
 
     }
 
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
-
 }
-
-
-// ======================================================
-// BACK TO TOP
-// ======================================================
-
-function scrollToTop() {
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
-
-}
-
-
-window.addEventListener(
-    "scroll",
-    function() {
-
-        const button =
-            document.getElementById(
-                "backToTop"
-            );
-
-
-        if (!button)
-            return;
-
-
-        if (
-            window.scrollY >
-            300
-        ) {
-
-            button.classList.add(
-                "show"
-            );
-
-        } else {
-
-            button.classList.remove(
-                "show"
-            );
-
-        }
-
-    }
-);
-
-
-// ======================================================
-// INPUT EVENTS
-// ======================================================
-
-function setupInputCounters() {
-
-    const noteInput =
-        document.getElementById(
-            "content"
-        );
-
-
-    const messageInput =
-        document.getElementById(
-            "secretMessage"
-        );
-
-
-    if (noteInput) {
-
-        noteInput.addEventListener(
-            "input",
-            updateNoteCounter
-        );
-
-    }
-
-
-    if (messageInput) {
-
-        messageInput.addEventListener(
-            "input",
-            updateMessageCounter
-        );
-
-    }
-
-
-    updateNoteCounter();
-
-    updateMessageCounter();
-
-}
-
 
 // ======================================================
 // START APP
@@ -2743,27 +1790,15 @@ async function startApp() {
 
     await getCurrentUser();
 
-
     updateTogetherTime();
-
 
     countdown();
 
+    loadNotes();
 
-    setupInputCounters();
+    loadGallery();
 
-
-    setupImagePreview();
-
-
-    await loadNotes();
-
-
-    await loadGallery();
-
-
-    await loadSecretMessages();
-
+    loadSecretMessages();
 
     showSection(
         "notes-section"
@@ -2771,22 +1806,14 @@ async function startApp() {
 
 }
 
-
 startApp();
-
-
-// ======================================================
-// LIVE UPDATE
-// ======================================================
 
 setInterval(
     updateTogetherTime,
     60000
 );
 
-
 setInterval(
     countdown,
     1000
 );
-
