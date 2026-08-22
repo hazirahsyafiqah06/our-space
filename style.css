@@ -1,4 +1,3 @@
-
 /* ======================================================
    BASIC
 ====================================================== */
@@ -1066,6 +1065,7 @@ button:hover {
 
 /* ======================================================
    SECRET MESSAGE
+   WHATSAPP STYLE
 ====================================================== */
 
 .message-section-card {
@@ -1073,43 +1073,108 @@ button:hover {
 }
 
 
+/* ------------------------------------------------------
+   SEND MESSAGE FORM
+   KEKAL DI ATAS
+------------------------------------------------------ */
+
 .message-form {
-    background: #fff8fa;
+    background:
+        linear-gradient(
+            135deg,
+            #fff8fb,
+            #f2fbff
+        );
 
-    border: 1px solid #f5dce5;
+    border: 1px solid #f2dce5;
 
-    padding: 18px;
+    padding: 15px;
 
-    border-radius: 18px;
+    border-radius: 17px;
 
-    margin-bottom: 25px;
+    margin-bottom: 22px;
 }
 
 
 .message-form textarea {
-    height: 110px;
-    margin-bottom: 10px;
+    height: 90px;
+
+    margin-bottom: 9px;
+
+    resize: none;
+
+    background: white;
+
+    border-radius: 13px;
+
+    font-size: 14px;
 }
 
+
+.message-form textarea::placeholder {
+    color: #aaa;
+}
+
+
+.message-form button {
+    background:
+        linear-gradient(
+            135deg,
+            #e75480,
+            #72c9df
+        );
+
+    font-weight: bold;
+
+    border-radius: 12px;
+
+    padding: 11px;
+}
+
+
+/* ------------------------------------------------------
+   CHAT AREA
+------------------------------------------------------ */
 
 #secretMessages {
     display: flex;
+
     flex-direction: column;
-    gap: 14px;
+
+    gap: 7px;
+
+    padding: 5px 2px;
 }
 
+
+/* ------------------------------------------------------
+   LOADING / EMPTY
+------------------------------------------------------ */
 
 .loading-message,
 .empty-message {
     text-align: center;
+
     color: #999;
-    padding: 20px;
+
+    padding: 20px 10px;
+
+    font-size: 13px;
 }
 
 
+/* ------------------------------------------------------
+   CHAT ROW
+------------------------------------------------------ */
+
 .secret-message-card {
     width: 100%;
+
     display: flex;
+
+    margin: 0;
+
+    padding: 0;
 }
 
 
@@ -1123,92 +1188,195 @@ button:hover {
 }
 
 
-.message-bubble {
-    width: 82%;
-    padding: 15px 16px;
+/* ------------------------------------------------------
+   CHAT BUBBLE
+------------------------------------------------------ */
 
-    border-radius: 18px;
+.message-bubble {
+    width: auto;
+
+    max-width: 68%;
+
+    min-width: 90px;
+
+    padding: 9px 11px 7px;
+
+    border-radius: 15px;
 
     position: relative;
 
     box-shadow:
-        0 3px 12px rgba(0,0,0,0.05);
+        0 2px 7px rgba(0,0,0,0.045);
 }
 
+
+/* ------------------------------------------------------
+   MY MESSAGE
+------------------------------------------------------ */
 
 .mine .message-bubble {
-    background: #ffe0eb;
-    border-bottom-right-radius: 5px;
+    background: #ffe1ec;
+
+    border: 1px solid #ffd3e2;
+
+    border-bottom-right-radius: 4px;
 }
 
+
+/* ------------------------------------------------------
+   PARTNER MESSAGE
+------------------------------------------------------ */
 
 .theirs .message-bubble {
     background: #eaf8ff;
-    border: 1px solid #d6edf6;
-    border-bottom-left-radius: 5px;
+
+    border: 1px solid #d5edf6;
+
+    border-bottom-left-radius: 4px;
 }
 
 
+/* ------------------------------------------------------
+   SENDER + TIME
+------------------------------------------------------ */
+
 .message-top {
     display: flex;
-    justify-content: space-between;
+
     align-items: center;
 
-    gap: 10px;
+    gap: 7px;
 
-    margin-bottom: 8px;
+    margin-bottom: 3px;
 }
 
 
 .message-sender {
-    font-size: 13px;
-    font-weight: bold;
-    color: #e75480;
-}
-
-
-.message-time {
-    color: #aaa;
     font-size: 10px;
-    white-space: nowrap;
+
+    font-weight: bold;
+
+    color: #e75480;
+
+    line-height: 1.2;
 }
 
+
+.theirs .message-sender {
+    color: #62a9c4;
+}
+
+
+/* ------------------------------------------------------
+   MESSAGE TEXT
+------------------------------------------------------ */
 
 .message-text {
     margin: 0;
 
     color: #444;
 
-    line-height: 1.6;
+    font-size: 13px;
+
+    line-height: 1.45;
 
     white-space: pre-wrap;
+
     word-break: break-word;
+
+    overflow-wrap: anywhere;
 }
 
 
+/* ------------------------------------------------------
+   DATE + TIME
+   PAPAR DALAM BUBBLE
+------------------------------------------------------ */
+
+.message-time {
+    display: block;
+
+    color: #9b9b9b;
+
+    font-size: 8.5px;
+
+    line-height: 1.2;
+
+    white-space: nowrap;
+
+    text-align: right;
+
+    margin-top: 5px;
+
+    opacity: 0.85;
+}
+
+
+/* ------------------------------------------------------
+   EDIT + DELETE
+------------------------------------------------------ */
+
 .message-actions {
     display: flex;
-    gap: 8px;
-    margin-top: 12px;
+
+    justify-content: flex-end;
+
+    gap: 5px;
+
+    margin-top: 7px;
+
+    padding-top: 5px;
+
+    border-top: 1px solid rgba(0,0,0,0.06);
 }
 
 
 .message-actions button {
     width: auto;
 
-    padding: 7px 12px;
+    padding: 4px 8px;
 
-    font-size: 12px;
+    font-size: 9px;
+
+    line-height: 1;
+
+    border-radius: 8px;
 }
 
+
+/* EDIT */
 
 .edit-message-btn {
-    background: #e75480;
+    background: rgba(231,84,128,0.12);
+
+    color: #e75480;
+
+    border: 1px solid rgba(231,84,128,0.15);
 }
 
 
+.edit-message-btn:hover {
+    background: #e75480;
+
+    color: white;
+}
+
+
+/* DELETE */
+
 .delete-message-btn {
+    background: rgba(120,120,120,0.10);
+
+    color: #888;
+
+    border: 1px solid rgba(120,120,120,0.12);
+}
+
+
+.delete-message-btn:hover {
     background: #999;
+
+    color: white;
 }
 
 
@@ -1220,6 +1388,7 @@ button:hover {
 
     .container {
         width: 94%;
+
         margin: 20px auto 40px;
     }
 
@@ -1246,6 +1415,7 @@ button:hover {
 
     .countdown-box {
         width: 60px;
+
         padding: 10px 3px;
     }
 
@@ -1256,17 +1426,21 @@ button:hover {
 
 
     .navigation {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns:
+            repeat(2, 1fr);
     }
 
 
     .section-card {
         padding: 18px;
+
         border-radius: 18px;
     }
 
 
-    /* Gallery */
+    /* ==================================================
+       GALLERY MOBILE
+    ================================================== */
 
     #gallery {
         grid-template-columns: 1fr;
@@ -1291,6 +1465,7 @@ button:hover {
 
     .gallery-heart {
         width: 42px;
+
         height: 42px;
     }
 
@@ -1305,7 +1480,9 @@ button:hover {
     }
 
 
-    /* Notes */
+    /* ==================================================
+       NOTES MOBILE
+    ================================================== */
 
     .note-buttons {
         flex-direction: column;
@@ -1317,38 +1494,116 @@ button:hover {
     }
 
 
-    /* Messages */
+    /* ==================================================
+       SECRET MESSAGE MOBILE
+    ================================================== */
+
+    .message-form {
+        padding: 13px;
+
+        margin-bottom: 18px;
+    }
+
+
+    .message-form textarea {
+        height: 82px;
+
+        font-size: 13px;
+    }
+
+
+    #secretMessages {
+        gap: 6px;
+
+        padding: 3px 0;
+    }
+
+
+    .secret-message-card {
+        width: 100%;
+    }
+
+
+    /* Bubble lebih kecil */
 
     .message-bubble {
-        width: 88%;
+        max-width: 78%;
+
+        min-width: 75px;
+
+        padding: 8px 9px 6px;
+
+        border-radius: 14px;
     }
 
 
-    .message-top {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 3px;
+    .mine .message-bubble {
+        border-bottom-right-radius: 4px;
     }
 
 
-    .message-time {
+    .theirs .message-bubble {
+        border-bottom-left-radius: 4px;
+    }
+
+
+    /* Sender */
+
+    .message-sender {
         font-size: 9px;
     }
 
 
-    .message-actions button {
-        flex: 1;
+    /* Text */
+
+    .message-text {
+        font-size: 12px;
+
+        line-height: 1.4;
     }
 
 
-    /* Together */
+    /* Masa */
+
+    .message-time {
+        font-size: 8px;
+
+        margin-top: 4px;
+    }
+
+
+    /* Edit/Delete */
+
+    .message-actions {
+        gap: 4px;
+
+        margin-top: 6px;
+
+        padding-top: 4px;
+    }
+
+
+    .message-actions button {
+        padding: 4px 7px;
+
+        font-size: 8px;
+
+        border-radius: 7px;
+    }
+
+
+    /* ==================================================
+       TOGETHER
+    ================================================== */
 
     .together-box {
         width: 95px;
     }
 
 
-    /* Lightbox */
+    /* ==================================================
+       LIGHTBOX
+    ================================================== */
 
     .lightbox {
         padding: 15px;
@@ -1376,11 +1631,59 @@ button:hover {
 
     .lightbox-close {
         top: 12px;
+
         right: 12px;
 
         width: 38px;
+
         height: 38px;
     }
 
 }
 
+
+/* ======================================================
+   VERY SMALL MOBILE
+====================================================== */
+
+@media (max-width: 380px) {
+
+    .container {
+        width: 95%;
+    }
+
+
+    .section-card {
+        padding: 15px;
+    }
+
+
+    .message-bubble {
+        max-width: 82%;
+
+        padding: 7px 8px 6px;
+    }
+
+
+    .message-text {
+        font-size: 11.5px;
+    }
+
+
+    .message-sender {
+        font-size: 8.5px;
+    }
+
+
+    .message-time {
+        font-size: 7.5px;
+    }
+
+
+    .message-actions button {
+        font-size: 7.5px;
+
+        padding: 4px 6px;
+    }
+
+}
