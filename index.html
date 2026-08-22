@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -19,9 +18,9 @@
 
 <div class="container">
 
-    <!-- ==================================================
+    <!-- =========================
          HERO
-    ================================================== -->
+    ========================== -->
 
     <div class="hero">
 
@@ -29,8 +28,7 @@
             WELCOME TO
         </p>
 
-        <p id="welcomeUser"
-           class="welcome-user">
+        <p id="welcomeUser" class="welcome-user">
             Welcome ❤️
         </p>
 
@@ -47,7 +45,7 @@
         </p>
 
 
-        <!-- TOGETHER -->
+        <!-- TOGETHER TIME -->
 
         <div class="together-card">
 
@@ -155,70 +153,61 @@
     </div>
 
 
-    <!-- ==================================================
+    <!-- =========================
          LOGOUT
-    ================================================== -->
+    ========================== -->
 
     <div class="logout-area">
 
         <button
             onclick="logout()"
-            class="logout-btn">
-
+            class="logout-btn"
+        >
             🚪 Logout
-
         </button>
 
     </div>
 
 
-    <!-- ==================================================
+    <!-- =========================
          NAVIGATION
-    ================================================== -->
+    ========================== -->
 
     <nav class="navigation">
 
         <button
-            id="nav-notes"
-            onclick="showSection('notes-section')">
-
+            onclick="showSection('notes-section')"
+        >
             📝 Notes
-
         </button>
 
 
         <button
-            id="nav-gallery"
-            onclick="showSection('gallery-section')">
-
+            onclick="showSection('gallery-section')"
+        >
             📸 Gallery
-
         </button>
 
 
         <button
-            id="nav-memories"
-            onclick="showSection('memories-section')">
-
+            onclick="showSection('memories-section')"
+        >
             💌 Memories
-
         </button>
 
 
         <button
-            id="nav-messages"
-            onclick="showSection('messages-section')">
-
+            onclick="showSection('messages-section')"
+        >
             💬 Secret
-
         </button>
 
     </nav>
 
 
-    <!-- ==================================================
+    <!-- =========================
          NOTES
-    ================================================== -->
+    ========================== -->
 
     <section id="notes-section">
 
@@ -235,72 +224,38 @@
                     type="text"
                     id="title"
                     placeholder="Note title..."
-                    maxlength="100">
+                >
 
 
                 <textarea
                     id="content"
                     placeholder="Write something..."
-                    maxlength="1000">
-                </textarea>
+                ></textarea>
 
 
-                <span
-                    id="noteCounter"
-                    class="note-counter">
-
-                    0 / 1000
-
-                </span>
-
-
-                <button onclick="addNote()">
-
+                <button
+                    onclick="addNote()"
+                >
                     + Save Note
-
                 </button>
 
             </div>
 
 
-            <!-- SEARCH NOTES -->
-
-            <div class="search-box">
-
-                <span class="search-icon">
-                    🔍
-                </span>
-
-                <input
-                    type="text"
-                    id="noteSearch"
-                    placeholder="Search your notes..."
-                    oninput="filterNotes()">
-
-            </div>
-
-
-            <div id="notes">
-
-                <p class="loading-message">
-                    Loading notes... 💕
-                </p>
-
-            </div>
+            <div id="notes"></div>
 
         </div>
 
     </section>
 
 
-    <!-- ==================================================
+    <!-- =========================
          GALLERY
-    ================================================== -->
+    ========================== -->
 
     <section id="gallery-section">
 
         <div class="section-card gallery-section-card">
-
 
             <div class="gallery-heading">
 
@@ -349,57 +304,24 @@
                 <input
                     type="file"
                     id="imageInput"
-                    accept="image/*">
-
-
-                <!-- IMAGE PREVIEW -->
-
-                <div
-                    id="imagePreview"
-                    class="image-preview">
-
-                    <img
-                        id="previewImage"
-                        src=""
-                        alt="Preview">
-
-                    <p id="previewName">
-                    </p>
-
-                </div>
+                    accept="image/*"
+                >
 
 
                 <input
                     type="text"
                     id="caption"
                     placeholder="Write a caption for this memory..."
-                    maxlength="200">
+                    maxlength="200"
+                >
 
 
                 <button
                     onclick="uploadImage()"
-                    class="upload-btn">
-
+                    class="upload-btn"
+                >
                     📸 Add to Our Gallery
-
                 </button>
-
-            </div>
-
-
-            <!-- SEARCH GALLERY -->
-
-            <div class="search-box gallery-filter">
-
-                <span class="search-icon">
-                    🔍
-                </span>
-
-                <input
-                    type="text"
-                    id="gallerySearch"
-                    placeholder="Search memories..."
-                    oninput="filterGallery()">
 
             </div>
 
@@ -419,17 +341,16 @@
     </section>
 
 
-    <!-- ==================================================
+    <!-- =========================
          LIGHTBOX
-    ================================================== -->
+    ========================== -->
 
-    <div
-        id="lightbox"
-        class="lightbox">
+    <div id="lightbox" class="lightbox">
 
         <div
             class="lightbox-overlay"
-            onclick="closeLightbox()">
+            onclick="closeLightbox()"
+        >
         </div>
 
 
@@ -437,17 +358,17 @@
 
             <button
                 class="lightbox-close"
-                onclick="closeLightbox()">
-
+                onclick="closeLightbox()"
+            >
                 ✕
-
             </button>
 
 
             <img
                 id="lightboxImage"
                 src=""
-                alt="Memory">
+                alt="Memory"
+            >
 
 
             <div class="lightbox-info">
@@ -456,8 +377,7 @@
                     Our Memory ❤️
                 </h3>
 
-                <p id="lightboxDate"
-                   class="lightbox-date">
+                <p id="lightboxDate">
                 </p>
 
             </div>
@@ -467,9 +387,9 @@
     </div>
 
 
-    <!-- ==================================================
+    <!-- =========================
          MEMORIES
-    ================================================== -->
+    ========================== -->
 
     <section id="memories-section">
 
@@ -485,6 +405,7 @@
                 <span>
                     ❤️
                 </span>
+
 
                 <div>
 
@@ -507,6 +428,7 @@
                     💕
                 </span>
 
+
                 <div>
 
                     <h3>
@@ -521,36 +443,14 @@
 
             </div>
 
-
-            <div class="memory">
-
-                <span>
-                    🩷
-                </span>
-
-                <div>
-
-                    <h3>
-                        More Stories
-                    </h3>
-
-                    <p>
-                        Add more special moments here whenever you want.
-                    </p>
-
-                </div>
-
-            </div>
-
         </div>
 
     </section>
 
 
-    <!-- ==================================================
+    <!-- =========================
          SECRET MESSAGE
-         NO WHATSAPP HEADER
-    ================================================== -->
+    ========================== -->
 
     <section id="messages-section">
 
@@ -559,6 +459,7 @@
             <h2>
                 💬 Secret Messages
             </h2>
+
 
             <p class="message-subtitle">
                 A little place just for us ❤️
@@ -570,25 +471,15 @@
                 <textarea
                     id="secretMessage"
                     placeholder="Write a secret message for your love... ❤️"
-                    maxlength="1000">
-                </textarea>
-
-
-                <span
-                    id="messageCounter"
-                    class="message-counter">
-
-                    0 / 1000
-
-                </span>
+                    maxlength="1000"
+                ></textarea>
 
 
                 <button
                     id="sendMessageBtn"
-                    onclick="sendSecretMessage()">
-
+                    onclick="sendSecretMessage()"
+                >
                     💌 Send Message
-
                 </button>
 
             </div>
@@ -609,34 +500,9 @@
 </div>
 
 
-<!-- ==================================================
-     BACK TO TOP
-================================================== -->
-
-<button
-    id="backToTop"
-    onclick="scrollToTop()"
-    aria-label="Back to top">
-
-    ↑
-
-</button>
-
-
-<!-- ==================================================
-     TOAST
-================================================== -->
-
-<div
-    id="toast"
-    class="toast">
-
-</div>
-
-
-<!-- ==================================================
+<!-- =========================
      SUPABASE
-================================================== -->
+========================= -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -667,7 +533,10 @@ async function checkLogin() {
         await authClient.auth.getSession();
 
 
-    if (error || !data.session) {
+    if (
+        error ||
+        !data.session
+    ) {
 
         window.location.href =
             "login.html";
@@ -751,7 +620,7 @@ async function logout() {
 
 <script src="./script.js"></script>
 
+
 </body>
 
 </html>
-
