@@ -40,15 +40,21 @@ const USER_NAMES = {
 };
 
 
-// ======================================================
-// CURRENT USER
-// ======================================================
-
 let currentUser = null;
 
 
 // ======================================================
-// GET CURRENT LOGIN USER
+// RELATIONSHIP DATE
+// ======================================================
+
+const relationshipStart =
+    new Date(
+        "2021-07-17T00:00:00"
+    );
+
+
+// ======================================================
+// GET CURRENT USER
 // ======================================================
 
 async function getCurrentUser() {
@@ -56,11 +62,13 @@ async function getCurrentUser() {
     const {
         data,
         error
-    } = await supabaseClient.auth.getUser();
+    } =
+        await supabaseClient.auth.getUser();
 
 
     if (
         error ||
+        !data ||
         !data.user
     ) {
 
@@ -70,7 +78,6 @@ async function getCurrentUser() {
         );
 
         return null;
-
     }
 
 
@@ -79,6 +86,223 @@ async function getCurrentUser() {
 
 
     return currentUser;
+}
+
+
+// ======================================================
+// TOGETHER YEARS + DAYS
+// ======================================================
+
+function updateTogetherTime() {
+
+    const now =
+        new Date();
+
+
+    let years =
+        now.getFullYear() -
+        relationshipStart.getFullYear();
+
+
+    const anniversaryThisYear =
+        new Date(
+            now.getFullYear(),
+            relationshipStart.getMonth(),
+            relationshipStart.getDate()
+        );
+
+
+    if (
+        now < anniversaryThisYear
+    ) {
+
+        years--;
+
+    }
+
+
+    const lastAnniversary =
+        new Date(
+            relationshipStart
+        );
+
+
+    lastAnniversary.setFullYear(
+        relationshipStart.getFullYear() +
+        years
+    );
+
+
+    const millisecondsPerDay =
+        1000 * 60 * 60 * 24;
+
+
+    const days =
+        Math.floor(
+            (
+                now -
+                lastAnniversary
+            ) /
+            millisecondsPerDay
+        );
+
+
+    const yearsElement =
+        document.getElementById(
+            "togetherYears"
+        );
+
+
+    const daysElement =
+        document.getElementById(
+            "togetherDays"
+        );
+
+
+    if (yearsElement) {
+
+        yearsElement.textContent =
+            years;
+
+    }
+
+
+    if (daysElement) {
+
+        daysElement.textContent =
+            days;
+
+    }
+
+}
+
+
+// ======================================================
+// ANNIVERSARY COUNTDOWN
+// ======================================================
+
+function countdown() {
+
+    const now =
+        new Date();
+
+
+    let nextAnniversary =
+        new Date(
+            now.getFullYear(),
+            6,
+            17,
+            0,
+            0,
+            0
+        );
+
+
+    if (
+        nextAnniversary <= now
+    ) {
+
+        nextAnniversary =
+            new Date(
+                now.getFullYear() + 1,
+                6,
+                17,
+                0,
+                0,
+                0
+            );
+
+    }
+
+
+    const distance =
+        nextAnniversary -
+        now;
+
+
+    if (distance <= 0) {
+
+        return;
+
+    }
+
+
+    const days =
+        Math.floor(
+            distance /
+            (1000 * 60 * 60 * 24)
+        );
+
+
+    const hours =
+        Math.floor(
+            (
+                distance /
+                (1000 * 60 * 60)
+            ) % 24
+        );
+
+
+    const minutes =
+        Math.floor(
+            (
+                distance /
+                (1000 * 60)
+            ) % 60
+        );
+
+
+    const seconds =
+        Math.floor(
+            (
+                distance /
+                1000
+            ) % 60
+        );
+
+
+    const daysElement =
+        document.getElementById(
+            "days"
+        );
+
+
+    const hoursElement =
+        document.getElementById(
+            "hours"
+        );
+
+
+    const minutesElement =
+        document.getElementById(
+            "minutes"
+        );
+
+
+    const secondsElement =
+        document.getElementById(
+            "seconds"
+        );
+
+
+    if (daysElement)
+        daysElement.textContent =
+            days;
+
+
+    if (hoursElement)
+        hoursElement.textContent =
+            hours;
+
+
+    if (minutesElement)
+        minutesElement.textContent =
+            minutes;
+
+
+    if (secondsElement)
+        secondsElement.textContent =
+            seconds;
 
 }
 
@@ -95,21 +319,23 @@ async function loadNotes() {
         );
 
 
-    if (!notesContainer) return;
+    if (!notesContainer)
+        return;
 
 
     const {
         data,
         error
-    } = await supabaseClient
-        .from("notes")
-        .select("*")
-        .order(
-            "created_at",
-            {
-                ascending: false
-            }
-        );
+    } =
+        await supabaseClient
+            .from("notes")
+            .select("*")
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
 
 
     if (error) {
@@ -123,7 +349,6 @@ async function loadNotes() {
             "<p>Failed to load notes.</p>";
 
         return;
-
     }
 
 
@@ -140,60 +365,53 @@ async function loadNotes() {
             "<p>No notes yet ❤️</p>";
 
         return;
-
     }
 
 
-    data.forEach(
-        note => {
+    data.forEach(note => {
 
-            const div =
-                document.createElement(
-                    "div"
-                );
-
-
-            div.className =
-                "note";
-
-
-            div.innerHTML = `
-
-                <h3>
-                    ${escapeHTML(
-                        note.title
-                    )}
-                </h3>
-
-                <p>
-                    ${escapeHTML(
-                        note.content
-                    )}
-                </p>
-
-                <div class="note-buttons">
-
-                    <button
-                        onclick="editNote(${note.id})">
-                        ✏️ Edit
-                    </button>
-
-                    <button
-                        onclick="deleteNote(${note.id})">
-                        🗑️ Delete
-                    </button>
-
-                </div>
-
-            `;
-
-
-            notesContainer.appendChild(
-                div
+        const div =
+            document.createElement(
+                "div"
             );
 
-        }
-    );
+
+        div.className =
+            "note";
+
+
+        div.innerHTML = `
+
+            <h3>
+                ${escapeHTML(note.title)}
+            </h3>
+
+            <p>
+                ${escapeHTML(note.content)}
+            </p>
+
+            <div class="note-buttons">
+
+                <button
+                    onclick="editNote(${note.id})">
+                    ✏️ Edit
+                </button>
+
+                <button
+                    onclick="deleteNote(${note.id})">
+                    🗑️ Delete
+                </button>
+
+            </div>
+
+        `;
+
+
+        notesContainer.appendChild(
+            div
+        );
+
+    });
 
 }
 
@@ -205,19 +423,17 @@ async function loadNotes() {
 async function addNote() {
 
     const title =
-        document.getElementById(
-            "title"
-        )
-        .value
-        .trim();
+        document
+            .getElementById("title")
+            .value
+            .trim();
 
 
     const content =
-        document.getElementById(
-            "content"
-        )
-        .value
-        .trim();
+        document
+            .getElementById("content")
+            .value
+            .trim();
 
 
     if (
@@ -230,50 +446,45 @@ async function addNote() {
         );
 
         return;
-
     }
 
 
     const {
         error
-    } = await supabaseClient
-        .from("notes")
-        .insert([
-            {
-                title:
-                    title,
+    } =
+        await supabaseClient
+            .from("notes")
+            .insert([
+                {
+                    title:
+                        title,
 
-                content:
-                    content
-            }
-        ]);
+                    content:
+                        content
+                }
+            ]);
 
 
     if (error) {
 
-        console.error(
-            error
-        );
+        console.error(error);
 
         alert(
             "Failed to save note."
         );
 
         return;
-
     }
 
 
     document.getElementById(
         "title"
-    ).value =
-        "";
+    ).value = "";
 
 
     document.getElementById(
         "content"
-    ).value =
-        "";
+    ).value = "";
 
 
     loadNotes();
@@ -290,24 +501,19 @@ async function editNote(id) {
     const {
         data,
         error
-    } = await supabaseClient
-        .from("notes")
-        .select("*")
-        .eq(
-            "id",
-            id
-        )
-        .single();
+    } =
+        await supabaseClient
+            .from("notes")
+            .select("*")
+            .eq("id", id)
+            .single();
 
 
     if (error) {
 
-        console.error(
-            error
-        );
+        console.error(error);
 
         return;
-
     }
 
 
@@ -320,7 +526,8 @@ async function editNote(id) {
 
     if (
         title === null
-    ) return;
+    )
+        return;
 
 
     const content =
@@ -332,24 +539,26 @@ async function editNote(id) {
 
     if (
         content === null
-    ) return;
+    )
+        return;
 
 
     const {
         error: updateError
-    } = await supabaseClient
-        .from("notes")
-        .update({
-            title:
-                title,
+    } =
+        await supabaseClient
+            .from("notes")
+            .update({
+                title:
+                    title,
 
-            content:
-                content
-        })
-        .eq(
-            "id",
-            id
-        );
+                content:
+                    content
+            })
+            .eq(
+                "id",
+                id
+            );
 
 
     if (updateError) {
@@ -363,7 +572,6 @@ async function editNote(id) {
         );
 
         return;
-
     }
 
 
@@ -382,36 +590,31 @@ async function deleteNote(id) {
         !confirm(
             "Delete this note? 🥺"
         )
-    ) {
-
+    )
         return;
-
-    }
 
 
     const {
         error
-    } = await supabaseClient
-        .from("notes")
-        .delete()
-        .eq(
-            "id",
-            id
-        );
+    } =
+        await supabaseClient
+            .from("notes")
+            .delete()
+            .eq(
+                "id",
+                id
+            );
 
 
     if (error) {
 
-        console.error(
-            error
-        );
+        console.error(error);
 
         alert(
             "Failed to delete note."
         );
 
         return;
-
     }
 
 
@@ -432,25 +635,30 @@ async function loadGallery() {
         );
 
 
-    if (!gallery) return;
+    if (!gallery)
+        return;
 
 
-    gallery.innerHTML =
-        "<p>Loading photos...</p>";
+    gallery.innerHTML = `
+        <p class="gallery-loading">
+            Loading our memories... 💕
+        </p>
+    `;
 
 
     const {
         data,
         error
-    } = await supabaseClient
-        .from("gallery")
-        .select("*")
-        .order(
-            "created_at",
-            {
-                ascending: false
-            }
-        );
+    } =
+        await supabaseClient
+            .from("gallery")
+            .select("*")
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
 
 
     if (error) {
@@ -460,16 +668,17 @@ async function loadGallery() {
             error
         );
 
-        gallery.innerHTML =
-            "<p>Failed to load gallery.</p>";
+        gallery.innerHTML = `
+            <p class="gallery-empty">
+                Failed to load gallery.
+            </p>
+        `;
 
         return;
-
     }
 
 
-    gallery.innerHTML =
-        "";
+    gallery.innerHTML = "";
 
 
     if (
@@ -477,54 +686,107 @@ async function loadGallery() {
         data.length === 0
     ) {
 
-        gallery.innerHTML =
-            "<p>No photos yet 📸❤️</p>";
+        gallery.innerHTML = `
+
+            <div class="gallery-empty">
+
+                <div class="empty-icon">
+                    📸💕
+                </div>
+
+                <strong>
+                    No memories yet
+                </strong>
+
+                <p>
+                    Our little album is waiting
+                    for its first photo 🩷🩵
+                </p>
+
+            </div>
+
+        `;
 
         return;
-
     }
 
 
-    data.forEach(
-        photo => {
+    data.forEach(photo => {
 
-            const div =
-                document.createElement(
-                    "div"
-                );
-
-
-            div.className =
-                "gallery-item";
+        const div =
+            document.createElement(
+                "div"
+            );
 
 
-            div.innerHTML = `
+        div.className =
+            "gallery-item";
+
+
+        const caption =
+            photo.caption ||
+            "A little memory ❤️";
+
+
+        const date =
+            photo.created_at
+                ? formatGalleryDate(
+                    photo.created_at
+                )
+                : "";
+
+
+        div.innerHTML = `
+
+            <div
+                class="gallery-image-wrapper"
+                onclick="openLightbox(
+                    '${escapeAttribute(photo.image_url)}',
+                    '${escapeAttribute(caption)}'
+                )"
+            >
 
                 <img
-                    src="${photo.image_url}"
-                    alt="Memory"
+                    src="${escapeAttribute(photo.image_url)}"
+                    alt="Our Memory"
+                    loading="lazy"
                 >
 
+                <span class="gallery-zoom">
+                    🔍
+                </span>
+
+            </div>
+
+
+            <div class="gallery-caption">
+
                 <p>
-                    ${escapeHTML(
-                        photo.caption || ""
-                    )}
+                    ${escapeHTML(caption)}
                 </p>
 
+                <span class="gallery-date">
+                    ${date}
+                </span>
+
+
                 <button
-                    onclick="deleteImage(${photo.id})">
+                    class="gallery-delete"
+                    onclick="event.stopPropagation(); deleteImage(${photo.id})"
+                >
                     🗑️ Delete
                 </button>
 
-            `;
+            </div>
+
+        `;
 
 
-            gallery.appendChild(
-                div
-            );
+        gallery.appendChild(
+            div
+        );
 
-        }
-    );
+    });
 
 }
 
@@ -547,6 +809,10 @@ async function uploadImage() {
         );
 
 
+    if (!fileInput)
+        return;
+
+
     const file =
         fileInput.files[0];
 
@@ -558,7 +824,6 @@ async function uploadImage() {
         );
 
         return;
-
     }
 
 
@@ -573,7 +838,6 @@ async function uploadImage() {
         );
 
         return;
-
     }
 
 
@@ -587,82 +851,90 @@ async function uploadImage() {
         );
 
         return;
-
     }
-
-
-    const fileName =
-        Date.now() +
-        "_" +
-        file.name.replace(
-            /\s+/g,
-            "_"
-        );
-
-
-    const {
-        error: uploadError
-    } = await supabaseClient
-        .storage
-        .from("gallery")
-        .upload(
-            fileName,
-            file
-        );
-
-
-    if (uploadError) {
-
-        console.error(
-            uploadError
-        );
-
-        alert(
-            "Upload failed: " +
-            uploadError.message
-        );
-
-        return;
-
-    }
-
-
-    const {
-        data: urlData
-    } = supabaseClient
-        .storage
-        .from("gallery")
-        .getPublicUrl(
-            fileName
-        );
-
-
-    const imageUrl =
-        urlData.publicUrl;
 
 
     const caption =
         captionInput.value.trim();
 
 
+    const safeName =
+        file.name
+            .replace(
+                /[^a-zA-Z0-9._-]/g,
+                "_"
+            );
+
+
+    const fileName =
+        Date.now() +
+        "_" +
+        safeName;
+
+
+    const {
+        error: uploadError
+    } =
+        await supabaseClient
+            .storage
+            .from("gallery")
+            .upload(
+                fileName,
+                file
+            );
+
+
+    if (uploadError) {
+
+        console.error(
+            "Upload error:",
+            uploadError
+        );
+
+        alert(
+            "Upload failed:\n" +
+            uploadError.message
+        );
+
+        return;
+    }
+
+
+    const {
+        data: urlData
+    } =
+        supabaseClient
+            .storage
+            .from("gallery")
+            .getPublicUrl(
+                fileName
+            );
+
+
+    const imageUrl =
+        urlData.publicUrl;
+
+
     const {
         error: databaseError
-    } = await supabaseClient
-        .from("gallery")
-        .insert([
-            {
-                image_url:
-                    imageUrl,
+    } =
+        await supabaseClient
+            .from("gallery")
+            .insert([
+                {
+                    image_url:
+                        imageUrl,
 
-                caption:
-                    caption
-            }
-        ]);
+                    caption:
+                        caption
+                }
+            ]);
 
 
     if (databaseError) {
 
         console.error(
+            "Database error:",
             databaseError
         );
 
@@ -671,7 +943,6 @@ async function uploadImage() {
         );
 
         return;
-
     }
 
 
@@ -684,7 +955,7 @@ async function uploadImage() {
 
 
     alert(
-        "Photo uploaded successfully ❤️"
+        "Photo added to Our Gallery ❤️"
     );
 
 
@@ -701,38 +972,37 @@ async function deleteImage(id) {
 
     if (
         !confirm(
-            "Delete this photo?"
+            "Delete this photo? 🥺"
         )
-    ) {
-
+    )
         return;
-
-    }
 
 
     const {
         data,
         error
-    } = await supabaseClient
-        .from("gallery")
-        .select(
-            "image_url"
-        )
-        .eq(
-            "id",
-            id
-        )
-        .single();
+    } =
+        await supabaseClient
+            .from("gallery")
+            .select(
+                "image_url"
+            )
+            .eq(
+                "id",
+                id
+            )
+            .single();
 
 
     if (error) {
 
-        console.error(
-            error
+        console.error(error);
+
+        alert(
+            "Unable to find photo."
         );
 
         return;
-
     }
 
 
@@ -740,31 +1010,53 @@ async function deleteImage(id) {
         data.image_url;
 
 
-    const fileName =
-        decodeURIComponent(
-            imageUrl
-                .split("/")
-                .pop()
+    try {
+
+        const url =
+            new URL(
+                imageUrl
+            );
+
+
+        const path =
+            url.pathname.split(
+                "/storage/v1/object/public/gallery/"
+            )[1];
+
+
+        if (path) {
+
+            await supabaseClient
+                .storage
+                .from("gallery")
+                .remove([
+                    decodeURIComponent(
+                        path
+                    )
+                ]);
+
+        }
+
+    } catch (storageError) {
+
+        console.error(
+            "Storage delete error:",
+            storageError
         );
 
-
-    await supabaseClient
-        .storage
-        .from("gallery")
-        .remove([
-            fileName
-        ]);
+    }
 
 
     const {
         error: deleteError
-    } = await supabaseClient
-        .from("gallery")
-        .delete()
-        .eq(
-            "id",
-            id
-        );
+    } =
+        await supabaseClient
+            .from("gallery")
+            .delete()
+            .eq(
+                "id",
+                id
+            );
 
 
     if (deleteError) {
@@ -773,12 +1065,171 @@ async function deleteImage(id) {
             deleteError
         );
 
-        return;
+        alert(
+            "Failed to delete photo."
+        );
 
+        return;
     }
 
 
     loadGallery();
+
+}
+
+
+// ======================================================
+// LIGHTBOX
+// ======================================================
+
+function openLightbox(
+    imageUrl,
+    caption
+) {
+
+    const lightbox =
+        document.getElementById(
+            "lightbox"
+        );
+
+
+    const image =
+        document.getElementById(
+            "lightboxImage"
+        );
+
+
+    const captionElement =
+        document.getElementById(
+            "lightboxCaption"
+        );
+
+
+    image.src =
+        imageUrl;
+
+
+    captionElement.textContent =
+        caption;
+
+
+    lightbox.classList.add(
+        "active"
+    );
+
+
+    document.body.style.overflow =
+        "hidden";
+
+}
+
+
+// ======================================================
+// CLOSE LIGHTBOX
+// ======================================================
+
+function closeLightbox(event) {
+
+    if (
+        event &&
+        event.target &&
+        event.target.id !==
+            "lightbox"
+    ) {
+
+        return;
+    }
+
+
+    const lightbox =
+        document.getElementById(
+            "lightbox"
+        );
+
+
+    lightbox.classList.remove(
+        "active"
+    );
+
+
+    document.body.style.overflow =
+        "";
+
+}
+
+
+// ======================================================
+// ESCAPE KEY FOR LIGHTBOX
+// ======================================================
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.key === "Escape"
+        ) {
+
+            const lightbox =
+                document.getElementById(
+                    "lightbox"
+                );
+
+
+            if (
+                lightbox &&
+                lightbox.classList.contains(
+                    "active"
+                )
+            ) {
+
+                lightbox.classList.remove(
+                    "active"
+                );
+
+
+                document.body.style.overflow =
+                    "";
+
+            }
+
+        }
+
+    }
+);
+
+
+// ======================================================
+// GALLERY DATE
+// ======================================================
+
+function formatGalleryDate(
+    dateString
+) {
+
+    if (!dateString)
+        return "";
+
+
+    const date =
+        new Date(
+            dateString
+        );
+
+
+    return date.toLocaleDateString(
+        "en-MY",
+        {
+            day:
+                "2-digit",
+
+            month:
+                "short",
+
+            year:
+                "numeric"
+        }
+    );
 
 }
 
@@ -795,7 +1246,8 @@ async function loadSecretMessages() {
         );
 
 
-    if (!container) return;
+    if (!container)
+        return;
 
 
     if (!currentUser) {
@@ -808,33 +1260,31 @@ async function loadSecretMessages() {
     if (!currentUser) {
 
         container.innerHTML = `
-
             <p class="empty-message">
                 Please login first ❤️
             </p>
-
         `;
 
         return;
-
     }
 
 
     const {
         data,
         error
-    } = await supabaseClient
-        .from("secret_message")
-        .select("*")
-        .or(
-            `sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`
-        )
-        .order(
-            "create_at",
-            {
-                ascending: true
-            }
-        );
+    } =
+        await supabaseClient
+            .from("secret_message")
+            .select("*")
+            .or(
+                `sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`
+            )
+            .order(
+                "create_at",
+                {
+                    ascending: true
+                }
+            );
 
 
     if (error) {
@@ -845,15 +1295,12 @@ async function loadSecretMessages() {
         );
 
         container.innerHTML = `
-
             <p class="empty-message">
                 Failed to load messages.
             </p>
-
         `;
 
         return;
-
     }
 
 
@@ -867,16 +1314,13 @@ async function loadSecretMessages() {
     ) {
 
         container.innerHTML = `
-
             <p class="empty-message">
                 No secret messages yet 💕<br>
                 Be the first to send one ❤️
             </p>
-
         `;
 
         return;
-
     }
 
 
@@ -924,17 +1368,22 @@ async function loadSecretMessages() {
 
                 actions = `
 
-                    <div class="message-actions">
+                    <div
+                        class="message-actions"
+                    >
 
                         <button
                             class="edit-message-btn"
-                            onclick="editSecretMessage(${message.id})">
+                            onclick="editSecretMessage(${message.id})"
+                        >
                             ✏️ Edit
                         </button>
 
+
                         <button
                             class="delete-message-btn"
-                            onclick="deleteSecretMessage(${message.id})">
+                            onclick="deleteSecretMessage(${message.id})"
+                        >
                             🗑️ Delete
                         </button>
 
@@ -947,27 +1396,40 @@ async function loadSecretMessages() {
 
             card.innerHTML = `
 
-                <div class="message-bubble">
+                <div
+                    class="message-bubble"
+                >
 
-                    <div class="message-top">
+                    <div
+                        class="message-top"
+                    >
 
-                        <span class="message-sender">
+                        <span
+                            class="message-sender"
+                        >
                             ${escapeHTML(
                                 senderName
                             )}
                         </span>
 
-                        <span class="message-time">
+
+                        <span
+                            class="message-time"
+                        >
                             ${formattedDate}
                         </span>
 
                     </div>
 
-                    <p class="message-text">
+
+                    <p
+                        class="message-text"
+                    >
                         ${escapeHTML(
                             message.message
                         )}
                     </p>
+
 
                     ${actions}
 
@@ -1006,7 +1468,6 @@ async function sendSecretMessage() {
         );
 
         return;
-
     }
 
 
@@ -1033,7 +1494,6 @@ async function sendSecretMessage() {
         );
 
         return;
-
     }
 
 
@@ -1063,7 +1523,6 @@ async function sendSecretMessage() {
         );
 
         return;
-
     }
 
 
@@ -1077,20 +1536,21 @@ async function sendSecretMessage() {
 
     const {
         error
-    } = await supabaseClient
-        .from("secret_message")
-        .insert([
-            {
-                sender_id:
-                    currentUser.id,
+    } =
+        await supabaseClient
+            .from("secret_message")
+            .insert([
+                {
+                    sender_id:
+                        currentUser.id,
 
-                receiver_id:
-                    receiverId,
+                    receiver_id:
+                        receiverId,
 
-                message:
-                    message
-            }
-        ]);
+                    message:
+                        message
+                }
+            ]);
 
 
     if (error) {
@@ -1105,6 +1565,7 @@ async function sendSecretMessage() {
             error.message
         );
 
+
         sendButton.disabled =
             false;
 
@@ -1112,8 +1573,8 @@ async function sendSecretMessage() {
         sendButton.textContent =
             "💌 Send Message";
 
-        return;
 
+        return;
     }
 
 
@@ -1138,33 +1599,33 @@ async function sendSecretMessage() {
 // EDIT SECRET MESSAGE
 // ======================================================
 
-async function editSecretMessage(id) {
+async function editSecretMessage(
+    id
+) {
 
     const {
         data,
         error
-    } = await supabaseClient
-        .from("secret_message")
-        .select("*")
-        .eq(
-            "id",
-            id
-        )
-        .single();
+    } =
+        await supabaseClient
+            .from("secret_message")
+            .select("*")
+            .eq(
+                "id",
+                id
+            )
+            .single();
 
 
     if (error) {
 
-        console.error(
-            error
-        );
+        console.error(error);
 
         alert(
             "Unable to find message."
         );
 
         return;
-
     }
 
 
@@ -1178,7 +1639,6 @@ async function editSecretMessage(id) {
         );
 
         return;
-
     }
 
 
@@ -1191,11 +1651,8 @@ async function editSecretMessage(id) {
 
     if (
         newMessage === null
-    ) {
-
+    )
         return;
-
-    }
 
 
     const cleanedMessage =
@@ -1209,22 +1666,22 @@ async function editSecretMessage(id) {
         );
 
         return;
-
     }
 
 
     const {
         error: updateError
-    } = await supabaseClient
-        .from("secret_message")
-        .update({
-            message:
-                cleanedMessage
-        })
-        .eq(
-            "id",
-            id
-        );
+    } =
+        await supabaseClient
+            .from("secret_message")
+            .update({
+                message:
+                    cleanedMessage
+            })
+            .eq(
+                "id",
+                id
+            );
 
 
     if (updateError) {
@@ -1238,7 +1695,6 @@ async function editSecretMessage(id) {
         );
 
         return;
-
     }
 
 
@@ -1251,42 +1707,39 @@ async function editSecretMessage(id) {
 // DELETE SECRET MESSAGE
 // ======================================================
 
-async function deleteSecretMessage(id) {
+async function deleteSecretMessage(
+    id
+) {
 
     if (
         !confirm(
             "Delete this message? 🥺"
         )
-    ) {
-
+    )
         return;
-
-    }
 
 
     const {
         error
-    } = await supabaseClient
-        .from("secret_message")
-        .delete()
-        .eq(
-            "id",
-            id
-        );
+    } =
+        await supabaseClient
+            .from("secret_message")
+            .delete()
+            .eq(
+                "id",
+                id
+            );
 
 
     if (error) {
 
-        console.error(
-            error
-        );
+        console.error(error);
 
         alert(
             "Failed to delete message."
         );
 
         return;
-
     }
 
 
@@ -1303,11 +1756,8 @@ function formatMessageDate(
     dateString
 ) {
 
-    if (!dateString) {
-
+    if (!dateString)
         return "";
-
-    }
 
 
     const date =
@@ -1343,9 +1793,7 @@ function formatMessageDate(
 // SECURITY
 // ======================================================
 
-function escapeHTML(
-    text
-) {
+function escapeHTML(text) {
 
     const div =
         document.createElement(
@@ -1358,6 +1806,33 @@ function escapeHTML(
 
 
     return div.innerHTML;
+
+}
+
+
+function escapeAttribute(text) {
+
+    return String(text)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /'/g,
+            "&#39;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        );
 
 }
 
@@ -1414,16 +1889,32 @@ function showSection(
 
     }
 
+
+    if (
+        sectionId ===
+        "gallery-section"
+    ) {
+
+        loadGallery();
+
+    }
+
 }
 
 
 // ======================================================
-// START
+// START APP
 // ======================================================
 
 async function startApp() {
 
     await getCurrentUser();
+
+
+    updateTogetherTime();
+
+
+    countdown();
 
 
     loadNotes();
@@ -1443,3 +1934,15 @@ async function startApp() {
 
 
 startApp();
+
+
+setInterval(
+    updateTogetherTime,
+    60000
+);
+
+
+setInterval(
+    countdown,
+    1000
+);
