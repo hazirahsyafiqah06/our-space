@@ -266,38 +266,43 @@
 
 
     <!-- =========================
-         LIGHTBOX
-    ========================== -->
+     LIGHTBOX
+========================= -->
 
-    <div
-        id="lightbox"
-        class="lightbox"
-        onclick="closeLightbox(event)"
-    >
+<div id="lightbox" class="lightbox">
+
+    <div class="lightbox-overlay"
+         onclick="closeLightbox()">
+    </div>
+
+    <div class="lightbox-content">
 
         <button
             class="lightbox-close"
-            onclick="closeLightbox()"
-        >
+            onclick="closeLightbox()">
             ✕
         </button>
 
-        <div class="lightbox-content">
+        <img
+            id="lightboxImage"
+            src=""
+            alt="Memory"
+        >
 
-            <img
-                id="lightboxImage"
-                src=""
-                alt="Memory"
-            >
+        <div class="lightbox-info">
 
-            <div
-                id="lightboxCaption"
-                class="lightbox-caption"
-            ></div>
+            <h3 id="lightboxCaption">
+                Our Memory ❤️
+            </h3>
+
+            <p id="lightboxDate">
+            </p>
 
         </div>
 
     </div>
+
+</div>
 
 
     <!-- =========================
