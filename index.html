@@ -35,7 +35,7 @@
         </h1>
 
         <p class="couple-name">
-            Zulkarnain ❤️ Nur Hazirah
+            Zulkarnain 🩵🩷 Nur Hazirah
         </p>
 
         <p class="since">
@@ -43,30 +43,32 @@
         </p>
 
 
-        <!-- =========================
-             TOGETHER TIME
-        ========================== -->
+        <!-- TOGETHER TIME -->
 
-        <div class="together-time">
+        <div class="together-card">
 
-            <span>
-                💕 Together for
-            </span>
+            <p class="together-title">
+                🩵 Together for 🩷
+            </p>
 
-            <strong id="togetherYears">
-                0 Years
-            </strong>
+            <div class="together-count">
 
-            <strong id="togetherDays">
-                0 Days
-            </strong>
+                <div class="together-box">
+                    <strong id="togetherYears">0</strong>
+                    <span>Years</span>
+                </div>
+
+                <div class="together-box">
+                    <strong id="togetherDays">0</strong>
+                    <span>Days</span>
+                </div>
+
+            </div>
 
         </div>
 
 
-        <!-- =========================
-             COUNTDOWN
-        ========================== -->
+        <!-- COUNTDOWN -->
 
         <div class="anniversary">
 
@@ -77,54 +79,23 @@
             <div id="countdown">
 
                 <div class="countdown-box">
-
-                    <strong id="days">
-                        0
-                    </strong>
-
-                    <span>
-                        Days
-                    </span>
-
+                    <strong id="days">0</strong>
+                    <span>Days</span>
                 </div>
 
-
                 <div class="countdown-box">
-
-                    <strong id="hours">
-                        0
-                    </strong>
-
-                    <span>
-                        Hours
-                    </span>
-
+                    <strong id="hours">0</strong>
+                    <span>Hours</span>
                 </div>
 
-
                 <div class="countdown-box">
-
-                    <strong id="minutes">
-                        0
-                    </strong>
-
-                    <span>
-                        Minutes
-                    </span>
-
+                    <strong id="minutes">0</strong>
+                    <span>Minutes</span>
                 </div>
 
-
                 <div class="countdown-box">
-
-                    <strong id="seconds">
-                        0
-                    </strong>
-
-                    <span>
-                        Seconds
-                    </span>
-
+                    <strong id="seconds">0</strong>
+                    <span>Seconds</span>
                 </div>
 
             </div>
@@ -183,9 +154,7 @@
 
         <div class="section-card">
 
-            <h2>
-                📝 Our Notes
-            </h2>
+            <h2>📝 Our Notes</h2>
 
             <div class="note-form">
 
@@ -219,13 +188,44 @@
 
     <section id="gallery-section">
 
-        <div class="section-card">
+        <div class="section-card gallery-section-card">
 
-            <h2>
-                📸 Our Gallery
-            </h2>
+            <div class="gallery-heading">
+
+                <div>
+                    <h2>📸 Our Gallery</h2>
+
+                    <p>
+                        Little moments that belong to us 🩷🩵
+                    </p>
+                </div>
+
+                <div class="gallery-heart">
+                    🩷
+                </div>
+
+            </div>
+
+
+            <!-- UPLOAD -->
 
             <div class="upload-card">
+
+                <div class="upload-icon">
+                    📷
+                </div>
+
+                <div class="upload-text">
+
+                    <h3>
+                        Add a new memory
+                    </h3>
+
+                    <p>
+                        Keep your favourite moments here ❤️
+                    </p>
+
+                </div>
 
                 <input
                     type="file"
@@ -236,20 +236,68 @@
                 <input
                     type="text"
                     id="caption"
-                    placeholder="Caption for this photo..."
+                    placeholder="Write a caption for this memory..."
+                    maxlength="200"
                 >
 
-                <button onclick="uploadImage()">
-                    📸 Upload Photo
+                <button
+                    onclick="uploadImage()"
+                    class="upload-btn"
+                >
+                    📸 Add to Our Gallery
                 </button>
 
             </div>
 
-            <div id="gallery"></div>
+
+            <!-- GALLERY -->
+
+            <div id="gallery">
+
+                <p class="gallery-loading">
+                    Loading our memories... 💕
+                </p>
+
+            </div>
 
         </div>
 
     </section>
+
+
+    <!-- =========================
+         LIGHTBOX
+    ========================== -->
+
+    <div
+        id="lightbox"
+        class="lightbox"
+        onclick="closeLightbox(event)"
+    >
+
+        <button
+            class="lightbox-close"
+            onclick="closeLightbox()"
+        >
+            ✕
+        </button>
+
+        <div class="lightbox-content">
+
+            <img
+                id="lightboxImage"
+                src=""
+                alt="Memory"
+            >
+
+            <div
+                id="lightboxCaption"
+                class="lightbox-caption"
+            ></div>
+
+        </div>
+
+    </div>
 
 
     <!-- =========================
@@ -260,15 +308,11 @@
 
         <div class="section-card">
 
-            <h2>
-                💌 Our Memories
-            </h2>
+            <h2>💌 Our Memories</h2>
 
             <div class="memory">
 
-                <span>
-                    ❤️
-                </span>
+                <span>❤️</span>
 
                 <div>
 
@@ -287,9 +331,7 @@
 
             <div class="memory">
 
-                <span>
-                    💕
-                </span>
+                <span>💕</span>
 
                 <div>
 
@@ -327,8 +369,6 @@
             </p>
 
 
-            <!-- SEND MESSAGE -->
-
             <div class="message-form">
 
                 <textarea
@@ -346,8 +386,6 @@
 
             </div>
 
-
-            <!-- MESSAGE LIST -->
 
             <div id="secretMessages">
 
@@ -393,7 +431,8 @@ async function checkLogin() {
     const {
         data,
         error
-    } = await authClient.auth.getSession();
+    } =
+        await authClient.auth.getSession();
 
 
     if (error || !data.session) {
@@ -450,7 +489,8 @@ async function logout() {
 
     const {
         error
-    } = await authClient.auth.signOut();
+    } =
+        await authClient.auth.signOut();
 
 
     if (error) {
@@ -477,257 +517,9 @@ async function logout() {
 </script>
 
 
-<!-- =========================
-     MAIN SCRIPT
-========================= -->
-
 <script src="./script.js"></script>
 
 
-<!-- =========================
-     TOGETHER TIME + COUNTDOWN
-========================= -->
-
-<script>
-
-
-// ======================================================
-// RELATIONSHIP START DATE
-// ======================================================
-
-const relationshipStartDate =
-    new Date("2021-07-17T00:00:00");
-
-
-// ======================================================
-// NEXT ANNIVERSARY
-// ======================================================
-
-const targetDate =
-    new Date("2027-07-17T00:00:00").getTime();
-
-
-// ======================================================
-// CALCULATE TOGETHER YEARS + DAYS
-// ======================================================
-
-function calculateTogetherTime() {
-
-    const now =
-        new Date();
-
-
-    let years =
-        now.getFullYear() -
-        relationshipStartDate.getFullYear();
-
-
-    const anniversaryThisYear =
-        new Date(
-            now.getFullYear(),
-            6,
-            17
-        );
-
-
-    if (
-        now < anniversaryThisYear
-    ) {
-
-        years--;
-
-    }
-
-
-    const lastAnniversary =
-        new Date(
-            now.getFullYear(),
-            6,
-            17
-        );
-
-
-    if (
-        now < lastAnniversary
-    ) {
-
-        lastAnniversary.setFullYear(
-            now.getFullYear() - 1
-        );
-
-    }
-
-
-    const difference =
-        now.getTime() -
-        lastAnniversary.getTime();
-
-
-    const days =
-        Math.floor(
-            difference /
-            (1000 * 60 * 60 * 24)
-        );
-
-
-    const yearsElement =
-        document.getElementById(
-            "togetherYears"
-        );
-
-
-    const daysElement =
-        document.getElementById(
-            "togetherDays"
-        );
-
-
-    if (
-        yearsElement
-    ) {
-
-        yearsElement.textContent =
-            years +
-            (
-                years === 1
-                    ? " Year"
-                    : " Years"
-            );
-
-    }
-
-
-    if (
-        daysElement
-    ) {
-
-        daysElement.textContent =
-            days +
-            (
-                days === 1
-                    ? " Day"
-                    : " Days"
-            );
-
-    }
-
-}
-
-
-// ======================================================
-// ANNIVERSARY COUNTDOWN
-// ======================================================
-
-function countdown() {
-
-    const now =
-        new Date().getTime();
-
-
-    const distance =
-        targetDate - now;
-
-
-    if (
-        distance <= 0
-    ) {
-
-        document.getElementById(
-            "countdown"
-        ).innerHTML = `
-
-            <p class="happy-anniversary">
-                💕 Happy Anniversary! 💕
-            </p>
-
-        `;
-
-        return;
-
-    }
-
-
-    const days =
-        Math.floor(
-            distance /
-            (1000 * 60 * 60 * 24)
-        );
-
-
-    const hours =
-        Math.floor(
-            (
-                distance /
-                (1000 * 60 * 60)
-            ) % 24
-        );
-
-
-    const minutes =
-        Math.floor(
-            (
-                distance /
-                (1000 * 60)
-            ) % 60
-        );
-
-
-    const seconds =
-        Math.floor(
-            (
-                distance /
-                1000
-            ) % 60
-        );
-
-
-    document.getElementById(
-        "days"
-    ).textContent =
-        days;
-
-
-    document.getElementById(
-        "hours"
-    ).textContent =
-        hours;
-
-
-    document.getElementById(
-        "minutes"
-    ).textContent =
-        minutes;
-
-
-    document.getElementById(
-        "seconds"
-    ).textContent =
-        seconds;
-
-}
-
-
-// ======================================================
-// START
-// ======================================================
-
-calculateTogetherTime();
-
-countdown();
-
-
-setInterval(
-    calculateTogetherTime,
-    60000
-);
-
-
-setInterval(
-    countdown,
-    1000
-);
-
-</script>
-
 </body>
+
 </html>
