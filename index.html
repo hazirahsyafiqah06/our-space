@@ -1,7 +1,9 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta name="viewport"
@@ -10,15 +12,16 @@
     <title>Our Space ❤️</title>
 
     <link rel="stylesheet" href="style.css">
+
 </head>
 
 <body>
 
 <div class="container">
 
-    <!-- =========================
+    <!-- ==================================================
          HERO
-    ========================== -->
+    ================================================== -->
 
     <div class="hero">
 
@@ -26,7 +29,8 @@
             WELCOME TO
         </p>
 
-        <p id="welcomeUser" class="welcome-user">
+        <p id="welcomeUser"
+           class="welcome-user">
             Welcome ❤️
         </p>
 
@@ -43,7 +47,7 @@
         </p>
 
 
-        <!-- TOGETHER TIME -->
+        <!-- TOGETHER -->
 
         <div class="together-card">
 
@@ -54,13 +58,28 @@
             <div class="together-count">
 
                 <div class="together-box">
-                    <strong id="togetherYears">0</strong>
-                    <span>Years</span>
+
+                    <strong id="togetherYears">
+                        0
+                    </strong>
+
+                    <span>
+                        Years
+                    </span>
+
                 </div>
 
+
                 <div class="together-box">
-                    <strong id="togetherDays">0</strong>
-                    <span>Days</span>
+
+                    <strong id="togetherDays">
+                        0
+                    </strong>
+
+                    <span>
+                        Days
+                    </span>
+
                 </div>
 
             </div>
@@ -79,23 +98,54 @@
             <div id="countdown">
 
                 <div class="countdown-box">
-                    <strong id="days">0</strong>
-                    <span>Days</span>
+
+                    <strong id="days">
+                        0
+                    </strong>
+
+                    <span>
+                        Days
+                    </span>
+
                 </div>
 
-                <div class="countdown-box">
-                    <strong id="hours">0</strong>
-                    <span>Hours</span>
-                </div>
 
                 <div class="countdown-box">
-                    <strong id="minutes">0</strong>
-                    <span>Minutes</span>
+
+                    <strong id="hours">
+                        0
+                    </strong>
+
+                    <span>
+                        Hours
+                    </span>
+
                 </div>
 
+
                 <div class="countdown-box">
-                    <strong id="seconds">0</strong>
-                    <span>Seconds</span>
+
+                    <strong id="minutes">
+                        0
+                    </strong>
+
+                    <span>
+                        Minutes
+                    </span>
+
+                </div>
+
+
+                <div class="countdown-box">
+
+                    <strong id="seconds">
+                        0
+                    </strong>
+
+                    <span>
+                        Seconds
+                    </span>
+
                 </div>
 
             </div>
@@ -105,56 +155,79 @@
     </div>
 
 
-    <!-- =========================
+    <!-- ==================================================
          LOGOUT
-    ========================== -->
+    ================================================== -->
 
     <div class="logout-area">
 
         <button
             onclick="logout()"
-            class="logout-btn"
-        >
+            class="logout-btn">
+
             🚪 Logout
+
         </button>
 
     </div>
 
 
-    <!-- =========================
+    <!-- ==================================================
          NAVIGATION
-    ========================== -->
+    ================================================== -->
 
     <nav class="navigation">
 
-        <button onclick="showSection('notes-section')">
+        <button
+            id="nav-notes"
+            onclick="showSection('notes-section')">
+
             📝 Notes
+
         </button>
 
-        <button onclick="showSection('gallery-section')">
+
+        <button
+            id="nav-gallery"
+            onclick="showSection('gallery-section')">
+
             📸 Gallery
+
         </button>
 
-        <button onclick="showSection('memories-section')">
+
+        <button
+            id="nav-memories"
+            onclick="showSection('memories-section')">
+
             💌 Memories
+
         </button>
 
-        <button onclick="showSection('messages-section')">
+
+        <button
+            id="nav-messages"
+            onclick="showSection('messages-section')">
+
             💬 Secret
+
         </button>
 
     </nav>
 
 
-    <!-- =========================
+    <!-- ==================================================
          NOTES
-    ========================== -->
+    ================================================== -->
 
     <section id="notes-section">
 
         <div class="section-card">
 
-            <h2>📝 Our Notes</h2>
+            <h2>
+                📝 Our Notes
+            </h2>
+
 
             <div class="note-form">
 
@@ -162,43 +235,87 @@
                     type="text"
                     id="title"
                     placeholder="Note title..."
-                >
+                    maxlength="100">
+
 
                 <textarea
                     id="content"
                     placeholder="Write something..."
-                ></textarea>
+                    maxlength="1000">
+                </textarea>
+
+
+                <span
+                    id="noteCounter"
+                    class="note-counter">
+
+                    0 / 1000
+
+                </span>
+
 
                 <button onclick="addNote()">
+
                     + Save Note
+
                 </button>
 
             </div>
 
-            <div id="notes"></div>
+
+            <!-- SEARCH NOTES -->
+
+            <div class="search-box">
+
+                <span class="search-icon">
+                    🔍
+                </span>
+
+                <input
+                    type="text"
+                    id="noteSearch"
+                    placeholder="Search your notes..."
+                    oninput="filterNotes()">
+
+            </div>
+
+
+            <div id="notes">
+
+                <p class="loading-message">
+                    Loading notes... 💕
+                </p>
+
+            </div>
 
         </div>
 
     </section>
 
 
-    <!-- =========================
+    <!-- ==================================================
          GALLERY
-    ========================== -->
+    ================================================== -->
 
     <section id="gallery-section">
 
         <div class="section-card gallery-section-card">
 
+
             <div class="gallery-heading">
 
                 <div>
-                    <h2>📸 Our Gallery</h2>
+
+                    <h2>
+                        📸 Our Gallery
+                    </h2>
 
                     <p>
                         Little moments that belong to us 🩷🩵
                     </p>
+
                 </div>
+
 
                 <div class="gallery-heart">
                     🩷
@@ -215,6 +332,7 @@
                     📷
                 </div>
 
+
                 <div class="upload-text">
 
                     <h3>
@@ -227,25 +345,61 @@
 
                 </div>
 
+
                 <input
                     type="file"
                     id="imageInput"
-                    accept="image/*"
-                >
+                    accept="image/*">
+
+
+                <!-- IMAGE PREVIEW -->
+
+                <div
+                    id="imagePreview"
+                    class="image-preview">
+
+                    <img
+                        id="previewImage"
+                        src=""
+                        alt="Preview">
+
+                    <p id="previewName">
+                    </p>
+
+                </div>
+
 
                 <input
                     type="text"
                     id="caption"
                     placeholder="Write a caption for this memory..."
-                    maxlength="200"
-                >
+                    maxlength="200">
+
 
                 <button
                     onclick="uploadImage()"
-                    class="upload-btn"
-                >
+                    class="upload-btn">
+
                     📸 Add to Our Gallery
+
                 </button>
+
+            </div>
+
+
+            <!-- SEARCH GALLERY -->
+
+            <div class="search-box gallery-filter">
+
+                <span class="search-icon">
+                    🔍
+                </span>
+
+                <input
+                    type="text"
+                    id="gallerySearch"
+                    placeholder="Search memories..."
+                    oninput="filterGallery()">
 
             </div>
 
@@ -265,59 +419,72 @@
     </section>
 
 
-    <!-- =========================
-     LIGHTBOX
-========================= -->
+    <!-- ==================================================
+         LIGHTBOX
+    ================================================== -->
 
-<div id="lightbox" class="lightbox">
+    <div
+        id="lightbox"
+        class="lightbox">
 
-    <div class="lightbox-overlay"
-         onclick="closeLightbox()">
-    </div>
-
-    <div class="lightbox-content">
-
-        <button
-            class="lightbox-close"
+        <div
+            class="lightbox-overlay"
             onclick="closeLightbox()">
-            ✕
-        </button>
+        </div>
 
-        <img
-            id="lightboxImage"
-            src=""
-            alt="Memory"
-        >
 
-        <div class="lightbox-info">
+        <div class="lightbox-content">
 
-            <h3 id="lightboxCaption">
-                Our Memory ❤️
-            </h3>
+            <button
+                class="lightbox-close"
+                onclick="closeLightbox()">
 
-            <p id="lightboxDate">
-            </p>
+                ✕
+
+            </button>
+
+
+            <img
+                id="lightboxImage"
+                src=""
+                alt="Memory">
+
+
+            <div class="lightbox-info">
+
+                <h3 id="lightboxCaption">
+                    Our Memory ❤️
+                </h3>
+
+                <p id="lightboxDate"
+                   class="lightbox-date">
+                </p>
+
+            </div>
 
         </div>
 
     </div>
 
-</div>
 
-
-    <!-- =========================
+    <!-- ==================================================
          MEMORIES
-    ========================== -->
+    ================================================== -->
 
     <section id="memories-section">
 
         <div class="section-card">
 
-            <h2>💌 Our Memories</h2>
+            <h2>
+                💌 Our Memories
+            </h2>
+
 
             <div class="memory">
 
-                <span>❤️</span>
+                <span>
+                    ❤️
+                </span>
 
                 <div>
 
@@ -336,7 +503,9 @@
 
             <div class="memory">
 
-                <span>💕</span>
+                <span>
+                    💕
+                </span>
 
                 <div>
 
@@ -352,14 +521,36 @@
 
             </div>
 
+
+            <div class="memory">
+
+                <span>
+                    🩷
+                </span>
+
+                <div>
+
+                    <h3>
+                        More Stories
+                    </h3>
+
+                    <p>
+                        Add more special moments here whenever you want.
+                    </p>
+
+                </div>
+
+            </div>
+
         </div>
 
     </section>
 
 
-    <!-- =========================
+    <!-- ==================================================
          SECRET MESSAGE
-    ========================== -->
+         NO WHATSAPP HEADER
+    ================================================== -->
 
     <section id="messages-section">
 
@@ -379,14 +570,25 @@
                 <textarea
                     id="secretMessage"
                     placeholder="Write a secret message for your love... ❤️"
-                    maxlength="1000"
-                ></textarea>
+                    maxlength="1000">
+                </textarea>
+
+
+                <span
+                    id="messageCounter"
+                    class="message-counter">
+
+                    0 / 1000
+
+                </span>
+
 
                 <button
                     id="sendMessageBtn"
-                    onclick="sendSecretMessage()"
-                >
+                    onclick="sendSecretMessage()">
+
                     💌 Send Message
+
                 </button>
 
             </div>
@@ -407,9 +609,34 @@
 </div>
 
 
-<!-- =========================
+<!-- ==================================================
+     BACK TO TOP
+================================================== -->
+
+<button
+    id="backToTop"
+    onclick="scrollToTop()"
+    aria-label="Back to top">
+
+    ↑
+
+</button>
+
+
+<!-- ==================================================
+     TOAST
+================================================== -->
+
+<div
+    id="toast"
+    class="toast">
+
+</div>
+
+
+<!-- ==================================================
      SUPABASE
-========================= -->
+================================================== -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -524,7 +751,7 @@ async function logout() {
 
 <script src="./script.js"></script>
 
-
 </body>
 
 </html>
+
