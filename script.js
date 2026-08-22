@@ -1,5 +1,11 @@
 
 // ======================================================
+// OUR SPACE
+// script.js
+// ======================================================
+
+
+// ======================================================
 // SUPABASE CONFIG
 // ======================================================
 
@@ -43,6 +49,10 @@ const USER_NAMES = {
 
 let currentUser = null;
 
+let allNotes = [];
+
+let allGallery = [];
+
 
 // ======================================================
 // RELATIONSHIP DATE
@@ -52,6 +62,54 @@ const relationshipStart =
     new Date(
         "2021-07-17T00:00:00"
     );
+
+
+// ======================================================
+// TOAST
+// ======================================================
+
+let toastTimer = null;
+
+
+function showToast(message) {
+
+    const toast =
+        document.getElementById(
+            "toast"
+        );
+
+
+    if (!toast)
+        return;
+
+
+    toast.textContent =
+        message;
+
+
+    toast.classList.add(
+        "show"
+    );
+
+
+    clearTimeout(
+        toastTimer
+    );
+
+
+    toastTimer =
+        setTimeout(
+            () => {
+
+                toast.classList.remove(
+                    "show"
+                );
+
+            },
+            2500
+        );
+
+}
 
 
 // ======================================================
@@ -221,11 +279,8 @@ function countdown() {
         now;
 
 
-    if (distance <= 0) {
-
+    if (distance <= 0)
         return;
-
-    }
 
 
     const days =
@@ -346,11 +401,44 @@ async function loadNotes() {
             error
         );
 
-        notesContainer.innerHTML =
-            "<p>Failed to load notes.</p>";
+
+        notesContainer.innerHTML = `
+            <p class="empty-message">
+                Failed to load notes.
+            </p>
+        `;
 
         return;
     }
+
+
+    allNotes =
+        data || [];
+
+
+    renderNotes(
+        allNotes
+    );
+
+}
+
+
+// ======================================================
+// RENDER NOTES
+// ======================================================
+
+function renderNotes(
+    notes
+) {
+
+    const notesContainer =
+        document.getElementById(
+            "notes"
+        );
+
+
+    if (!notesContainer)
+        return;
 
 
     notesContainer.innerHTML =
@@ -358,61 +446,173 @@ async function loadNotes() {
 
 
     if (
-        !data ||
-        data.length === 0
+        !notes ||
+        notes.length === 0
     ) {
 
-        notesContainer.innerHTML =
-            "<p>No notes yet ❤️</p>";
+        notesContainer.innerHTML = `
+            <p class="empty-message">
+                No notes yet ❤️
+            </p>
+        `;
 
         return;
     }
 
 
-    data.forEach(note => {
+    notes.forEach(
+        note => {
 
-        const div =
-            document.createElement(
-                "div"
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+
+            div.className =
+                "note";
+
+
+            const noteDate =
+                note.created_at
+                    ? formatGalleryDate(
+                        note.created_at
+                    )
+                    : "";
+
+
+            div.innerHTML = `
+
+                <h3>
+                    ${escapeHTML(note.title)}
+                </h3>
+
+                <p>
+                    ${escapeHTML(note.content)}
+                </p>
+
+                ${
+                    noteDate
+                        ? `
+                            <span class="note-date">
+                                📅 ${escapeHTML(noteDate)}
+                            </span>
+                        `
+                        : ""
+                }
+
+                <div class="note-buttons">
+
+                    <button
+                        onclick="editNote(${note.id})">
+
+                        ✏️ Edit
+
+                    </button>
+
+
+                    <button
+                        onclick="deleteNote(${note.id})">
+
+                        🗑️ Delete
+
+                    </button>
+
+                </div>
+
+            `;
+
+
+            notesContainer.appendChild(
+                div
+            );
+
+        }
+    );
+
+}
+
+
+// ======================================================
+// FILTER NOTES
+// ======================================================
+
+function filterNotes() {
+
+    const input =
+        document.getElementById(
+            "noteSearch"
+        );
+
+
+    if (!input)
+        return;
+
+
+    const keyword =
+        input.value
+            .trim()
+            .toLowerCase();
+
+
+    if (!keyword) {
+
+        renderNotes(
+            allNotes
+        );
+
+        return;
+
+    }
+
+
+    const filtered =
+        allNotes.filter(
+            note => {
+
+                const title =
+                    String(
+                        note.title || ""
+                    ).toLowerCase();
+
+
+                const content =
+                    String(
+                        note.content || ""
+                    ).toLowerCase();
+
+
+                return (
+                    title.includes(keyword) ||
+                    content.includes(keyword)
+                );
+
+            }
+        );
+
+
+    if (filtered.length === 0) {
+
+        const notesContainer =
+            document.getElementById(
+                "notes"
             );
 
 
-        div.className =
-            "note";
-
-
-        div.innerHTML = `
-
-            <h3>
-                ${escapeHTML(note.title)}
-            </h3>
-
-            <p>
-                ${escapeHTML(note.content)}
+        notesContainer.innerHTML = `
+            <p class="empty-message">
+                No notes found 🔍
             </p>
-
-            <div class="note-buttons">
-
-                <button
-                    onclick="editNote(${note.id})">
-                    ✏️ Edit
-                </button>
-
-                <button
-                    onclick="deleteNote(${note.id})">
-                    🗑️ Delete
-                </button>
-
-            </div>
-
         `;
 
+        return;
 
-        notesContainer.appendChild(
-            div
-        );
+    }
 
-    });
+
+    renderNotes(
+        filtered
+    );
 
 }
 
@@ -423,18 +623,24 @@ async function loadNotes() {
 
 async function addNote() {
 
+    const titleInput =
+        document.getElementById(
+            "title"
+        );
+
+
+    const contentInput =
+        document.getElementById(
+            "content"
+        );
+
+
     const title =
-        document
-            .getElementById("title")
-            .value
-            .trim();
+        titleInput.value.trim();
 
 
     const content =
-        document
-            .getElementById("content")
-            .value
-            .trim();
+        contentInput.value.trim();
 
 
     if (
@@ -442,7 +648,7 @@ async function addNote() {
         !content
     ) {
 
-        alert(
+        showToast(
             "Please fill in the title and note ❤️"
         );
 
@@ -470,7 +676,7 @@ async function addNote() {
 
         console.error(error);
 
-        alert(
+        showToast(
             "Failed to save note."
         );
 
@@ -478,17 +684,23 @@ async function addNote() {
     }
 
 
-    document.getElementById(
-        "title"
-    ).value = "";
+    titleInput.value =
+        "";
 
 
-    document.getElementById(
-        "content"
-    ).value = "";
+    contentInput.value =
+        "";
 
 
-    loadNotes();
+    updateNoteCounter();
+
+
+    showToast(
+        "Note saved ❤️"
+    );
+
+
+    await loadNotes();
 
 }
 
@@ -497,7 +709,9 @@ async function addNote() {
 // EDIT NOTE
 // ======================================================
 
-async function editNote(id) {
+async function editNote(
+    id
+) {
 
     const {
         data,
@@ -506,13 +720,20 @@ async function editNote(id) {
         await supabaseClient
             .from("notes")
             .select("*")
-            .eq("id", id)
+            .eq(
+                "id",
+                id
+            )
             .single();
 
 
     if (error) {
 
         console.error(error);
+
+        showToast(
+            "Unable to find note."
+        );
 
         return;
     }
@@ -544,6 +765,19 @@ async function editNote(id) {
         return;
 
 
+    if (
+        !title.trim() ||
+        !content.trim()
+    ) {
+
+        showToast(
+            "Title and note cannot be empty."
+        );
+
+        return;
+    }
+
+
     const {
         error: updateError
     } =
@@ -551,10 +785,10 @@ async function editNote(id) {
             .from("notes")
             .update({
                 title:
-                    title,
+                    title.trim(),
 
                 content:
-                    content
+                    content.trim()
             })
             .eq(
                 "id",
@@ -568,12 +802,17 @@ async function editNote(id) {
             updateError
         );
 
-        alert(
+        showToast(
             "Failed to update note."
         );
 
         return;
     }
+
+
+    showToast(
+        "Note updated ✨"
+    );
 
 
     loadNotes();
@@ -585,7 +824,9 @@ async function editNote(id) {
 // DELETE NOTE
 // ======================================================
 
-async function deleteNote(id) {
+async function deleteNote(
+    id
+) {
 
     if (
         !confirm(
@@ -611,12 +852,17 @@ async function deleteNote(id) {
 
         console.error(error);
 
-        alert(
+        showToast(
             "Failed to delete note."
         );
 
         return;
     }
+
+
+    showToast(
+        "Note deleted 🗑️"
+    );
 
 
     loadNotes();
@@ -669,22 +915,65 @@ async function loadGallery() {
             error
         );
 
+
         gallery.innerHTML = `
-            <p class="gallery-empty">
-                Failed to load gallery.
-            </p>
+            <div class="gallery-empty">
+
+                <div class="empty-icon">
+                    😢
+                </div>
+
+                <strong>
+                    Failed to load gallery
+                </strong>
+
+                <p>
+                    ${escapeHTML(error.message)}
+                </p>
+
+            </div>
         `;
 
         return;
     }
 
 
-    gallery.innerHTML = "";
+    allGallery =
+        data || [];
+
+
+    renderGallery(
+        allGallery
+    );
+
+}
+
+
+// ======================================================
+// RENDER GALLERY
+// ======================================================
+
+function renderGallery(
+    photos
+) {
+
+    const gallery =
+        document.getElementById(
+            "gallery"
+        );
+
+
+    if (!gallery)
+        return;
+
+
+    gallery.innerHTML =
+        "";
 
 
     if (
-        !data ||
-        data.length === 0
+        !photos ||
+        photos.length === 0
     ) {
 
         gallery.innerHTML = `
@@ -712,97 +1001,315 @@ async function loadGallery() {
     }
 
 
-    data.forEach(photo => {
+    photos.forEach(
+        photo => {
 
-        const div =
-            document.createElement(
-                "div"
-            );
-
-
-        div.className =
-            "gallery-item";
+            const div =
+                document.createElement(
+                    "div"
+                );
 
 
-        const caption =
-            photo.caption ||
-            "A little memory ❤️";
+            div.className =
+                "gallery-item";
 
 
-        /*
-         * TARIKH + MASA UPLOAD
-         */
-        const date =
-            photo.created_at
-                ? formatGalleryDate(
-                    photo.created_at
-                )
-                : "Date unavailable";
+            const caption =
+                photo.caption ||
+                "A little memory ❤️";
 
 
-        div.innerHTML = `
-
-            <div
-                class="gallery-image-wrapper"
-                onclick="openLightbox(
-                    '${escapeJS(photo.image_url)}',
-                    '${escapeJS(caption)}',
-                    '${escapeJS(date)}'
-                )"
-            >
-
-                <img
-                    src="${escapeAttribute(photo.image_url)}"
-                    alt="Our Memory"
-                    loading="lazy"
-                >
+            const date =
+                photo.created_at
+                    ? formatGalleryDate(
+                        photo.created_at
+                    )
+                    : "Date unavailable";
 
 
-                <div class="photo-overlay">
+            div.innerHTML = `
 
-                    <span class="view-photo">
-                        🔍 View Photo
+                <div
+                    class="gallery-image-wrapper"
+                    data-image-url="${escapeAttribute(photo.image_url)}"
+                    data-caption="${escapeAttribute(caption)}"
+                    data-date="${escapeAttribute(date)}">
+
+                    <img
+                        src="${escapeAttribute(photo.image_url)}"
+                        alt="Our Memory"
+                        loading="lazy">
+
+
+                    <div class="photo-overlay">
+
+                        <span class="view-photo">
+                            🔍 View Photo
+                        </span>
+
+                    </div>
+
+
+                    <span class="gallery-zoom">
+                        🔍
                     </span>
 
                 </div>
 
 
-                <span class="gallery-zoom">
+                <div class="gallery-caption">
+
+                    <p>
+                        ${escapeHTML(caption)}
+                    </p>
+
+
+                    <span class="gallery-date">
+                        📅 ${escapeHTML(date)}
+                    </span>
+
+
+                    <button
+                        class="gallery-delete"
+                        onclick="event.stopPropagation(); deleteImage(${photo.id})">
+
+                        🗑️ Delete
+
+                    </button>
+
+                </div>
+
+            `;
+
+
+            const imageWrapper =
+                div.querySelector(
+                    ".gallery-image-wrapper"
+                );
+
+
+            imageWrapper.addEventListener(
+                "click",
+                function() {
+
+                    openLightbox(
+                        photo.image_url,
+                        caption,
+                        date
+                    );
+
+                }
+            );
+
+
+            gallery.appendChild(
+                div
+            );
+
+        }
+    );
+
+}
+
+
+// ======================================================
+// FILTER GALLERY
+// ======================================================
+
+function filterGallery() {
+
+    const input =
+        document.getElementById(
+            "gallerySearch"
+        );
+
+
+    if (!input)
+        return;
+
+
+    const keyword =
+        input.value
+            .trim()
+            .toLowerCase();
+
+
+    if (!keyword) {
+
+        renderGallery(
+            allGallery
+        );
+
+        return;
+
+    }
+
+
+    const filtered =
+        allGallery.filter(
+            photo => {
+
+                const caption =
+                    String(
+                        photo.caption || ""
+                    ).toLowerCase();
+
+
+                return caption.includes(
+                    keyword
+                );
+
+            }
+        );
+
+
+    if (
+        filtered.length === 0
+    ) {
+
+        const gallery =
+            document.getElementById(
+                "gallery"
+            );
+
+
+        gallery.innerHTML = `
+
+            <div class="gallery-empty">
+
+                <div class="empty-icon">
                     🔍
-                </span>
+                </div>
 
-            </div>
-
-
-            <div class="gallery-caption">
+                <strong>
+                    No memory found
+                </strong>
 
                 <p>
-                    ${escapeHTML(caption)}
+                    Try another keyword ❤️
                 </p>
-
-
-                <span class="gallery-date">
-                    📅 ${escapeHTML(date)}
-                </span>
-
-
-                <button
-                    class="gallery-delete"
-                    onclick="event.stopPropagation(); deleteImage(${photo.id})"
-                >
-                    🗑️ Delete
-                </button>
 
             </div>
 
         `;
 
+        return;
 
-        gallery.appendChild(
-            div
+    }
+
+
+    renderGallery(
+        filtered
+    );
+
+}
+
+
+// ======================================================
+// IMAGE PREVIEW
+// ======================================================
+
+function setupImagePreview() {
+
+    const input =
+        document.getElementById(
+            "imageInput"
         );
 
-    });
+
+    if (!input)
+        return;
+
+
+    input.addEventListener(
+        "change",
+        function() {
+
+            const file =
+                input.files[0];
+
+
+            const preview =
+                document.getElementById(
+                    "imagePreview"
+                );
+
+
+            const previewImage =
+                document.getElementById(
+                    "previewImage"
+                );
+
+
+            const previewName =
+                document.getElementById(
+                    "previewName"
+                );
+
+
+            if (!file) {
+
+                preview.classList.remove(
+                    "active"
+                );
+
+                previewImage.src =
+                    "";
+
+                previewName.textContent =
+                    "";
+
+                return;
+
+            }
+
+
+            if (
+                !file.type.startsWith(
+                    "image/"
+                )
+            ) {
+
+                showToast(
+                    "Please choose an image."
+                );
+
+                input.value =
+                    "";
+
+                return;
+
+            }
+
+
+            const reader =
+                new FileReader();
+
+
+            reader.onload =
+                function(event) {
+
+                    previewImage.src =
+                        event.target.result;
+
+
+                    previewName.textContent =
+                        file.name;
+
+
+                    preview.classList.add(
+                        "active"
+                    );
+
+                };
+
+
+            reader.readAsDataURL(
+                file
+            );
+
+        }
+    );
 
 }
 
@@ -825,6 +1332,12 @@ async function uploadImage() {
         );
 
 
+    const uploadButton =
+        document.querySelector(
+            ".upload-btn"
+        );
+
+
     if (!fileInput)
         return;
 
@@ -835,7 +1348,7 @@ async function uploadImage() {
 
     if (!file) {
 
-        alert(
+        showToast(
             "Please choose a photo 📸"
         );
 
@@ -849,7 +1362,7 @@ async function uploadImage() {
         )
     ) {
 
-        alert(
+        showToast(
             "Please select an image."
         );
 
@@ -862,7 +1375,7 @@ async function uploadImage() {
         5 * 1024 * 1024
     ) {
 
-        alert(
+        showToast(
             "Image must be smaller than 5MB."
         );
 
@@ -888,6 +1401,14 @@ async function uploadImage() {
         safeName;
 
 
+    uploadButton.disabled =
+        true;
+
+
+    uploadButton.textContent =
+        "Uploading... 📸";
+
+
     const {
         error: uploadError
     } =
@@ -907,10 +1428,20 @@ async function uploadImage() {
             uploadError
         );
 
-        alert(
-            "Upload failed:\n" +
+
+        showToast(
+            "Upload failed: " +
             uploadError.message
         );
+
+
+        uploadButton.disabled =
+            false;
+
+
+        uploadButton.textContent =
+            "📸 Add to Our Gallery";
+
 
         return;
     }
@@ -954,9 +1485,19 @@ async function uploadImage() {
             databaseError
         );
 
-        alert(
+
+        showToast(
             "Image uploaded but database failed."
         );
+
+
+        uploadButton.disabled =
+            false;
+
+
+        uploadButton.textContent =
+            "📸 Add to Our Gallery";
+
 
         return;
     }
@@ -970,12 +1511,41 @@ async function uploadImage() {
         "";
 
 
-    alert(
+    const preview =
+        document.getElementById(
+            "imagePreview"
+        );
+
+
+    preview.classList.remove(
+        "active"
+    );
+
+
+    document.getElementById(
+        "previewImage"
+    ).src = "";
+
+
+    document.getElementById(
+        "previewName"
+    ).textContent = "";
+
+
+    uploadButton.disabled =
+        false;
+
+
+    uploadButton.textContent =
+        "📸 Add to Our Gallery";
+
+
+    showToast(
         "Photo added to Our Gallery ❤️"
     );
 
 
-    loadGallery();
+    await loadGallery();
 
 }
 
@@ -984,7 +1554,9 @@ async function uploadImage() {
 // DELETE IMAGE
 // ======================================================
 
-async function deleteImage(id) {
+async function deleteImage(
+    id
+) {
 
     if (
         !confirm(
@@ -1014,7 +1586,7 @@ async function deleteImage(id) {
 
         console.error(error);
 
-        alert(
+        showToast(
             "Unable to find photo."
         );
 
@@ -1034,22 +1606,36 @@ async function deleteImage(id) {
             );
 
 
-        const path =
-            url.pathname.split(
-                "/storage/v1/object/public/gallery/"
-            )[1];
+        const marker =
+            "/storage/v1/object/public/gallery/";
 
 
-        if (path) {
+        const index =
+            url.pathname.indexOf(
+                marker
+            );
 
-            await supabaseClient
-                .storage
-                .from("gallery")
-                .remove([
-                    decodeURIComponent(
-                        path
-                    )
-                ]);
+
+        if (index !== -1) {
+
+            const path =
+                url.pathname.substring(
+                    index + marker.length
+                );
+
+
+            if (path) {
+
+                await supabaseClient
+                    .storage
+                    .from("gallery")
+                    .remove([
+                        decodeURIComponent(
+                            path
+                        )
+                    ]);
+
+            }
 
         }
 
@@ -1081,12 +1667,17 @@ async function deleteImage(id) {
             deleteError
         );
 
-        alert(
+        showToast(
             "Failed to delete photo."
         );
 
         return;
     }
+
+
+    showToast(
+        "Photo deleted 🗑️"
+    );
 
 
     loadGallery();
@@ -1122,49 +1713,22 @@ function openLightbox(
         );
 
 
+    const dateElement =
+        document.getElementById(
+            "lightboxDate"
+        );
+
+
+    if (!lightbox)
+        return;
+
+
     image.src =
         imageUrl;
 
 
     captionElement.textContent =
         caption;
-
-
-    /*
-     * CREATE DATE ELEMENT
-     * AUTOMATICALLY
-     * JIKA HTML BELUM ADA
-     */
-
-    let dateElement =
-        document.getElementById(
-            "lightboxDate"
-        );
-
-
-    if (!dateElement) {
-
-        dateElement =
-            document.createElement(
-                "div"
-            );
-
-
-        dateElement.id =
-            "lightboxDate";
-
-
-        dateElement.className =
-            "lightbox-date";
-
-
-        captionElement
-            .insertAdjacentElement(
-                "afterend",
-                dateElement
-            );
-
-    }
 
 
     dateElement.textContent =
@@ -1187,23 +1751,16 @@ function openLightbox(
 // CLOSE LIGHTBOX
 // ======================================================
 
-function closeLightbox(event) {
-
-    if (
-        event &&
-        event.target &&
-        event.target.id !==
-            "lightbox"
-    ) {
-
-        return;
-    }
-
+function closeLightbox() {
 
     const lightbox =
         document.getElementById(
             "lightbox"
         );
+
+
+    if (!lightbox)
+        return;
 
 
     lightbox.classList.remove(
@@ -1218,7 +1775,7 @@ function closeLightbox(event) {
 
 
 // ======================================================
-// ESCAPE KEY FOR LIGHTBOX
+// ESCAPE KEY
 // ======================================================
 
 document.addEventListener(
@@ -1229,28 +1786,7 @@ document.addEventListener(
             event.key === "Escape"
         ) {
 
-            const lightbox =
-                document.getElementById(
-                    "lightbox"
-                );
-
-
-            if (
-                lightbox &&
-                lightbox.classList.contains(
-                    "active"
-                )
-            ) {
-
-                lightbox.classList.remove(
-                    "active"
-                );
-
-
-                document.body.style.overflow =
-                    "";
-
-            }
+            closeLightbox();
 
         }
 
@@ -1259,7 +1795,7 @@ document.addEventListener(
 
 
 // ======================================================
-// GALLERY DATE
+// FORMAT DATE
 // ======================================================
 
 function formatGalleryDate(
@@ -1362,6 +1898,7 @@ async function loadSecretMessages() {
             error
         );
 
+
         container.innerHTML = `
             <p class="empty-message">
                 Failed to load messages.
@@ -1437,22 +1974,23 @@ async function loadSecretMessages() {
                 actions = `
 
                     <div
-                        class="message-actions"
-                    >
+                        class="message-actions">
 
                         <button
                             class="edit-message-btn"
-                            onclick="editSecretMessage(${message.id})"
-                        >
+                            onclick="editSecretMessage(${message.id})">
+
                             ✏️ Edit
+
                         </button>
 
 
                         <button
                             class="delete-message-btn"
-                            onclick="deleteSecretMessage(${message.id})"
-                        >
+                            onclick="deleteSecretMessage(${message.id})">
+
                             🗑️ Delete
+
                         </button>
 
                     </div>
@@ -1464,34 +2002,32 @@ async function loadSecretMessages() {
 
             card.innerHTML = `
 
-    <div
-        class="message-bubble"
-    >
+                <div class="message-bubble">
 
-        <div class="message-top">
+                    <div class="message-top">
 
-            <span class="message-sender">
-                ${escapeHTML(senderName)}
-            </span>
+                        <span class="message-sender">
+                            ${escapeHTML(senderName)}
+                        </span>
 
-        </div>
+                    </div>
 
 
-        <p class="message-text">
-            ${escapeHTML(message.message)}
-        </p>
+                    <p class="message-text">
+                        ${escapeHTML(message.message)}
+                    </p>
 
 
-        <span class="message-time">
-            ${formattedDate}
-        </span>
+                    <span class="message-time">
+                        ${formattedDate}
+                    </span>
 
 
-        ${actions}
+                    ${actions}
 
-    </div>
+                </div>
 
-`;
+            `;
 
 
             container.appendChild(
@@ -1519,7 +2055,7 @@ async function sendSecretMessage() {
 
     if (!currentUser) {
 
-        alert(
+        showToast(
             "Please login first ❤️"
         );
 
@@ -1545,7 +2081,7 @@ async function sendSecretMessage() {
 
     if (!message) {
 
-        alert(
+        showToast(
             "Please write a message first ❤️"
         );
 
@@ -1574,7 +2110,7 @@ async function sendSecretMessage() {
 
     } else {
 
-        alert(
+        showToast(
             "This account is not part of Our Space ❤️"
         );
 
@@ -1616,9 +2152,9 @@ async function sendSecretMessage() {
             error
         );
 
-        alert(
-            "Message failed to send:\n" +
-            error.message
+
+        showToast(
+            "Message failed to send."
         );
 
 
@@ -1638,12 +2174,20 @@ async function sendSecretMessage() {
         "";
 
 
+    updateMessageCounter();
+
+
     sendButton.disabled =
         false;
 
 
     sendButton.textContent =
         "💌 Send Message";
+
+
+    showToast(
+        "Message sent ❤️"
+    );
 
 
     await loadSecretMessages();
@@ -1677,7 +2221,7 @@ async function editSecretMessage(
 
         console.error(error);
 
-        alert(
+        showToast(
             "Unable to find message."
         );
 
@@ -1686,11 +2230,12 @@ async function editSecretMessage(
 
 
     if (
+        !currentUser ||
         data.sender_id !==
         currentUser.id
     ) {
 
-        alert(
+        showToast(
             "You can only edit your own message."
         );
 
@@ -1717,7 +2262,7 @@ async function editSecretMessage(
 
     if (!cleanedMessage) {
 
-        alert(
+        showToast(
             "Message cannot be empty."
         );
 
@@ -1746,12 +2291,17 @@ async function editSecretMessage(
             updateError
         );
 
-        alert(
+        showToast(
             "Failed to edit message."
         );
 
         return;
     }
+
+
+    showToast(
+        "Message updated ✨"
+    );
 
 
     loadSecretMessages();
@@ -1791,12 +2341,17 @@ async function deleteSecretMessage(
 
         console.error(error);
 
-        alert(
+        showToast(
             "Failed to delete message."
         );
 
         return;
     }
+
+
+    showToast(
+        "Message deleted 🗑️"
+    );
 
 
     loadSecretMessages();
@@ -1838,9 +2393,70 @@ function formatMessageDate(
                 "2-digit",
 
             minute:
-                "2-digit"
+                "2-digit",
+
+            hour12:
+                true
         }
     );
+
+}
+
+
+// ======================================================
+// NOTE COUNTER
+// ======================================================
+
+function updateNoteCounter() {
+
+    const input =
+        document.getElementById(
+            "content"
+        );
+
+
+    const counter =
+        document.getElementById(
+            "noteCounter"
+        );
+
+
+    if (!input || !counter)
+        return;
+
+
+    counter.textContent =
+        input.value.length +
+        " / 1000";
+
+}
+
+
+// ======================================================
+// MESSAGE COUNTER
+// ======================================================
+
+function updateMessageCounter() {
+
+    const input =
+        document.getElementById(
+            "secretMessage"
+        );
+
+
+    const counter =
+        document.getElementById(
+            "messageCounter"
+        );
+
+
+    if (!input || !counter)
+        return;
+
+
+    counter.textContent =
+        input.value.length +
+        " / 1000";
 
 }
 
@@ -1849,7 +2465,9 @@ function formatMessageDate(
 // SECURITY
 // ======================================================
 
-function escapeHTML(text) {
+function escapeHTML(
+    text
+) {
 
     const div =
         document.createElement(
@@ -1866,7 +2484,9 @@ function escapeHTML(text) {
 }
 
 
-function escapeAttribute(text) {
+function escapeAttribute(
+    text
+) {
 
     return String(text)
         .replace(
@@ -1888,38 +2508,6 @@ function escapeAttribute(text) {
         .replace(
             />/g,
             "&gt;"
-        );
-
-}
-
-
-/*
- * Escape untuk JavaScript
- * string dalam onclick Lightbox
- */
-
-function escapeJS(text) {
-
-    return String(text)
-        .replace(
-            /\\/g,
-            "\\\\"
-        )
-        .replace(
-            /'/g,
-            "\\'"
-        )
-        .replace(
-            /"/g,
-            '\\"'
-        )
-        .replace(
-            /\n/g,
-            "\\n"
-        )
-        .replace(
-            /\r/g,
-            "\\r"
         );
 
 }
@@ -1968,6 +2556,63 @@ function showSection(
     );
 
 
+    const navButtons = {
+
+        "notes-section":
+            "nav-notes",
+
+        "gallery-section":
+            "nav-gallery",
+
+        "memories-section":
+            "nav-memories",
+
+        "messages-section":
+            "nav-messages"
+
+    };
+
+
+    Object.values(
+        navButtons
+    ).forEach(
+        buttonId => {
+
+            const button =
+                document.getElementById(
+                    buttonId
+                );
+
+
+            if (button) {
+
+                button.classList.remove(
+                    "active"
+                );
+
+            }
+
+        }
+    );
+
+
+    const activeButton =
+        document.getElementById(
+            navButtons[
+                sectionId
+            ]
+        );
+
+
+    if (activeButton) {
+
+        activeButton.classList.add(
+            "active"
+        );
+
+    }
+
+
     if (
         sectionId ===
         "messages-section"
@@ -1987,6 +2632,106 @@ function showSection(
 
     }
 
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+}
+
+
+// ======================================================
+// BACK TO TOP
+// ======================================================
+
+function scrollToTop() {
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+}
+
+
+window.addEventListener(
+    "scroll",
+    function() {
+
+        const button =
+            document.getElementById(
+                "backToTop"
+            );
+
+
+        if (!button)
+            return;
+
+
+        if (
+            window.scrollY >
+            300
+        ) {
+
+            button.classList.add(
+                "show"
+            );
+
+        } else {
+
+            button.classList.remove(
+                "show"
+            );
+
+        }
+
+    }
+);
+
+
+// ======================================================
+// INPUT EVENTS
+// ======================================================
+
+function setupInputCounters() {
+
+    const noteInput =
+        document.getElementById(
+            "content"
+        );
+
+
+    const messageInput =
+        document.getElementById(
+            "secretMessage"
+        );
+
+
+    if (noteInput) {
+
+        noteInput.addEventListener(
+            "input",
+            updateNoteCounter
+        );
+
+    }
+
+
+    if (messageInput) {
+
+        messageInput.addEventListener(
+            "input",
+            updateMessageCounter
+        );
+
+    }
+
+
+    updateNoteCounter();
+
+    updateMessageCounter();
+
 }
 
 
@@ -2005,13 +2750,19 @@ async function startApp() {
     countdown();
 
 
-    loadNotes();
+    setupInputCounters();
 
 
-    loadGallery();
+    setupImagePreview();
 
 
-    loadSecretMessages();
+    await loadNotes();
+
+
+    await loadGallery();
+
+
+    await loadSecretMessages();
 
 
     showSection(
@@ -2023,6 +2774,10 @@ async function startApp() {
 
 startApp();
 
+
+// ======================================================
+// LIVE UPDATE
+// ======================================================
 
 setInterval(
     updateTogetherTime,
