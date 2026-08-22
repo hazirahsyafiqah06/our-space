@@ -1,3 +1,4 @@
+
 // ======================================================
 // SUPABASE CONFIG
 // ======================================================
@@ -728,12 +729,15 @@ async function loadGallery() {
             "A little memory ❤️";
 
 
+        /*
+         * TARIKH + MASA UPLOAD
+         */
         const date =
             photo.created_at
                 ? formatGalleryDate(
                     photo.created_at
                 )
-                : "";
+                : "Date unavailable";
 
 
         div.innerHTML = `
@@ -741,8 +745,9 @@ async function loadGallery() {
             <div
                 class="gallery-image-wrapper"
                 onclick="openLightbox(
-                    '${escapeAttribute(photo.image_url)}',
-                    '${escapeAttribute(caption)}'
+                    '${escapeJS(photo.image_url)}',
+                    '${escapeJS(caption)}',
+                    '${escapeJS(date)}'
                 )"
             >
 
@@ -751,6 +756,16 @@ async function loadGallery() {
                     alt="Our Memory"
                     loading="lazy"
                 >
+
+
+                <div class="photo-overlay">
+
+                    <span class="view-photo">
+                        🔍 View Photo
+                    </span>
+
+                </div>
+
 
                 <span class="gallery-zoom">
                     🔍
@@ -765,8 +780,9 @@ async function loadGallery() {
                     ${escapeHTML(caption)}
                 </p>
 
+
                 <span class="gallery-date">
-                    ${date}
+                    📅 ${escapeHTML(date)}
                 </span>
 
 
@@ -1084,7 +1100,8 @@ async function deleteImage(id) {
 
 function openLightbox(
     imageUrl,
-    caption
+    caption,
+    date
 ) {
 
     const lightbox =
@@ -1111,6 +1128,48 @@ function openLightbox(
 
     captionElement.textContent =
         caption;
+
+
+    /*
+     * CREATE DATE ELEMENT
+     * AUTOMATICALLY
+     * JIKA HTML BELUM ADA
+     */
+
+    let dateElement =
+        document.getElementById(
+            "lightboxDate"
+        );
+
+
+    if (!dateElement) {
+
+        dateElement =
+            document.createElement(
+                "div"
+            );
+
+
+        dateElement.id =
+            "lightboxDate";
+
+
+        dateElement.className =
+            "lightbox-date";
+
+
+        captionElement
+            .insertAdjacentElement(
+                "afterend",
+                dateElement
+            );
+
+    }
+
+
+    dateElement.textContent =
+        "📅 Uploaded: " +
+        date;
 
 
     lightbox.classList.add(
@@ -1208,7 +1267,7 @@ function formatGalleryDate(
 ) {
 
     if (!dateString)
-        return "";
+        return "Date unavailable";
 
 
     const date =
@@ -1217,7 +1276,7 @@ function formatGalleryDate(
         );
 
 
-    return date.toLocaleDateString(
+    return date.toLocaleString(
         "en-MY",
         {
             day:
@@ -1227,7 +1286,16 @@ function formatGalleryDate(
                 "short",
 
             year:
-                "numeric"
+                "numeric",
+
+            hour:
+                "2-digit",
+
+            minute:
+                "2-digit",
+
+            hour12:
+                true
         }
     );
 
@@ -1837,6 +1905,38 @@ function escapeAttribute(text) {
 }
 
 
+/*
+ * Escape untuk JavaScript
+ * string dalam onclick Lightbox
+ */
+
+function escapeJS(text) {
+
+    return String(text)
+        .replace(
+            /\\/g,
+            "\\\\"
+        )
+        .replace(
+            /'/g,
+            "\\'"
+        )
+        .replace(
+            /"/g,
+            '\\"'
+        )
+        .replace(
+            /\n/g,
+            "\\n"
+        )
+        .replace(
+            /\r/g,
+            "\\r"
+        );
+
+}
+
+
 // ======================================================
 // NAVIGATION
 // ======================================================
@@ -1946,3 +2046,4 @@ setInterval(
     countdown,
     1000
 );
+
