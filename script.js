@@ -1,4 +1,3 @@
-
 // ======================================================
 // SUPABASE CONFIG
 // ======================================================
@@ -6,8 +5,10 @@
 const SUPABASE_URL =
     "https://ognpydprqxxwjdnophxq.supabase.co";
 
+
 const SUPABASE_KEY =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9nbnB5ZHBycXh4d2pkbm9waHhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcyOTM3NzIsImV4cCI6MjEwMjg2OTc3Mn0.GEboyNWovkJ7U9zXAWtzcQ7iddISbQuoLSirBJfFkrM";
+
 
 const supabaseClient =
     window.supabase.createClient(
@@ -22,6 +23,7 @@ const supabaseClient =
 
 const HAZIRAH_ID =
     "fd76923c-6b95-4668-b020-32ff37192990";
+
 
 const ZULKARNAIN_ID =
     "327adb82-7b8b-4e01-be1d-2802a334e6db";
@@ -57,7 +59,10 @@ async function getCurrentUser() {
     } = await supabaseClient.auth.getUser();
 
 
-    if (error || !data.user) {
+    if (
+        error ||
+        !data.user
+    ) {
 
         console.error(
             "Unable to get user:",
@@ -65,10 +70,12 @@ async function getCurrentUser() {
         );
 
         return null;
+
     }
 
 
-    currentUser = data.user;
+    currentUser =
+        data.user;
 
 
     return currentUser;
@@ -83,7 +90,9 @@ async function getCurrentUser() {
 async function loadNotes() {
 
     const notesContainer =
-        document.getElementById("notes");
+        document.getElementById(
+            "notes"
+        );
 
 
     if (!notesContainer) return;
@@ -95,9 +104,12 @@ async function loadNotes() {
     } = await supabaseClient
         .from("notes")
         .select("*")
-        .order("created_at", {
-            ascending: false
-        });
+        .order(
+            "created_at",
+            {
+                ascending: false
+            }
+        );
 
 
     if (error) {
@@ -111,60 +123,77 @@ async function loadNotes() {
             "<p>Failed to load notes.</p>";
 
         return;
+
     }
 
 
-    notesContainer.innerHTML = "";
+    notesContainer.innerHTML =
+        "";
 
 
-    if (!data || data.length === 0) {
+    if (
+        !data ||
+        data.length === 0
+    ) {
 
         notesContainer.innerHTML =
             "<p>No notes yet ❤️</p>";
 
         return;
+
     }
 
 
-    data.forEach(note => {
+    data.forEach(
+        note => {
 
-        const div =
-            document.createElement("div");
-
-
-        div.className = "note";
-
-
-        div.innerHTML = `
-
-            <h3>
-                ${escapeHTML(note.title)}
-            </h3>
-
-            <p>
-                ${escapeHTML(note.content)}
-            </p>
-
-            <div class="note-buttons">
-
-                <button
-                    onclick="editNote(${note.id})">
-                    ✏️ Edit
-                </button>
-
-                <button
-                    onclick="deleteNote(${note.id})">
-                    🗑️ Delete
-                </button>
-
-            </div>
-
-        `;
+            const div =
+                document.createElement(
+                    "div"
+                );
 
 
-        notesContainer.appendChild(div);
+            div.className =
+                "note";
 
-    });
+
+            div.innerHTML = `
+
+                <h3>
+                    ${escapeHTML(
+                        note.title
+                    )}
+                </h3>
+
+                <p>
+                    ${escapeHTML(
+                        note.content
+                    )}
+                </p>
+
+                <div class="note-buttons">
+
+                    <button
+                        onclick="editNote(${note.id})">
+                        ✏️ Edit
+                    </button>
+
+                    <button
+                        onclick="deleteNote(${note.id})">
+                        🗑️ Delete
+                    </button>
+
+                </div>
+
+            `;
+
+
+            notesContainer.appendChild(
+                div
+            );
+
+        }
+    );
 
 }
 
@@ -176,22 +205,32 @@ async function loadNotes() {
 async function addNote() {
 
     const title =
-        document.getElementById("title")
-            .value.trim();
+        document.getElementById(
+            "title"
+        )
+        .value
+        .trim();
 
 
     const content =
-        document.getElementById("content")
-            .value.trim();
+        document.getElementById(
+            "content"
+        )
+        .value
+        .trim();
 
 
-    if (!title || !content) {
+    if (
+        !title ||
+        !content
+    ) {
 
         alert(
             "Please fill in the title and note ❤️"
         );
 
         return;
+
     }
 
 
@@ -201,30 +240,40 @@ async function addNote() {
         .from("notes")
         .insert([
             {
-                title: title,
-                content: content
+                title:
+                    title,
+
+                content:
+                    content
             }
         ]);
 
 
     if (error) {
 
-        console.error(error);
+        console.error(
+            error
+        );
 
         alert(
             "Failed to save note."
         );
 
         return;
+
     }
 
 
-    document.getElementById("title")
-        .value = "";
+    document.getElementById(
+        "title"
+    ).value =
+        "";
 
 
-    document.getElementById("content")
-        .value = "";
+    document.getElementById(
+        "content"
+    ).value =
+        "";
 
 
     loadNotes();
@@ -244,15 +293,21 @@ async function editNote(id) {
     } = await supabaseClient
         .from("notes")
         .select("*")
-        .eq("id", id)
+        .eq(
+            "id",
+            id
+        )
         .single();
 
 
     if (error) {
 
-        console.error(error);
+        console.error(
+            error
+        );
 
         return;
+
     }
 
 
@@ -263,7 +318,9 @@ async function editNote(id) {
         );
 
 
-    if (title === null) return;
+    if (
+        title === null
+    ) return;
 
 
     const content =
@@ -273,7 +330,9 @@ async function editNote(id) {
         );
 
 
-    if (content === null) return;
+    if (
+        content === null
+    ) return;
 
 
     const {
@@ -281,10 +340,16 @@ async function editNote(id) {
     } = await supabaseClient
         .from("notes")
         .update({
-            title: title,
-            content: content
+            title:
+                title,
+
+            content:
+                content
         })
-        .eq("id", id);
+        .eq(
+            "id",
+            id
+        );
 
 
     if (updateError) {
@@ -298,6 +363,7 @@ async function editNote(id) {
         );
 
         return;
+
     }
 
 
@@ -319,6 +385,7 @@ async function deleteNote(id) {
     ) {
 
         return;
+
     }
 
 
@@ -327,18 +394,24 @@ async function deleteNote(id) {
     } = await supabaseClient
         .from("notes")
         .delete()
-        .eq("id", id);
+        .eq(
+            "id",
+            id
+        );
 
 
     if (error) {
 
-        console.error(error);
+        console.error(
+            error
+        );
 
         alert(
             "Failed to delete note."
         );
 
         return;
+
     }
 
 
@@ -354,7 +427,9 @@ async function deleteNote(id) {
 async function loadGallery() {
 
     const gallery =
-        document.getElementById("gallery");
+        document.getElementById(
+            "gallery"
+        );
 
 
     if (!gallery) return;
@@ -370,9 +445,12 @@ async function loadGallery() {
     } = await supabaseClient
         .from("gallery")
         .select("*")
-        .order("created_at", {
-            ascending: false
-        });
+        .order(
+            "created_at",
+            {
+                ascending: false
+            }
+        );
 
 
     if (error) {
@@ -386,55 +464,67 @@ async function loadGallery() {
             "<p>Failed to load gallery.</p>";
 
         return;
+
     }
 
 
-    gallery.innerHTML = "";
+    gallery.innerHTML =
+        "";
 
 
-    if (!data || data.length === 0) {
+    if (
+        !data ||
+        data.length === 0
+    ) {
 
         gallery.innerHTML =
             "<p>No photos yet 📸❤️</p>";
 
         return;
+
     }
 
 
-    data.forEach(photo => {
+    data.forEach(
+        photo => {
 
-        const div =
-            document.createElement("div");
-
-
-        div.className =
-            "gallery-item";
-
-
-        div.innerHTML = `
-
-            <img
-                src="${photo.image_url}"
-                alt="Memory"
-            >
-
-            <p>
-                ${escapeHTML(
-                    photo.caption || ""
-                )}
-            </p>
-
-            <button
-                onclick="deleteImage(${photo.id})">
-                🗑️ Delete
-            </button>
-
-        `;
+            const div =
+                document.createElement(
+                    "div"
+                );
 
 
-        gallery.appendChild(div);
+            div.className =
+                "gallery-item";
 
-    });
+
+            div.innerHTML = `
+
+                <img
+                    src="${photo.image_url}"
+                    alt="Memory"
+                >
+
+                <p>
+                    ${escapeHTML(
+                        photo.caption || ""
+                    )}
+                </p>
+
+                <button
+                    onclick="deleteImage(${photo.id})">
+                    🗑️ Delete
+                </button>
+
+            `;
+
+
+            gallery.appendChild(
+                div
+            );
+
+        }
+    );
 
 }
 
@@ -468,11 +558,14 @@ async function uploadImage() {
         );
 
         return;
+
     }
 
 
     if (
-        !file.type.startsWith("image/")
+        !file.type.startsWith(
+            "image/"
+        )
     ) {
 
         alert(
@@ -480,6 +573,7 @@ async function uploadImage() {
         );
 
         return;
+
     }
 
 
@@ -493,6 +587,7 @@ async function uploadImage() {
         );
 
         return;
+
     }
 
 
@@ -528,6 +623,7 @@ async function uploadImage() {
         );
 
         return;
+
     }
 
 
@@ -555,8 +651,11 @@ async function uploadImage() {
         .from("gallery")
         .insert([
             {
-                image_url: imageUrl,
-                caption: caption
+                image_url:
+                    imageUrl,
+
+                caption:
+                    caption
             }
         ]);
 
@@ -572,11 +671,16 @@ async function uploadImage() {
         );
 
         return;
+
     }
 
 
-    fileInput.value = "";
-    captionInput.value = "";
+    fileInput.value =
+        "";
+
+
+    captionInput.value =
+        "";
 
 
     alert(
@@ -602,6 +706,7 @@ async function deleteImage(id) {
     ) {
 
         return;
+
     }
 
 
@@ -610,16 +715,24 @@ async function deleteImage(id) {
         error
     } = await supabaseClient
         .from("gallery")
-        .select("image_url")
-        .eq("id", id)
+        .select(
+            "image_url"
+        )
+        .eq(
+            "id",
+            id
+        )
         .single();
 
 
     if (error) {
 
-        console.error(error);
+        console.error(
+            error
+        );
 
         return;
+
     }
 
 
@@ -648,7 +761,10 @@ async function deleteImage(id) {
     } = await supabaseClient
         .from("gallery")
         .delete()
-        .eq("id", id);
+        .eq(
+            "id",
+            id
+        );
 
 
     if (deleteError) {
@@ -658,6 +774,7 @@ async function deleteImage(id) {
         );
 
         return;
+
     }
 
 
@@ -691,12 +808,15 @@ async function loadSecretMessages() {
     if (!currentUser) {
 
         container.innerHTML = `
+
             <p class="empty-message">
                 Please login first ❤️
             </p>
+
         `;
 
         return;
+
     }
 
 
@@ -709,9 +829,12 @@ async function loadSecretMessages() {
         .or(
             `sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`
         )
-        .order("create_at", {
-            ascending: true
-        });
+        .order(
+            "create_at",
+            {
+                ascending: true
+            }
+        );
 
 
     if (error) {
@@ -722,122 +845,143 @@ async function loadSecretMessages() {
         );
 
         container.innerHTML = `
+
             <p class="empty-message">
                 Failed to load messages.
             </p>
+
         `;
 
         return;
+
     }
 
 
-    container.innerHTML = "";
+    container.innerHTML =
+        "";
 
 
-    if (!data || data.length === 0) {
+    if (
+        !data ||
+        data.length === 0
+    ) {
 
         container.innerHTML = `
+
             <p class="empty-message">
                 No secret messages yet 💕<br>
                 Be the first to send one ❤️
             </p>
+
         `;
 
         return;
+
     }
 
 
-    data.forEach(message => {
+    data.forEach(
+        message => {
 
-        const isMine =
-            message.sender_id ===
-            currentUser.id;
-
-
-        const card =
-            document.createElement("div");
+            const isMine =
+                message.sender_id ===
+                currentUser.id;
 
 
-        card.className =
-            "secret-message-card " +
-            (
-                isMine
-                    ? "mine"
-                    : "theirs"
-            );
+            const card =
+                document.createElement(
+                    "div"
+                );
 
 
-        const senderName =
-            USER_NAMES[
-                message.sender_id
-            ] ||
-            "Our Love";
+            card.className =
+                "secret-message-card " +
+                (
+                    isMine
+                        ? "mine"
+                        : "theirs"
+                );
 
 
-        const formattedDate =
-            formatMessageDate(
-                message.create_at
-            );
+            const senderName =
+                USER_NAMES[
+                    message.sender_id
+                ] ||
+                "Our Love";
 
 
-        let actions = "";
+            const formattedDate =
+                formatMessageDate(
+                    message.create_at
+                );
 
 
-        if (isMine) {
+            let actions =
+                "";
 
-            actions = `
 
-                <div class="message-actions">
+            if (isMine) {
 
-                    <button
-                        class="edit-message-btn"
-                        onclick="editSecretMessage(${message.id})">
-                        ✏️ Edit
-                    </button>
+                actions = `
 
-                    <button
-                        class="delete-message-btn"
-                        onclick="deleteSecretMessage(${message.id})">
-                        🗑️ Delete
-                    </button>
+                    <div class="message-actions">
+
+                        <button
+                            class="edit-message-btn"
+                            onclick="editSecretMessage(${message.id})">
+                            ✏️ Edit
+                        </button>
+
+                        <button
+                            class="delete-message-btn"
+                            onclick="deleteSecretMessage(${message.id})">
+                            🗑️ Delete
+                        </button>
+
+                    </div>
+
+                `;
+
+            }
+
+
+            card.innerHTML = `
+
+                <div class="message-bubble">
+
+                    <div class="message-top">
+
+                        <span class="message-sender">
+                            ${escapeHTML(
+                                senderName
+                            )}
+                        </span>
+
+                        <span class="message-time">
+                            ${formattedDate}
+                        </span>
+
+                    </div>
+
+                    <p class="message-text">
+                        ${escapeHTML(
+                            message.message
+                        )}
+                    </p>
+
+                    ${actions}
 
                 </div>
 
             `;
 
+
+            container.appendChild(
+                card
+            );
+
         }
-
-
-        card.innerHTML = `
-
-            <div class="message-bubble">
-
-                <div class="message-top">
-
-                    <span class="message-sender">
-                        ${escapeHTML(senderName)}
-                    </span>
-
-                    <span class="message-time">
-                        ${formattedDate}
-                    </span>
-
-                </div>
-
-                <p class="message-text">
-                    ${escapeHTML(message.message)}
-                </p>
-
-                ${actions}
-
-            </div>
-
-        `;
-
-
-        container.appendChild(card);
-
-    });
+    );
 
 }
 
@@ -862,6 +1006,7 @@ async function sendSecretMessage() {
         );
 
         return;
+
     }
 
 
@@ -888,6 +1033,7 @@ async function sendSecretMessage() {
         );
 
         return;
+
     }
 
 
@@ -917,10 +1063,13 @@ async function sendSecretMessage() {
         );
 
         return;
+
     }
 
 
-    sendButton.disabled = true;
+    sendButton.disabled =
+        true;
+
 
     sendButton.textContent =
         "Sending... 💕";
@@ -956,19 +1105,25 @@ async function sendSecretMessage() {
             error.message
         );
 
-        sendButton.disabled = false;
+        sendButton.disabled =
+            false;
+
 
         sendButton.textContent =
             "💌 Send Message";
 
         return;
+
     }
 
 
-    messageInput.value = "";
+    messageInput.value =
+        "";
 
 
-    sendButton.disabled = false;
+    sendButton.disabled =
+        false;
+
 
     sendButton.textContent =
         "💌 Send Message";
@@ -991,19 +1146,25 @@ async function editSecretMessage(id) {
     } = await supabaseClient
         .from("secret_message")
         .select("*")
-        .eq("id", id)
+        .eq(
+            "id",
+            id
+        )
         .single();
 
 
     if (error) {
 
-        console.error(error);
+        console.error(
+            error
+        );
 
         alert(
             "Unable to find message."
         );
 
         return;
+
     }
 
 
@@ -1017,6 +1178,7 @@ async function editSecretMessage(id) {
         );
 
         return;
+
     }
 
 
@@ -1027,9 +1189,12 @@ async function editSecretMessage(id) {
         );
 
 
-    if (newMessage === null) {
+    if (
+        newMessage === null
+    ) {
 
         return;
+
     }
 
 
@@ -1044,6 +1209,7 @@ async function editSecretMessage(id) {
         );
 
         return;
+
     }
 
 
@@ -1072,6 +1238,7 @@ async function editSecretMessage(id) {
         );
 
         return;
+
     }
 
 
@@ -1093,6 +1260,7 @@ async function deleteSecretMessage(id) {
     ) {
 
         return;
+
     }
 
 
@@ -1118,6 +1286,7 @@ async function deleteSecretMessage(id) {
         );
 
         return;
+
     }
 
 
@@ -1130,25 +1299,40 @@ async function deleteSecretMessage(id) {
 // FORMAT MESSAGE DATE
 // ======================================================
 
-function formatMessageDate(dateString) {
+function formatMessageDate(
+    dateString
+) {
 
     if (!dateString) {
+
         return "";
+
     }
 
 
     const date =
-        new Date(dateString);
+        new Date(
+            dateString
+        );
 
 
     return date.toLocaleString(
         "en-MY",
         {
-            day: "2-digit",
-            month: "short",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit"
+            day:
+                "2-digit",
+
+            month:
+                "short",
+
+            year:
+                "numeric",
+
+            hour:
+                "2-digit",
+
+            minute:
+                "2-digit"
         }
     );
 
@@ -1159,7 +1343,9 @@ function formatMessageDate(dateString) {
 // SECURITY
 // ======================================================
 
-function escapeHTML(text) {
+function escapeHTML(
+    text
+) {
 
     const div =
         document.createElement(
@@ -1180,7 +1366,9 @@ function escapeHTML(text) {
 // NAVIGATION
 // ======================================================
 
-function showSection(sectionId) {
+function showSection(
+    sectionId
+) {
 
     const sections = [
 
@@ -1195,24 +1383,26 @@ function showSection(sectionId) {
     ];
 
 
-    sections.forEach(id => {
+    sections.forEach(
+        id => {
 
-        const section =
-            document.getElementById(
-                id
-            );
+            const section =
+                document.getElementById(
+                    id
+                );
 
 
-        if (section) {
+            if (section) {
 
-            section.style.display =
-                id === sectionId
-                    ? "block"
-                    : "none";
+                section.style.display =
+                    id === sectionId
+                        ? "block"
+                        : "none";
+
+            }
 
         }
-
-    });
+    );
 
 
     if (
@@ -1235,11 +1425,15 @@ async function startApp() {
 
     await getCurrentUser();
 
+
     loadNotes();
+
 
     loadGallery();
 
+
     loadSecretMessages();
+
 
     showSection(
         "notes-section"
@@ -1249,4 +1443,3 @@ async function startApp() {
 
 
 startApp();
-
