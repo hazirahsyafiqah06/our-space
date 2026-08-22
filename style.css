@@ -1,13 +1,29 @@
+/* ======================================================
+   BASIC
+====================================================== */
+
 * {
     box-sizing: border-box;
+}
+
+
+html {
+    scroll-behavior: smooth;
 }
 
 
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background: #fff5f8;
-    color: #333;
+    color: #444;
+
+    background:
+        linear-gradient(
+            135deg,
+            #fff7fa 0%,
+            #f7fbff 50%,
+            #fff5f8 100%
+        );
 }
 
 
@@ -18,9 +34,9 @@ body {
 }
 
 
-/* =========================
+/* ======================================================
    HERO
-========================= */
+====================================================== */
 
 .hero {
     text-align: center;
@@ -31,7 +47,7 @@ body {
 .small-title {
     font-size: 12px;
     letter-spacing: 3px;
-    color: #999;
+    color: #9aa5ad;
     margin-bottom: 8px;
 }
 
@@ -53,59 +69,81 @@ h1 {
 
 .couple-name {
     font-size: 18px;
-    color: #e75480;
+    color: #6faac8;
     margin: 10px 0;
+    font-weight: bold;
 }
 
 
 .since {
     color: #999;
     font-size: 14px;
-    margin-bottom: 12px;
 }
 
 
-/* =========================
-   TOGETHER TIME
-========================= */
+/* ======================================================
+   TOGETHER CARD
+====================================================== */
 
-.together-time {
+.together-card {
+    margin: 24px auto 0;
+    max-width: 350px;
+    padding: 18px;
+    border-radius: 22px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #e9f8ff,
+            #fff0f5
+        );
+
+    border: 1px solid #e7dce2;
+
+    box-shadow:
+        0 5px 18px rgba(0,0,0,0.06);
+}
+
+
+.together-title {
+    margin: 0 0 13px;
+    color: #7b8d98;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+
+.together-count {
     display: flex;
     justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 8px;
-    width: fit-content;
-    max-width: 100%;
-    margin: 15px auto 20px;
-    padding: 12px 18px;
-    background: #fff8fa;
-    border: 1px solid #f5dce5;
+    gap: 12px;
+}
+
+
+.together-box {
+    width: 105px;
+    padding: 10px;
+    background: rgba(255,255,255,0.85);
     border-radius: 15px;
-    box-shadow: 0 3px 12px rgba(0,0,0,0.04);
 }
 
 
-.together-time span {
+.together-box strong {
+    display: block;
+    color: #6faac8;
+    font-size: 24px;
+}
+
+
+.together-box span {
     color: #999;
-    font-size: 13px;
-    font-weight: 500;
+    font-size: 11px;
 }
 
 
-.together-time strong {
-    color: #e75480;
-    font-size: 14px;
-    background: white;
-    padding: 7px 12px;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-}
-
-
-/* =========================
+/* ======================================================
    COUNTDOWN
-========================= */
+====================================================== */
 
 .anniversary {
     margin-top: 25px;
@@ -132,7 +170,9 @@ h1 {
     width: 70px;
     padding: 12px 5px;
     border-radius: 16px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+
+    box-shadow:
+        0 4px 15px rgba(0,0,0,0.06);
 }
 
 
@@ -155,9 +195,9 @@ h1 {
 }
 
 
-/* =========================
+/* ======================================================
    LOGOUT
-========================= */
+====================================================== */
 
 .logout-area {
     text-align: center;
@@ -171,13 +211,15 @@ h1 {
     color: #e75480;
     padding: 10px 20px;
     border-radius: 12px;
-    box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+
+    box-shadow:
+        0 3px 12px rgba(0,0,0,0.08);
 }
 
 
-/* =========================
+/* ======================================================
    NAVIGATION
-========================= */
+====================================================== */
 
 .navigation {
     display: grid;
@@ -189,27 +231,34 @@ h1 {
 
 .navigation button {
     background: white;
-    color: #e75480;
-    border: 1px solid #f3c1d1;
+    color: #6faac8;
+
+    border: 1px solid #cfe9f5;
+
     padding: 12px 8px;
     border-radius: 12px;
+
+    font-weight: bold;
 }
 
 
 .navigation button:hover {
-    background: #fff0f5;
+    background: #fff2f6;
+    color: #e75480;
 }
 
 
-/* =========================
+/* ======================================================
    SECTION CARD
-========================= */
+====================================================== */
 
 .section-card {
-    background: white;
+    background: rgba(255,255,255,0.96);
     padding: 25px;
     border-radius: 22px;
-    box-shadow: 0 5px 22px rgba(0,0,0,0.07);
+
+    box-shadow:
+        0 5px 22px rgba(0,0,0,0.07);
 }
 
 
@@ -233,27 +282,32 @@ section h2 {
 }
 
 
-/* =========================
+/* ======================================================
    INPUT
-========================= */
+====================================================== */
 
 input,
 textarea {
     width: 100%;
     padding: 12px 14px;
     margin-bottom: 12px;
+
     border: 1px solid #ead5dc;
     border-radius: 12px;
+
     font-size: 15px;
     outline: none;
+
     background: #fffafb;
 }
 
 
 input:focus,
 textarea:focus {
-    border-color: #e75480;
-    box-shadow: 0 0 0 3px rgba(231,84,128,0.08);
+    border-color: #8ecde7;
+
+    box-shadow:
+        0 0 0 3px rgba(142,205,231,0.12);
 }
 
 
@@ -266,12 +320,16 @@ textarea {
 button {
     width: 100%;
     padding: 12px;
+
     border: none;
     border-radius: 12px;
+
     background: #e75480;
     color: white;
+
     font-size: 15px;
     cursor: pointer;
+
     transition: 0.2s;
 }
 
@@ -281,15 +339,17 @@ button:hover {
 }
 
 
-/* =========================
+/* ======================================================
    NOTES
-========================= */
+====================================================== */
 
 .note-form {
     background: #fff8fa;
     padding: 18px;
     border-radius: 17px;
     margin-bottom: 20px;
+
+    border: 1px solid #f7dce6;
 }
 
 
@@ -303,6 +363,7 @@ button:hover {
 .note {
     background: #fffafb;
     border: 1px solid #f5dce5;
+
     padding: 18px;
     border-radius: 18px;
 }
@@ -337,67 +398,466 @@ button:hover {
 }
 
 
-/* =========================
-   GALLERY
-========================= */
+/* ======================================================
+   GALLERY HEADING
+====================================================== */
 
-.upload-card {
-    background: #fff8fa;
-    padding: 18px;
-    border-radius: 17px;
-    margin-bottom: 20px;
+.gallery-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 18px;
 }
 
 
+.gallery-heading h2 {
+    margin-bottom: 4px;
+}
+
+
+.gallery-heading p {
+    margin: 0;
+    color: #999;
+    font-size: 13px;
+}
+
+
+.gallery-heart {
+    width: 48px;
+    height: 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ffe0eb,
+            #dff5ff
+        );
+
+    font-size: 22px;
+
+    box-shadow:
+        0 4px 12px rgba(0,0,0,0.06);
+}
+
+
+/* ======================================================
+   GALLERY UPLOAD
+====================================================== */
+
+.upload-card {
+    position: relative;
+
+    background:
+        linear-gradient(
+            135deg,
+            #fff5f8,
+            #f1fbff
+        );
+
+    padding: 20px;
+
+    border-radius: 20px;
+
+    margin-bottom: 25px;
+
+    border: 1px solid #f0dfe6;
+}
+
+
+.upload-icon {
+    width: 50px;
+    height: 50px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 15px;
+
+    background: white;
+
+    font-size: 23px;
+
+    margin-bottom: 10px;
+}
+
+
+.upload-text h3 {
+    margin: 0 0 4px;
+    color: #e75480;
+}
+
+
+.upload-text p {
+    margin: 0 0 15px;
+    color: #999;
+    font-size: 13px;
+}
+
+
+.upload-btn {
+    background:
+        linear-gradient(
+            135deg,
+            #e75480,
+            #80c9e7
+        );
+}
+
+
+/* ======================================================
+   POLAROID GALLERY
+====================================================== */
+
 #gallery {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 22px;
+
+    align-items: start;
 }
 
 
 .gallery-item {
-    background: #fffafb;
-    border: 1px solid #f5dce5;
-    padding: 10px;
-    border-radius: 18px;
+    background: white;
+
+    padding: 10px 10px 14px;
+
+    border-radius: 4px;
+
+    border: 1px solid #eeeeee;
+
+    box-shadow:
+        0 7px 18px rgba(0,0,0,0.10);
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+
+    position: relative;
+}
+
+
+.gallery-item:nth-child(even) {
+    transform: rotate(1deg);
+}
+
+
+.gallery-item:nth-child(odd) {
+    transform: rotate(-1deg);
+}
+
+
+.gallery-item:hover {
+    transform:
+        rotate(0deg)
+        translateY(-5px);
+
+    box-shadow:
+        0 12px 25px rgba(0,0,0,0.13);
+}
+
+
+/* IMAGE */
+
+.gallery-image-wrapper {
+    position: relative;
+
+    width: 100%;
+    height: 235px;
+
     overflow: hidden;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f8dce6,
+            #dff4fc
+        );
+
+    cursor: zoom-in;
 }
 
 
 .gallery-item img {
     width: 100%;
-    height: 220px;
+    height: 100%;
+
     object-fit: cover;
-    border-radius: 12px;
+
     display: block;
+
+    transition:
+        transform 0.35s ease;
 }
 
 
-.gallery-item p {
-    margin: 10px 0;
-    color: #666;
-    line-height: 1.4;
+.gallery-image-wrapper:hover img {
+    transform: scale(1.05);
 }
 
 
-.gallery-item button {
-    background: #999;
+/* ZOOM ICON */
+
+.gallery-zoom {
+    position: absolute;
+
+    right: 10px;
+    bottom: 10px;
+
+    width: 35px;
+    height: 35px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255,255,255,0.9);
+
+    color: #e75480;
+
+    font-size: 16px;
+
+    opacity: 0;
+
+    transition: 0.25s;
 }
 
 
-/* =========================
+.gallery-image-wrapper:hover
+.gallery-zoom {
+    opacity: 1;
+}
+
+
+/* CAPTION */
+
+.gallery-caption {
+    padding: 12px 5px 5px;
+
+    text-align: center;
+}
+
+
+.gallery-caption p {
+    margin: 0;
+
+    color: #555;
+
+    font-size: 14px;
+
+    line-height: 1.5;
+
+    word-break: break-word;
+}
+
+
+.gallery-date {
+    display: block;
+
+    margin-top: 5px;
+
+    color: #aaa;
+
+    font-size: 10px;
+}
+
+
+/* DELETE */
+
+.gallery-delete {
+    background: #f3f3f3;
+
+    color: #999;
+
+    font-size: 11px;
+
+    padding: 7px;
+
+    margin-top: 8px;
+
+    border-radius: 9px;
+}
+
+
+.gallery-delete:hover {
+    background: #ffe5ec;
+    color: #e75480;
+}
+
+
+/* EMPTY */
+
+.gallery-empty {
+    grid-column: 1 / -1;
+
+    text-align: center;
+
+    padding: 35px 15px;
+
+    color: #999;
+
+    background: #fffafd;
+
+    border: 1px dashed #edcedb;
+
+    border-radius: 18px;
+}
+
+
+.gallery-empty .empty-icon {
+    font-size: 40px;
+    margin-bottom: 8px;
+}
+
+
+.gallery-loading {
+    grid-column: 1 / -1;
+
+    text-align: center;
+
+    color: #999;
+
+    padding: 25px;
+}
+
+
+/* ======================================================
+   LIGHTBOX
+====================================================== */
+
+.lightbox {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 9999;
+
+    background:
+        rgba(35,35,45,0.88);
+
+    display: none;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 25px;
+
+    backdrop-filter: blur(5px);
+}
+
+
+.lightbox.active {
+    display: flex;
+}
+
+
+.lightbox-content {
+    max-width: 850px;
+    width: 100%;
+
+    text-align: center;
+
+    animation:
+        lightboxOpen 0.25s ease;
+}
+
+
+@keyframes lightboxOpen {
+
+    from {
+        opacity: 0;
+        transform: scale(0.94);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+}
+
+
+.lightbox-content img {
+    max-width: 100%;
+    max-height: 75vh;
+
+    object-fit: contain;
+
+    border-radius: 8px;
+
+    box-shadow:
+        0 15px 45px rgba(0,0,0,0.3);
+}
+
+
+.lightbox-caption {
+    color: white;
+
+    margin-top: 14px;
+
+    font-size: 14px;
+
+    line-height: 1.5;
+}
+
+
+.lightbox-close {
+    position: fixed;
+
+    top: 20px;
+    right: 25px;
+
+    width: 42px;
+    height: 42px;
+
+    padding: 0;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255,255,255,0.9);
+
+    color: #e75480;
+
+    font-size: 20px;
+
+    z-index: 10000;
+}
+
+
+/* ======================================================
    MEMORIES
-========================= */
+====================================================== */
 
 .memory {
     display: flex;
+
     align-items: center;
+
     gap: 15px;
+
     background: #fff8fa;
+
     border: 1px solid #f5dce5;
+
     padding: 18px;
+
     border-radius: 18px;
+
     margin-bottom: 12px;
 }
 
@@ -419,9 +879,9 @@ button:hover {
 }
 
 
-/* =========================
+/* ======================================================
    SECRET MESSAGE
-========================= */
+====================================================== */
 
 .message-section-card {
     overflow: hidden;
@@ -430,9 +890,13 @@ button:hover {
 
 .message-form {
     background: #fff8fa;
+
     border: 1px solid #f5dce5;
+
     padding: 18px;
+
     border-radius: 18px;
+
     margin-bottom: 25px;
 }
 
@@ -458,10 +922,6 @@ button:hover {
 }
 
 
-/* =========================
-   MESSAGE CARD
-========================= */
-
 .secret-message-card {
     width: 100%;
     display: flex;
@@ -481,9 +941,13 @@ button:hover {
 .message-bubble {
     width: 82%;
     padding: 15px 16px;
+
     border-radius: 18px;
+
     position: relative;
-    box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+
+    box-shadow:
+        0 3px 12px rgba(0,0,0,0.05);
 }
 
 
@@ -494,8 +958,8 @@ button:hover {
 
 
 .theirs .message-bubble {
-    background: #f7f7f7;
-    border: 1px solid #eee;
+    background: #eaf8ff;
+    border: 1px solid #d6edf6;
     border-bottom-left-radius: 5px;
 }
 
@@ -504,7 +968,9 @@ button:hover {
     display: flex;
     justify-content: space-between;
     align-items: center;
+
     gap: 10px;
+
     margin-bottom: 8px;
 }
 
@@ -525,8 +991,11 @@ button:hover {
 
 .message-text {
     margin: 0;
+
     color: #444;
+
     line-height: 1.6;
+
     white-space: pre-wrap;
     word-break: break-word;
 }
@@ -541,7 +1010,9 @@ button:hover {
 
 .message-actions button {
     width: auto;
+
     padding: 7px 12px;
+
     font-size: 12px;
 }
 
@@ -556,9 +1027,9 @@ button:hover {
 }
 
 
-/* =========================
+/* ======================================================
    MOBILE
-========================= */
+====================================================== */
 
 @media (max-width: 600px) {
 
@@ -580,26 +1051,6 @@ button:hover {
 
     .couple-name {
         font-size: 16px;
-    }
-
-
-    .together-time {
-        width: 100%;
-        max-width: 300px;
-        gap: 6px;
-        padding: 10px 12px;
-    }
-
-
-    .together-time span {
-        width: 100%;
-        margin-bottom: 2px;
-    }
-
-
-    .together-time strong {
-        font-size: 13px;
-        padding: 6px 10px;
     }
 
 
@@ -630,16 +1081,33 @@ button:hover {
     }
 
 
+    /* Gallery */
+
     #gallery {
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
+        grid-template-columns: 1fr;
+        gap: 20px;
     }
 
 
-    .gallery-item img {
-        height: 150px;
+    .gallery-item,
+    .gallery-item:nth-child(even),
+    .gallery-item:nth-child(odd) {
+        transform: rotate(0deg);
     }
 
+
+    .gallery-image-wrapper {
+        height: 240px;
+    }
+
+
+    .gallery-heart {
+        width: 42px;
+        height: 42px;
+    }
+
+
+    /* Notes */
 
     .note-buttons {
         flex-direction: column;
@@ -650,6 +1118,8 @@ button:hover {
         width: 100%;
     }
 
+
+    /* Messages */
 
     .message-bubble {
         width: 88%;
@@ -670,6 +1140,31 @@ button:hover {
 
     .message-actions button {
         flex: 1;
+    }
+
+
+    /* Together */
+
+    .together-box {
+        width: 95px;
+    }
+
+
+    /* Lightbox */
+
+    .lightbox {
+        padding: 15px;
+    }
+
+
+    .lightbox-content img {
+        max-height: 70vh;
+    }
+
+
+    .lightbox-close {
+        top: 12px;
+        right: 12px;
     }
 
 }
