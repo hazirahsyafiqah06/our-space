@@ -1,3 +1,4 @@
+
 /* ======================================================
    BASIC
 ====================================================== */
@@ -436,14 +437,16 @@ button:hover {
     background:
         linear-gradient(
             135deg,
-            #ffe0eb,
-            #dff5ff
+            #ffdce9,
+            #cfefff
         );
+
+    color: #e75480;
 
     font-size: 22px;
 
     box-shadow:
-        0 4px 12px rgba(0,0,0,0.06);
+        0 5px 15px rgba(114,201,223,0.18);
 }
 
 
@@ -457,17 +460,20 @@ button:hover {
     background:
         linear-gradient(
             135deg,
-            #fff5f8,
-            #f1fbff
+            #fff1f7 0%,
+            #edfaff 100%
         );
 
     padding: 20px;
 
     border-radius: 20px;
 
-    margin-bottom: 25px;
+    margin-bottom: 28px;
 
-    border: 1px solid #f0dfe6;
+    border: 1px solid #d8edf5;
+
+    box-shadow:
+        0 5px 18px rgba(114,201,223,0.10);
 }
 
 
@@ -481,7 +487,14 @@ button:hover {
 
     border-radius: 15px;
 
-    background: white;
+    background:
+        linear-gradient(
+            135deg,
+            #ffe1ed,
+            #d8f3ff
+        );
+
+    color: #6faac8;
 
     font-size: 23px;
 
@@ -497,8 +510,28 @@ button:hover {
 
 .upload-text p {
     margin: 0 0 15px;
-    color: #999;
+    color: #7fa1af;
     font-size: 13px;
+}
+
+
+.upload-card input[type="file"] {
+    background: rgba(255,255,255,0.9);
+
+    border: 1px solid #cde9f3;
+
+    padding: 11px;
+
+    border-radius: 12px;
+
+    color: #6f8f9b;
+}
+
+
+.upload-card input[type="text"] {
+    background: rgba(255,255,255,0.9);
+
+    border: 1px solid #ead5dc;
 }
 
 
@@ -507,8 +540,29 @@ button:hover {
         linear-gradient(
             135deg,
             #e75480,
-            #80c9e7
+            #72c9df
         );
+
+    border: none;
+
+    color: white;
+
+    font-weight: bold;
+
+    box-shadow:
+        0 5px 16px rgba(114,201,223,0.25);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.upload-btn:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 8px 20px rgba(114,201,223,0.30);
 }
 
 
@@ -522,67 +576,74 @@ button:hover {
     grid-template-columns:
         repeat(2, minmax(0, 1fr));
 
-    gap: 22px;
+    gap: 24px;
 
     align-items: start;
 }
 
 
 .gallery-item {
-    background: white;
+    background: #ffffff;
 
-    padding: 10px 10px 14px;
+    padding: 11px 11px 16px;
 
-    border-radius: 4px;
+    border-radius: 5px;
 
     border: 1px solid #eeeeee;
 
     box-shadow:
-        0 7px 18px rgba(0,0,0,0.10);
+        0 8px 20px rgba(0,0,0,0.10);
 
     transition:
-        transform 0.25s ease,
-        box-shadow 0.25s ease;
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
 
     position: relative;
+
+    overflow: visible;
 }
 
 
 .gallery-item:nth-child(even) {
-    transform: rotate(1deg);
+    transform: rotate(1.2deg);
 }
 
 
 .gallery-item:nth-child(odd) {
-    transform: rotate(-1deg);
+    transform: rotate(-1.2deg);
 }
 
 
 .gallery-item:hover {
     transform:
         rotate(0deg)
-        translateY(-5px);
+        translateY(-7px);
 
     box-shadow:
-        0 12px 25px rgba(0,0,0,0.13);
+        0 16px 30px rgba(114,201,223,0.20);
+
+    z-index: 3;
 }
 
 
-/* IMAGE */
+/* ======================================================
+   PHOTO
+====================================================== */
 
 .gallery-image-wrapper {
     position: relative;
 
     width: 100%;
-    height: 235px;
+
+    aspect-ratio: 1 / 1;
 
     overflow: hidden;
 
     background:
         linear-gradient(
             135deg,
-            #f8dce6,
-            #dff4fc
+            #ffe5ee,
+            #dff5ff
         );
 
     cursor: zoom-in;
@@ -598,16 +659,71 @@ button:hover {
     display: block;
 
     transition:
-        transform 0.35s ease;
+        transform 0.4s ease;
 }
 
 
 .gallery-image-wrapper:hover img {
-    transform: scale(1.05);
+    transform: scale(1.06);
 }
 
 
-/* ZOOM ICON */
+/* ======================================================
+   IMAGE OVERLAY
+====================================================== */
+
+.photo-overlay {
+    position: absolute;
+
+    inset: 0;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(231,84,128,0.18),
+            rgba(114,201,223,0.25)
+        );
+
+    opacity: 0;
+
+    transition:
+        opacity 0.25s ease;
+}
+
+
+.gallery-image-wrapper:hover
+.photo-overlay {
+    opacity: 1;
+}
+
+
+.view-photo {
+    background:
+        rgba(255,255,255,0.94);
+
+    color: #e75480;
+
+    padding: 8px 15px;
+
+    border-radius: 20px;
+
+    font-size: 12px;
+
+    font-weight: bold;
+
+    box-shadow:
+        0 4px 12px rgba(0,0,0,0.12);
+}
+
+
+/* ======================================================
+   ZOOM ICON
+====================================================== */
 
 .gallery-zoom {
     position: absolute;
@@ -619,13 +735,14 @@ button:hover {
     height: 35px;
 
     display: flex;
+
     align-items: center;
     justify-content: center;
 
     border-radius: 50%;
 
     background:
-        rgba(255,255,255,0.9);
+        rgba(255,255,255,0.92);
 
     color: #e75480;
 
@@ -633,20 +750,26 @@ button:hover {
 
     opacity: 0;
 
-    transition: 0.25s;
+    transition:
+        opacity 0.25s ease,
+        transform 0.25s ease;
 }
 
 
 .gallery-image-wrapper:hover
 .gallery-zoom {
     opacity: 1;
+
+    transform: scale(1.05);
 }
 
 
-/* CAPTION */
+/* ======================================================
+   POLAROID CAPTION
+====================================================== */
 
 .gallery-caption {
-    padding: 12px 5px 5px;
+    padding: 13px 5px 3px;
 
     text-align: center;
 }
@@ -661,25 +784,35 @@ button:hover {
 
     line-height: 1.5;
 
+    font-weight: 500;
+
     word-break: break-word;
 }
 
 
+/* ======================================================
+   UPLOAD DATE
+====================================================== */
+
 .gallery-date {
     display: block;
 
-    margin-top: 5px;
+    margin-top: 7px;
 
-    color: #aaa;
+    color: #72b9ca;
 
     font-size: 10px;
+
+    letter-spacing: 0.2px;
 }
 
 
-/* DELETE */
+/* ======================================================
+   DELETE BUTTON
+====================================================== */
 
 .gallery-delete {
-    background: #f3f3f3;
+    background: #f5f5f5;
 
     color: #999;
 
@@ -687,19 +820,26 @@ button:hover {
 
     padding: 7px;
 
-    margin-top: 8px;
+    margin-top: 10px;
 
     border-radius: 9px;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
 }
 
 
 .gallery-delete:hover {
     background: #ffe5ec;
+
     color: #e75480;
 }
 
 
-/* EMPTY */
+/* ======================================================
+   EMPTY
+====================================================== */
 
 .gallery-empty {
     grid-column: 1 / -1;
@@ -710,9 +850,14 @@ button:hover {
 
     color: #999;
 
-    background: #fffafd;
+    background:
+        linear-gradient(
+            135deg,
+            #fff8fb,
+            #f1fbff
+        );
 
-    border: 1px dashed #edcedb;
+    border: 1px dashed #cfe5ed;
 
     border-radius: 18px;
 }
@@ -720,6 +865,7 @@ button:hover {
 
 .gallery-empty .empty-icon {
     font-size: 40px;
+
     margin-bottom: 8px;
 }
 
@@ -729,7 +875,7 @@ button:hover {
 
     text-align: center;
 
-    color: #999;
+    color: #72b9ca;
 
     padding: 25px;
 }
@@ -756,7 +902,8 @@ button:hover {
 
     padding: 25px;
 
-    backdrop-filter: blur(5px);
+    backdrop-filter:
+        blur(7px);
 }
 
 
@@ -767,6 +914,7 @@ button:hover {
 
 .lightbox-content {
     max-width: 850px;
+
     width: 100%;
 
     text-align: center;
@@ -793,27 +941,52 @@ button:hover {
 
 .lightbox-content img {
     max-width: 100%;
-    max-height: 75vh;
+
+    max-height: 72vh;
 
     object-fit: contain;
 
     border-radius: 8px;
 
     box-shadow:
-        0 15px 45px rgba(0,0,0,0.3);
+        0 15px 45px rgba(0,0,0,0.35);
+
+    border: 4px solid
+        rgba(255,255,255,0.15);
 }
 
+
+/* ======================================================
+   LIGHTBOX INFO
+====================================================== */
 
 .lightbox-caption {
     color: white;
 
     margin-top: 14px;
 
-    font-size: 14px;
+    font-size: 15px;
 
     line-height: 1.5;
+
+    font-weight: 500;
 }
 
+
+.lightbox-date {
+    color: #bdefff;
+
+    margin-top: 6px;
+
+    font-size: 11px;
+
+    letter-spacing: 0.3px;
+}
+
+
+/* ======================================================
+   LIGHTBOX CLOSE
+====================================================== */
 
 .lightbox-close {
     position: fixed;
@@ -829,13 +1002,25 @@ button:hover {
     border-radius: 50%;
 
     background:
-        rgba(255,255,255,0.9);
+        rgba(255,255,255,0.94);
 
     color: #e75480;
 
     font-size: 20px;
 
     z-index: 10000;
+
+    box-shadow:
+        0 5px 15px rgba(0,0,0,0.18);
+}
+
+
+.lightbox-close:hover {
+    background: #e75480;
+
+    color: white;
+
+    transform: rotate(90deg);
 }
 
 
@@ -1085,7 +1270,8 @@ button:hover {
 
     #gallery {
         grid-template-columns: 1fr;
-        gap: 20px;
+
+        gap: 22px;
     }
 
 
@@ -1097,13 +1283,25 @@ button:hover {
 
 
     .gallery-image-wrapper {
-        height: 240px;
+        aspect-ratio: 1 / 1;
+
+        height: auto;
     }
 
 
     .gallery-heart {
         width: 42px;
         height: 42px;
+    }
+
+
+    .gallery-caption p {
+        font-size: 13px;
+    }
+
+
+    .gallery-date {
+        font-size: 9px;
     }
 
 
@@ -1158,13 +1356,31 @@ button:hover {
 
 
     .lightbox-content img {
-        max-height: 70vh;
+        max-height: 68vh;
+
+        border-radius: 6px;
+    }
+
+
+    .lightbox-caption {
+        font-size: 13px;
+
+        margin-top: 12px;
+    }
+
+
+    .lightbox-date {
+        font-size: 9px;
     }
 
 
     .lightbox-close {
         top: 12px;
         right: 12px;
+
+        width: 38px;
+        height: 38px;
     }
 
 }
+
