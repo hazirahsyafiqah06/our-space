@@ -1464,46 +1464,34 @@ async function loadSecretMessages() {
 
             card.innerHTML = `
 
-                <div
-                    class="message-bubble"
-                >
+    <div
+        class="message-bubble"
+    >
 
-                    <div
-                        class="message-top"
-                    >
+        <div class="message-top">
 
-                        <span
-                            class="message-sender"
-                        >
-                            ${escapeHTML(
-                                senderName
-                            )}
-                        </span>
+            <span class="message-sender">
+                ${escapeHTML(senderName)}
+            </span>
+
+        </div>
 
 
-                        <span
-                            class="message-time"
-                        >
-                            ${formattedDate}
-                        </span>
-
-                    </div>
+        <p class="message-text">
+            ${escapeHTML(message.message)}
+        </p>
 
 
-                    <p
-                        class="message-text"
-                    >
-                        ${escapeHTML(
-                            message.message
-                        )}
-                    </p>
+        <span class="message-time">
+            ${formattedDate}
+        </span>
 
 
-                    ${actions}
+        ${actions}
 
-                </div>
+    </div>
 
-            `;
+`;
 
 
             container.appendChild(
