@@ -4296,4 +4296,401 @@ button:hover {
     .surprise-message {
         font-size: 13px;
     }
+
+   /* ======================================================
+   BIRTHDAY SURPRISE POPUP
+   ====================================================== */
+
+.birthday-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255, 220, 235, 0.88),
+            rgba(220, 245, 255, 0.88)
+        );
+
+    backdrop-filter: blur(7px);
+
+    animation:
+        birthdayFadeIn 0.4s ease;
+}
+
+
+.birthday-popup {
+    position: relative;
+
+    width: 100%;
+    max-width: 390px;
+
+    max-height: 90vh;
+    overflow-y: auto;
+
+    padding: 25px 22px;
+
+    text-align: center;
+
+    background:
+        linear-gradient(
+            145deg,
+            #fff8fb,
+            #f2fbff
+        );
+
+    border: 1px solid #f3dce6;
+
+    border-radius: 28px;
+
+    box-shadow:
+        0 18px 50px rgba(0,0,0,0.16);
+
+    animation:
+        birthdayPopup 0.5s ease;
+}
+
+
+.birthday-popup h2 {
+    margin: 5px 0 5px;
+
+    color: #e75480;
+
+    font-size: 28px;
+}
+
+
+.birthday-popup h3 {
+    margin: 10px 0;
+
+    color: #6faac8;
+
+    font-size: 19px;
+}
+
+
+.wish {
+    color: #999;
+
+    font-size: 13px;
+
+    margin-bottom: 15px;
+}
+
+
+.popup-photo {
+    width: 115px;
+    height: 115px;
+
+    object-fit: cover;
+
+    border-radius: 50%;
+
+    border: 5px solid white;
+
+    box-shadow:
+        0 7px 20px rgba(0,0,0,0.12);
+
+    margin: 8px auto 5px;
+
+    display: block;
+}
+
+
+.popup-message {
+    color: #666;
+
+    font-size: 13px;
+
+    line-height: 1.6;
+
+    padding: 0 8px;
+}
+
+
+.special-badge {
+    display: inline-block;
+
+    margin-top: 18px;
+
+    padding: 9px 15px;
+
+    border-radius: 20px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ffe0eb,
+            #dff5ff
+        );
+
+    color: #e75480;
+
+    font-size: 12px;
+
+    font-weight: bold;
+}
+
+
+.popup-date {
+    margin-top: 15px;
+
+    color: #72b9ca;
+
+    font-size: 10px;
+
+    letter-spacing: 1px;
+}
+
+
+/* ======================================================
+   GIFT
+   ====================================================== */
+
+.birthday-gift {
+    position: relative;
+
+    width: 90px;
+    height: 82px;
+
+    margin: 0 auto 8px;
+}
+
+
+.gift-box {
+    position: absolute;
+
+    left: 10px;
+    bottom: 0;
+
+    width: 70px;
+    height: 55px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ff9fbd,
+            #e75480
+        );
+
+    border-radius: 5px 5px 10px 10px;
+
+    box-shadow:
+        0 7px 15px rgba(231,84,128,0.20);
+}
+
+
+.gift-lid {
+    position: absolute;
+
+    left: 5px;
+    top: 18px;
+
+    width: 80px;
+    height: 17px;
+
+    background: #f47fa4;
+
+    border-radius: 5px;
+
+    z-index: 2;
+}
+
+
+.gift-ribbon-left,
+.gift-ribbon-right {
+    position: absolute;
+
+    width: 35px;
+    height: 18px;
+
+    border: 5px solid #72c9df;
+
+    border-radius: 50%;
+
+    top: 0;
+
+    z-index: 3;
+}
+
+
+.gift-ribbon-left {
+    left: 13px;
+
+    transform:
+        rotate(-25deg);
+}
+
+
+.gift-ribbon-right {
+    right: 13px;
+
+    transform:
+        rotate(25deg);
+}
+
+
+/* ======================================================
+   CLOSE BUTTON
+   ====================================================== */
+
+.close-button {
+    position: absolute;
+
+    top: 12px;
+    right: 14px;
+
+    width: 34px;
+    height: 34px;
+
+    padding: 0;
+
+    border-radius: 50%;
+
+    background: white;
+
+    color: #e75480;
+
+    font-size: 16px;
+
+    box-shadow:
+        0 3px 10px rgba(0,0,0,0.10);
+
+    z-index: 5;
+}
+
+
+.close-button:hover {
+    background: #e75480;
+
+    color: white;
+
+    transform: rotate(90deg);
+}
+
+
+/* ======================================================
+   FLOATING GIFTS
+   ====================================================== */
+
+.floating-gift {
+    position: fixed;
+
+    top: -40px;
+
+    z-index: 100000;
+
+    font-size: 22px;
+
+    pointer-events: none;
+
+    animation:
+        floatingGift linear forwards;
+}
+
+
+/* ======================================================
+   ANIMATION
+   ====================================================== */
+
+@keyframes birthdayFadeIn {
+
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+
+}
+
+
+@keyframes birthdayPopup {
+
+    from {
+        opacity: 0;
+        transform:
+            scale(0.85)
+            translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform:
+            scale(1)
+            translateY(0);
+    }
+
+}
+
+
+@keyframes floatingGift {
+
+    0% {
+        transform:
+            translateY(-40px)
+            rotate(0deg);
+
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    100% {
+        transform:
+            translateY(110vh)
+            rotate(360deg);
+
+        opacity: 0;
+    }
+
+}
+
+
+/* ======================================================
+   MOBILE
+   ====================================================== */
+
+@media (max-width: 600px) {
+
+    .birthday-overlay {
+        padding: 14px;
+    }
+
+
+    .birthday-popup {
+        max-width: 350px;
+
+        padding: 22px 17px;
+
+        border-radius: 24px;
+    }
+
+
+    .birthday-popup h2 {
+        font-size: 25px;
+    }
+
+
+    .popup-photo {
+        width: 100px;
+        height: 100px;
+    }
+
+
+    .popup-message {
+        font-size: 12.5px;
+    }
+
+}
 }
