@@ -2604,30 +2604,44 @@ async function loadOurSongs() {
 
             div.innerHTML = `
 
-                <div class="song-info">
+               <div class="song-romantic-top">
 
-                    <div class="song-icon">
-                        🎵
-                    </div>
+    <img
+        class="song-cover"
+        src="https://img.youtube.com/vi/${encodeURIComponent(youtubeId)}/hqdefault.jpg"
+        alt="${escapeAttribute(song.title)} album cover"
+        loading="lazy"
+    >
 
-                    <div class="song-details">
+    <div class="song-details">
 
-                        <h3>
-                            ${escapeHTML(song.title)}
-                        </h3>
+        <span class="song-label">
+            🎵 OUR SONG
+        </span>
 
-                        <p>
-                            ${escapeHTML(
-                                song.artist ||
-                                "Our Song"
-                            )}
-                        </p>
+        <h3>
+            ${escapeHTML(song.title)}
+        </h3>
 
-                    </div>
+        <p>
+            ${escapeHTML(
+                song.artist ||
+                "Our Song"
+            )}
+        </p>
 
-                </div>
+        <div class="song-love-line">
+            This song reminds me of you 🩷
+        </div>
 
+    </div>
+    
 
+    <span class="song-floating-heart heart-one">♡</span>
+    <span class="song-floating-heart heart-two">♡</span>
+    <span class="song-floating-heart heart-three">♡</span>
+
+</div>
                 <div class="song-player">
 
                     <iframe
