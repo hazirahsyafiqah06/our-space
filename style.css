@@ -2550,9 +2550,16 @@ button:hover {
 }
 
 .birthday-person {
-    padding: 0;
-    margin-bottom: 18px;
-    background: transparent;
+    position: relative;
+    width: 100%;
+    min-height: 150px;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    border-radius: 22px;
+    margin-bottom: 20px;
+    padding: 20px 28px;
+    overflow: hidden;
 }
 
 .birthday-person:last-child {
@@ -3361,20 +3368,14 @@ button:hover {
 /* ---------- IMAGE ---------- */
 
 .birthday-image {
-    width: 125px;
-    height: 125px;
-
+    width: 82px;
+    height: 82px;
     flex-shrink: 0;
-
     border-radius: 50%;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
-    margin-right: 35px;
-
-    background: rgba(255, 255, 255, 0.55);
+    margin-right: 22px;
 }
 
 
@@ -3387,36 +3388,29 @@ button:hover {
     background: rgba(145, 205, 255, 0.17);
 }
 
-
 .birthday-image img {
-    width: 95px;
-    height: 95px;
-
+    width: 62px;
+    height: 62px;
     object-fit: contain;
-
     display: block;
-
-    border-radius: 18px;
+    border-radius: 12px;
 }
 
 
 /* ---------- NAME / DATE ---------- */
 
 .birthday-info {
-    width: 280px;
+    width: 190px;
     flex-shrink: 0;
-
     text-align: center;
 }
 
 
 .birthday-name {
-    font-size: 30px;
+    font-size: 23px;
     font-weight: 700;
-
     line-height: 1.2;
-
-    margin-bottom: 7px;
+    margin-bottom: 5px;
 }
 
 
@@ -3431,16 +3425,14 @@ button:hover {
 
 
 .birthday-date {
-    font-size: 19px;
+    font-size: 15px;
     color: #68798a;
-
-    margin-bottom: 14px;
+    margin-bottom: 8px;
 }
 
 
 .birthday-next {
-    font-size: 14px;
-    opacity: 0.8;
+    font-size: 11px;
 }
 
 
@@ -3460,41 +3452,37 @@ button:hover {
     display: flex;
     align-items: center;
     justify-content: center;
-
-    gap: 12px;
-
+    gap: 7px;
     margin-left: auto;
 }
 
 
 .birthday-box {
-    width: 88px;
-    height: 88px;
-
+    width: 58px;
+    height: 62px;
     flex-shrink: 0;
-
-    background: rgba(255, 255, 255, 0.85);
-
-    border-radius: 18px;
-
+    background: rgba(255,255,255,0.9);
+    border-radius: 14px;
     display: flex;
     flex-direction: column;
-
     align-items: center;
     justify-content: center;
-
-    box-shadow:
-        0 5px 18px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
 
+
 .birthday-box strong {
-    font-size: 29px;
+    font-size: 21px;
     font-weight: 700;
-
     line-height: 1;
+    margin-bottom: 5px;
+}
 
-    margin-bottom: 7px;
+
+.birthday-box span {
+    font-size: 10px;
+    color: #7e8993;
 }
 
 
@@ -3505,12 +3493,6 @@ button:hover {
 
 .birthday-zulkarnain .birthday-box strong {
     color: #4d9bd1;
-}
-
-
-.birthday-box span {
-    font-size: 13px;
-    color: #7e8993;
 }
 
 
