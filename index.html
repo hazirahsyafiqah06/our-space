@@ -878,16 +878,33 @@ async function checkLogin() {
 
 
     if (
-        welcomeUser &&
-        savedUsername
-    ) {
+    welcomeUser &&
+    savedUsername
+) {
 
-        welcomeUser.textContent =
-            "Welcome back, " +
-            savedUsername +
-            " ❤️";
+    welcomeUser.textContent =
+        "Welcome back, " +
+        savedUsername +
+        " ❤️";
+
+    const welcomeScreen =
+        document.getElementById(
+            "welcomeScreen"
+        );
+
+    if (welcomeScreen) {
+
+        setTimeout(() => {
+
+            welcomeScreen.classList.add(
+                "hide"
+            );
+
+        }, 1800);
 
     }
+
+}
 
 }
 
