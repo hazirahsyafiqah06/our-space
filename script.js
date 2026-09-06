@@ -1721,6 +1721,349 @@ function escapeJS(text) {
         );
 
 }
+// ======================================================
+// LOVE TIMELINE
+// ======================================================
+
+function formatTimelineDate(dateString) {
+
+    if (!dateString)
+        return "Date unavailable";
+
+    const date =
+        new Date(
+            dateString + "T00:00:00"
+        );
+
+    return date.toLocaleDateString(
+        "en-MY",
+        {
+            day: "2-digit",
+            month: "long",
+            year: "numeric"
+        }
+    );
+}
+
+
+async function loadTimeline() {
+
+    const timeline =
+        document.getElementById(
+            "timeline"
+        );
+
+    if (!timeline)
+        return;
+
+    timeline.innerHTML =
+        '<p class="timeline-loading">Loading our story... 💕</p>';
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("timeline")
+            .select("*")
+            .order(
+                "event_date",
+                {
+                    ascending: true
+                }
+            );
+
+
+    if (error) {
+
+        console.error(
+            "Timeline error:",
+            error
+        );
+
+        timeline.innerHTML = `
+            <div class="timeline-empty">
+
+                <div class="empty-icon">
+                    💌
+                </div>
+
+                <strong>
+                    Unable to load our story
+                </strong>
+
+                <p>
+                    Please check the timeline table in Supabase.
+                </p>
+
+            </div>
+        `;
+
+        return;
+    }
+
+
+    timeline.innerHTML = "";
+
+
+    if (
+        !data ||
+        data.length === 0
+    ) {
+
+        timeline.innerHTML = `
+            <div class="timeline-empty">
+
+                <div class="empty-icon">
+                    💗
+                </div>
+
+                <strong>
+                    Our story starts here
+                </strong>
+
+                <p>
+                    Add your first special moment above.
+                </p>
+
+            </div>
+        `;
+
+        return;
+    }
+
+
+    data.forEach(
+        event => {
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+            item.className =
+                "timeline-item";
+
+
+            item.innerHTML = `
+
+                <div class="timeline-dot">
+                    ${escapeHTML(
+                        event.icon || "❤️"
+                    )}
+                </div>
+
+
+                <div class="timeline-content">
+
+                    <span class="timeline-date">
+                        ${escapeHTML(
+                            formatTimelineDate(
+                                event.event_date
+                            )
+                        )}
+                    </span>
+
+
+                    <h3>
+                        ${escapeHTML(
+                            event.title
+                        )}
+                    </h3>
+
+
+                    <p>
+                        ${escapeHTML(
+                            event.description || ""
+                        )}
+                    </p>
+
+
+                    <button
+                        type="button"
+                        class="timeline-delete"
+                        onclick="deleteTimelineEvent(${event.id})"
+                    >
+                        🗑️ Delete
+                    </button>
+
+                </div>
+
+            `;
+
+
+            timeline.appendChild(
+                item
+            );
+
+        }
+    );
+
+}
+
+
+async function addTimelineEvent() {
+
+    const date =
+        document
+            .getElementById(
+                "timelineDate"
+            )
+            .value;
+
+
+    const title =
+        document
+            .getElementById(
+                "timelineTitle"
+            )
+            .value
+            .trim();
+
+
+    const description =
+        document
+            .getElementById(
+                "timelineDescription"
+            )
+            .value
+            .trim();
+
+
+    const icon =
+        document
+            .getElementById(
+                "timelineIcon"
+            )
+            .value;
+
+
+    if (
+        !date ||
+        !title
+    ) {
+
+        alert(
+            "Please choose a date and enter a memory title ❤️"
+        );
+
+        return;
+    }
+
+
+    const {
+        error
+    } =
+        await supabaseClient
+            .from("timeline")
+            .insert([
+                {
+                    event_date:
+                        date,
+
+                    title:
+                        title,
+
+                    description:
+                        description,
+
+                    icon:
+                        icon
+                }
+            ]);
+
+
+    if (error) {
+
+        console.error(
+            "Timeline insert error:",
+            error
+        );
+
+        alert(
+            "Failed to save this memory."
+        );
+
+        return;
+    }
+
+
+    document
+        .getElementById(
+            "timelineDate"
+        )
+        .value = "";
+
+
+    document
+        .getElementById(
+            "timelineTitle"
+        )
+        .value = "";
+
+
+    document
+        .getElementById(
+            "timelineDescription"
+        )
+        .value = "";
+
+
+    document
+        .getElementById(
+            "timelineIcon"
+        )
+        .value = "❤️";
+
+
+    loadTimeline();
+
+}
+
+
+async function deleteTimelineEvent(
+    id
+) {
+
+    if (
+        !confirm(
+            "Delete this memory from our timeline? 🥺"
+        )
+    )
+        return;
+
+
+    const {
+        error
+    } =
+        await supabaseClient
+            .from("timeline")
+            .delete()
+            .eq(
+                "id",
+                id
+            );
+
+
+    if (error) {
+
+        console.error(
+            "Timeline delete error:",
+            error
+        );
+
+        alert(
+            "Failed to delete this memory."
+        );
+
+        return;
+    }
+
+
+    loadTimeline();
+
+}
 
 // ======================================================
 // NAVIGATION
@@ -1779,6 +2122,13 @@ function showSection(
         loadGallery();
 
     }
+    
+    if (
+    sectionId ===
+    "memories-section"
+) {
+    loadTimeline();
+}
 
 }
 
