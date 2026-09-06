@@ -3245,3 +3245,435 @@ button:hover {
         transition: none;
     }
 }
+/* =========================================================
+   BIRTHDAY COUNTDOWN - CUTE ROMANTIC VERSION
+   ========================================================= */
+
+.birthday-countdown {
+    width: 100%;
+    max-width: 1100px;
+    margin: 35px auto 25px;
+    padding: 0 15px;
+    box-sizing: border-box;
+}
+
+
+/* ---------- HEADING ---------- */
+
+.birthday-heading {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.birthday-heading .birthday-decoration {
+    color: #f08aaa;
+    font-size: 18px;
+    letter-spacing: 5px;
+    margin-bottom: 5px;
+}
+
+.birthday-heading h2 {
+    margin: 0;
+    font-size: 30px;
+    font-weight: 700;
+    color: #68798a;
+    letter-spacing: 0.3px;
+}
+
+.birthday-heading p {
+    margin: 7px 0 0;
+    font-size: 18px;
+    color: #8a929b;
+    font-style: italic;
+    font-family: cursive;
+}
+
+
+/* ---------- BIRTHDAY CARD ---------- */
+
+.birthday-person {
+    position: relative;
+
+    width: 100%;
+    min-height: 210px;
+
+    display: flex;
+    align-items: center;
+
+    box-sizing: border-box;
+
+    border-radius: 24px;
+
+    margin-bottom: 25px;
+    padding: 28px 45px;
+
+    overflow: hidden;
+
+    transition: transform 0.25s ease,
+                box-shadow 0.25s ease;
+}
+
+
+/* HAZIRAH */
+
+.birthday-hazirah {
+    background:
+        linear-gradient(
+            135deg,
+            #fff6fa 0%,
+            #fff0f6 50%,
+            #fff9fc 100%
+        );
+
+    border: 1.5px solid #ffd1e2;
+
+    box-shadow:
+        0 8px 25px rgba(241, 133, 168, 0.08);
+}
+
+
+/* ZULKARNAIN */
+
+.birthday-zulkarnain {
+    background:
+        linear-gradient(
+            135deg,
+            #f4faff 0%,
+            #eef8ff 50%,
+            #f9fcff 100%
+        );
+
+    border: 1.5px solid #cfe7ff;
+
+    box-shadow:
+        0 8px 25px rgba(102, 172, 230, 0.08);
+}
+
+
+.birthday-person:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 12px 30px rgba(0, 0, 0, 0.07);
+}
+
+
+/* ---------- IMAGE ---------- */
+
+.birthday-image {
+    width: 125px;
+    height: 125px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-right: 35px;
+
+    background: rgba(255, 255, 255, 0.55);
+}
+
+
+.birthday-hazirah .birthday-image {
+    background: rgba(255, 180, 208, 0.16);
+}
+
+
+.birthday-zulkarnain .birthday-image {
+    background: rgba(145, 205, 255, 0.17);
+}
+
+
+.birthday-image img {
+    width: 95px;
+    height: 95px;
+
+    object-fit: contain;
+
+    display: block;
+
+    border-radius: 18px;
+}
+
+
+/* ---------- NAME / DATE ---------- */
+
+.birthday-info {
+    width: 280px;
+    flex-shrink: 0;
+
+    text-align: center;
+}
+
+
+.birthday-name {
+    font-size: 30px;
+    font-weight: 700;
+
+    line-height: 1.2;
+
+    margin-bottom: 7px;
+}
+
+
+.birthday-hazirah .birthday-name {
+    color: #e84f7d;
+}
+
+
+.birthday-zulkarnain .birthday-name {
+    color: #4d9bd1;
+}
+
+
+.birthday-date {
+    font-size: 19px;
+    color: #68798a;
+
+    margin-bottom: 14px;
+}
+
+
+.birthday-next {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+
+.birthday-hazirah .birthday-next {
+    color: #e69ab5;
+}
+
+
+.birthday-zulkarnain .birthday-next {
+    color: #8abde2;
+}
+
+
+/* ---------- COUNTDOWN ---------- */
+
+.birthday-count {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 12px;
+
+    margin-left: auto;
+}
+
+
+.birthday-box {
+    width: 88px;
+    height: 88px;
+
+    flex-shrink: 0;
+
+    background: rgba(255, 255, 255, 0.85);
+
+    border-radius: 18px;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    box-shadow:
+        0 5px 18px rgba(0, 0, 0, 0.05);
+}
+
+
+.birthday-box strong {
+    font-size: 29px;
+    font-weight: 700;
+
+    line-height: 1;
+
+    margin-bottom: 7px;
+}
+
+
+.birthday-hazirah .birthday-box strong {
+    color: #e94f7d;
+}
+
+
+.birthday-zulkarnain .birthday-box strong {
+    color: #4d9bd1;
+}
+
+
+.birthday-box span {
+    font-size: 13px;
+    color: #7e8993;
+}
+
+
+/* ---------- LITTLE HEARTS ---------- */
+
+.birthday-decoration-side {
+    position: absolute;
+
+    font-size: 24px;
+
+    opacity: 0.65;
+
+    pointer-events: none;
+}
+
+
+.birthday-decoration-side.left {
+    left: 28px;
+    top: 25px;
+}
+
+
+.birthday-decoration-side.right {
+    right: 28px;
+    top: 22px;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+    .birthday-person {
+        padding: 25px;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+    }
+
+    .birthday-image {
+        width: 105px;
+        height: 105px;
+        margin-right: 0;
+    }
+
+    .birthday-image img {
+        width: 80px;
+        height: 80px;
+    }
+
+    .birthday-info {
+        width: 220px;
+    }
+
+    .birthday-name {
+        font-size: 25px;
+    }
+
+    .birthday-count {
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .birthday-box {
+        width: 75px;
+        height: 75px;
+    }
+
+    .birthday-box strong {
+        font-size: 25px;
+    }
+}
+
+
+@media (max-width: 600px) {
+
+    .birthday-countdown {
+        padding: 0 8px;
+        margin-top: 25px;
+    }
+
+    .birthday-heading {
+        margin-bottom: 22px;
+    }
+
+    .birthday-heading h2 {
+        font-size: 25px;
+    }
+
+    .birthday-heading p {
+        font-size: 15px;
+    }
+
+    .birthday-person {
+        min-height: auto;
+
+        padding: 25px 15px;
+
+        border-radius: 20px;
+
+        flex-direction: column;
+
+        gap: 12px;
+    }
+
+    .birthday-image {
+        width: 90px;
+        height: 90px;
+    }
+
+    .birthday-image img {
+        width: 70px;
+        height: 70px;
+    }
+
+    .birthday-info {
+        width: 100%;
+    }
+
+    .birthday-name {
+        font-size: 24px;
+    }
+
+    .birthday-date {
+        font-size: 17px;
+    }
+
+    .birthday-next {
+        font-size: 12px;
+    }
+
+    .birthday-count {
+        width: 100%;
+        gap: 6px;
+    }
+
+    .birthday-box {
+        width: calc(25% - 5px);
+        height: 70px;
+        border-radius: 14px;
+    }
+
+    .birthday-box strong {
+        font-size: 22px;
+    }
+
+    .birthday-box span {
+        font-size: 11px;
+    }
+
+    .birthday-decoration-side {
+        font-size: 18px;
+    }
+
+    .birthday-decoration-side.left {
+        left: 12px;
+        top: 12px;
+    }
+
+    .birthday-decoration-side.right {
+        right: 12px;
+        top: 12px;
+    }
+}
