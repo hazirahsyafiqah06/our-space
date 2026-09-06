@@ -389,6 +389,228 @@ function birthdayCountdown() {
         "zulkarnainBirthdayMinutes",
         "zulkarnainBirthdaySeconds"
     );
+        birthdaySurprise();
+
+}
+
+// ======================================================
+// BIRTHDAY SURPRISE
+// ======================================================
+
+function birthdaySurprise() {
+
+    const now = new Date();
+
+    const month = now.getMonth() + 1;
+    const date = now.getDate();
+
+    let person = "";
+    let image = "";
+    let message = "";
+    let badge = "";
+
+    if (month === 9 && date === 9) {
+
+        person = "Zulkarnain 💙";
+        image = "zul.jpeg";
+        badge = "🎁 Stay amazing, always ♡";
+
+        message = `
+            Happy Birthday, Zulkarnain! 🎂💙
+            <br><br>
+            Today is all about you.
+            Thank you for being part of
+            all these little memories with me.
+            <br><br>
+            May this new chapter bring you
+            happiness, health, success
+            and everything good in life.
+            <br><br>
+            Thank you for always being you. ♡
+        `;
+
+    }
+
+    if (month === 2 && date === 27) {
+
+        person = "Nur Hazirah 🩷";
+        image = "zirah.jpeg";
+        badge = "🎀 Forever my favourite person ♡";
+
+        message = `
+            Happy Birthday, Hazirah! 🎂🩷
+            <br><br>
+            Thank you for bringing so much
+            happiness into this little world.
+            <br><br>
+            I hope your smile never fades,
+            your dreams always come true,
+            and your heart stays this soft forever.
+            <br><br>
+            You deserve all the love in the world. ♡
+        `;
+
+    }
+
+    if (person === "")
+        return;
+
+    const todayKey =
+        "birthday_" +
+        now.getFullYear() +
+        "_" +
+        month +
+        "_" +
+        date +
+        "_" +
+        person;
+
+    if (sessionStorage.getItem(todayKey))
+        return;
+
+    sessionStorage.setItem(todayKey, "shown");
+
+    const popup =
+        document.createElement("div");
+
+    popup.className =
+        "birthday-overlay";
+
+    popup.innerHTML = `
+        <div class="birthday-popup">
+
+            <button
+                class="close-button"
+                onclick="closeBirthdaySurprise()"
+            >
+                ✕
+            </button>
+
+            <div class="birthday-gift">
+
+                <div class="gift-ribbon-left"></div>
+                <div class="gift-ribbon-right"></div>
+                <div class="gift-lid"></div>
+                <div class="gift-box"></div>
+
+            </div>
+
+            <h2>
+                Happy Birthday!
+            </h2>
+
+            <div class="wish">
+                Wishing you a day as special as you are ♡
+            </div>
+
+            <img
+                src="${image}"
+                class="popup-photo"
+                alt="${person}"
+            >
+
+            <h3>
+                ${person}
+            </h3>
+
+            <div class="popup-message">
+                ${message}
+            </div>
+
+            <div class="special-badge">
+                ${badge}
+            </div>
+
+            <div class="popup-date">
+                🎁 TODAY IS YOUR SPECIAL DAY 🎁
+            </div>
+
+        </div>
+    `;
+
+    document.body.appendChild(
+        popup
+    );
+
+    document.body.style.overflow =
+        "hidden";
+
+    createBirthdayGifts();
+
+}
+
+
+// ======================================================
+// CLOSE POPUP
+// ======================================================
+
+function closeBirthdaySurprise() {
+
+    const popup =
+        document.querySelector(
+            ".birthday-overlay"
+        );
+
+    if (popup)
+        popup.remove();
+
+    document.body.style.overflow =
+        "";
+
+}
+
+
+// ======================================================
+// FLOATING GIFTS
+// ======================================================
+
+function createBirthdayGifts() {
+
+    const items = [
+        "🎁",
+        "🎀",
+        "✨",
+        "🎁",
+        "🩷",
+        "💙"
+    ];
+
+    for (let i = 0; i < 18; i++) {
+
+        const gift =
+            document.createElement(
+                "span"
+            );
+
+        gift.className =
+            "floating-gift";
+
+        gift.textContent =
+            items[
+                Math.floor(
+                    Math.random() *
+                    items.length
+                )
+            ];
+
+        gift.style.left =
+            Math.random() * 100 + "%";
+
+        gift.style.animationDelay =
+            Math.random() * 1.5 + "s";
+
+        gift.style.animationDuration =
+            3 + Math.random() * 3 + "s";
+
+        document.body.appendChild(
+            gift
+        );
+
+        setTimeout(() => {
+            gift.remove();
+        }, 7000);
+
+    }
 
 }
 
