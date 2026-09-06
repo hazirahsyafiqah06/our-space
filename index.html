@@ -856,30 +856,6 @@ async function checkLogin() {
     );
 
 
-    const savedUsername =
-        localStorage.getItem(
-            "ourSpaceUsername"
-        );
-
-
-    const welcomeUser =
-        document.getElementById(
-            "welcomeUser"
-        );
-
-
-    if (
-        welcomeUser &&
-        savedUsername
-    ) {
-
-        welcomeUser.textContent =
-            "Welcome back, " +
-            savedUsername +
-            " ❤️";
-
-    }
-
 }
 
 
