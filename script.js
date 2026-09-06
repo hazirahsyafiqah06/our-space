@@ -3303,5 +3303,3 @@ setInterval(
     birthdayCountdown,
     1000
 );
-
-);
