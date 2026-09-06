@@ -1708,6 +1708,14 @@ async function sendSecretMessage() {
     sendButton.textContent =
         "💌 Send Message";
 
+    await sendEmailNotification(
+    "New Secret Message 💌",
+    "💌 New Secret Message",
+    "You have received a new secret message in Our Space.<br><br>" +
+    "<strong>Message:</strong><br>" +
+    escapeHTML(message)
+);
+
     await loadSecretMessages();
 
 }
