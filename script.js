@@ -265,6 +265,140 @@ function countdown() {
             seconds;
 
 }
+// ======================================================
+// BIRTHDAY COUNTDOWN
+// ======================================================
+
+function updateBirthdayCountdown(
+    month,
+    date,
+    daysId,
+    hoursId,
+    minutesId,
+    secondsId
+) {
+
+    const now =
+        new Date();
+
+    let nextBirthday =
+        new Date(
+            now.getFullYear(),
+            month - 1,
+            date,
+            0,
+            0,
+            0
+        );
+
+    if (
+        nextBirthday <= now
+    ) {
+        nextBirthday =
+            new Date(
+                now.getFullYear() + 1,
+                month - 1,
+                date,
+                0,
+                0,
+                0
+            );
+    }
+
+    const distance =
+        nextBirthday - now;
+
+    const days =
+        Math.floor(
+            distance /
+            (1000 * 60 * 60 * 24)
+        );
+
+    const hours =
+        Math.floor(
+            (
+                distance /
+                (1000 * 60 * 60)
+            ) % 24
+        );
+
+    const minutes =
+        Math.floor(
+            (
+                distance /
+                (1000 * 60)
+            ) % 60
+        );
+
+    const seconds =
+        Math.floor(
+            (
+                distance /
+                1000
+            ) % 60
+        );
+
+    const daysElement =
+        document.getElementById(
+            daysId
+        );
+
+    const hoursElement =
+        document.getElementById(
+            hoursId
+        );
+
+    const minutesElement =
+        document.getElementById(
+            minutesId
+        );
+
+    const secondsElement =
+        document.getElementById(
+            secondsId
+        );
+
+    if (daysElement)
+        daysElement.textContent =
+            days;
+
+    if (hoursElement)
+        hoursElement.textContent =
+            hours;
+
+    if (minutesElement)
+        minutesElement.textContent =
+            minutes;
+
+    if (secondsElement)
+        secondsElement.textContent =
+            seconds;
+}
+
+
+function birthdayCountdown() {
+
+    // Nur Hazirah - 27 February
+    updateBirthdayCountdown(
+        2,
+        27,
+        "hazirahBirthdayDays",
+        "hazirahBirthdayHours",
+        "hazirahBirthdayMinutes",
+        "hazirahBirthdaySeconds"
+    );
+
+    // Zulkarnain - 9 September
+    updateBirthdayCountdown(
+        9,
+        9,
+        "zulkarnainBirthdayDays",
+        "zulkarnainBirthdayHours",
+        "zulkarnainBirthdayMinutes",
+        "zulkarnainBirthdaySeconds"
+    );
+
+}
 
 // ======================================================
 // NOTES
@@ -2936,6 +3070,8 @@ async function startApp() {
 
 startApp();
 
+birthdayCountdown();
+
 setInterval(
     updateTogetherTime,
     60000
@@ -2943,5 +3079,11 @@ setInterval(
 
 setInterval(
     countdown,
+    1000
+);
+
+
+setInterval(
+    birthdayCountdown,
     1000
 );
