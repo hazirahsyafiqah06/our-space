@@ -2066,6 +2066,349 @@ async function deleteTimelineEvent(
 }
 
 // ======================================================
+// BUCKET LIST
+// ======================================================
+
+async function loadBucketList() {
+
+    const bucketList =
+        document.getElementById(
+            "bucketList"
+        );
+
+    if (!bucketList)
+        return;
+
+    bucketList.innerHTML =
+        '<p class="bucket-loading">Loading our dreams... 💕</p>';
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("bucket_list")
+            .select("*")
+            .order(
+                "created_at",
+                {
+                    ascending: true
+                }
+            );
+
+    if (error) {
+
+        console.error(
+            "Bucket List error:",
+            error
+        );
+
+        bucketList.innerHTML = `
+            <div class="bucket-empty">
+
+                <div class="empty-icon">
+                    💔
+                </div>
+
+                <strong>
+                    Unable to load our bucket list
+                </strong>
+
+                <p>
+                    Please check the bucket_list table in Supabase.
+                </p>
+
+            </div>
+        `;
+
+        return;
+    }
+
+    bucketList.innerHTML = "";
+
+    if (
+        !data ||
+        data.length === 0
+    ) {
+
+        bucketList.innerHTML = `
+            <div class="bucket-empty">
+
+                <div class="empty-icon">
+                    🌷
+                </div>
+
+                <strong>
+                    Our dreams start here
+                </strong>
+
+                <p>
+                    Add something we want to do together 💕
+                </p>
+
+            </div>
+        `;
+
+        updateBucketProgress([]);
+
+        return;
+    }
+
+
+    data.forEach(
+        item => {
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+            div.className =
+                "bucket-item" +
+                (
+                    item.completed
+                        ? " completed"
+                        : ""
+                );
+
+
+            div.innerHTML = `
+
+                <input
+                    type="checkbox"
+                    class="bucket-check"
+                    ${item.completed ? "checked" : ""}
+                    onchange="toggleBucketItem(
+                        ${item.id},
+                        this.checked
+                    )"
+                >
+
+                <div class="bucket-title">
+                    ${escapeHTML(item.title)}
+                </div>
+
+                <button
+                    type="button"
+                    class="bucket-delete"
+                    onclick="deleteBucketItem(${item.id})"
+                >
+                    🗑️ Delete
+                </button>
+
+            `;
+
+            bucketList.appendChild(div);
+
+        }
+    );
+
+
+    updateBucketProgress(data);
+
+}
+
+
+function updateBucketProgress(items) {
+
+    const progressText =
+        document.getElementById(
+            "bucketProgressText"
+        );
+
+    const progressBar =
+        document.getElementById(
+            "bucketProgressBar"
+        );
+
+    if (
+        !progressText ||
+        !progressBar
+    )
+        return;
+
+
+    const total =
+        items.length;
+
+    const completed =
+        items.filter(
+            item =>
+                item.completed === true
+        ).length;
+
+
+    progressText.textContent =
+        completed +
+        " / " +
+        total +
+        " completed";
+
+
+    const percentage =
+        total === 0
+            ? 0
+            : Math.round(
+                (
+                    completed /
+                    total
+                ) * 100
+            );
+
+
+    progressBar.style.width =
+        percentage + "%";
+
+}
+
+
+async function addBucketItem() {
+
+    const input =
+        document.getElementById(
+            "bucketTitle"
+        );
+
+    if (!input)
+        return;
+
+
+    const title =
+        input.value.trim();
+
+
+    if (!title) {
+
+        alert(
+            "Please enter something for our bucket list 🌷"
+        );
+
+        return;
+    }
+
+
+    const {
+        error
+    } =
+        await supabaseClient
+            .from("bucket_list")
+            .insert([
+                {
+                    title:
+                        title,
+
+                    completed:
+                        false
+                }
+            ]);
+
+
+    if (error) {
+
+        console.error(
+            "Bucket List insert error:",
+            error
+        );
+
+        alert(
+            "Failed to add this dream."
+        );
+
+        return;
+    }
+
+
+    input.value = "";
+
+    loadBucketList();
+
+}
+
+
+async function toggleBucketItem(
+    id,
+    completed
+) {
+
+    const {
+        error
+    } =
+        await supabaseClient
+            .from("bucket_list")
+            .update({
+                completed:
+                    completed
+            })
+            .eq(
+                "id",
+                id
+            );
+
+
+    if (error) {
+
+        console.error(
+            "Bucket List update error:",
+            error
+        );
+
+        alert(
+            "Failed to update this dream."
+        );
+
+        loadBucketList();
+
+        return;
+    }
+
+
+    loadBucketList();
+
+}
+
+
+async function deleteBucketItem(id) {
+
+    if (
+        !confirm(
+            "Remove this dream from our bucket list? 🥺"
+        )
+    )
+        return;
+
+
+    const {
+        error
+    } =
+        await supabaseClient
+            .from("bucket_list")
+            .delete()
+            .eq(
+                "id",
+                id
+            );
+
+
+    if (error) {
+
+        console.error(
+            "Bucket List delete error:",
+            error
+        );
+
+        alert(
+            "Failed to delete this dream."
+        );
+
+        return;
+    }
+
+
+    loadBucketList();
+
+}
+
+// ======================================================
 // NAVIGATION
 // ======================================================
 
@@ -2129,6 +2472,12 @@ function showSection(
 ) {
     loadTimeline();
 }
+    if (
+    sectionId ===
+    "bucket-section"
+) {
+    loadBucketList();
+}
 
 }
 
@@ -2147,6 +2496,8 @@ async function startApp() {
     loadNotes();
 
     loadGallery();
+
+    loadBucketList();
 
     loadSecretMessages();
 
