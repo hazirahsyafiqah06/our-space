@@ -2944,3 +2944,51 @@ button:hover {
         transition: none;
     }
 }
+
+
+/* ======================================================
+   SECRET MESSAGE - COMPACT CHAT AREA
+   TAMBAHAN SAHAJA
+====================================================== */
+
+#secretMessages {
+    max-height: 330px;
+    padding: 12px 10px;
+    gap: 9px;
+    overflow-y: auto;
+}
+
+/* Bubble lebih compact */
+.message-bubble {
+    max-width: 68%;
+    min-width: 95px;
+    padding: 10px 12px 7px;
+}
+
+/* Bagi mesej pendek tak nampak terlalu besar */
+.message-text {
+    line-height: 1.45;
+}
+
+/* Kalau mesej sedikit, ruang kosong tak terlalu ketara */
+.loading-message,
+.empty-message {
+    padding: 24px 12px;
+}
+
+/* MOBILE */
+@media (max-width: 600px) {
+
+    #secretMessages {
+        max-height: 300px;
+        padding: 10px 8px;
+        gap: 8px;
+    }
+
+    .message-bubble {
+        max-width: 80%;
+        min-width: 82px;
+        padding: 9px 10px 7px;
+    }
+}
+
