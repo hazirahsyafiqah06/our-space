@@ -208,6 +208,12 @@
             🌷 Bucket List
         </button>
 
+        <button
+            onclick="showSection('song-section')"
+        >
+            🎵 Our Song
+        </button>
+
     </nav>
 
 
@@ -537,6 +543,80 @@
 
             <p class="bucket-loading">
                 Loading our dreams... 💕
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+    <!-- =========================
+     OUR SONG
+========================= -->
+
+<section id="song-section">
+
+    <div class="section-card song-section-card">
+
+        <div class="song-heading">
+
+            <div>
+                <h2>🎵 Our Song</h2>
+
+                <p>
+                    The soundtrack of us 🩷🩵
+                </p>
+            </div>
+
+            <div class="song-heart">
+                🎵
+            </div>
+
+        </div>
+
+
+        <!-- ADD SONG -->
+
+        <div class="song-form">
+
+            <input
+                type="text"
+                id="songTitle"
+                placeholder="Song title..."
+                maxlength="100"
+            >
+
+            <input
+                type="text"
+                id="songArtist"
+                placeholder="Artist..."
+                maxlength="100"
+            >
+
+            <input
+                type="text"
+                id="songURL"
+                placeholder="Paste YouTube link here..."
+            >
+
+            <button
+                type="button"
+                class="song-add-btn"
+                onclick="addOurSong()"
+            >
+                + Add to Our Songs 🎵
+            </button>
+
+        </div>
+
+
+        <!-- SONG LIST -->
+
+        <div id="songList">
+
+            <p class="song-loading">
+                Loading our songs... 🎵💕
             </p>
 
         </div>
