@@ -500,6 +500,71 @@ async function loadNotes() {
 }
 
 // ======================================================
+// EMAIL NOTIFICATION
+// ======================================================
+
+async function sendEmailNotification(
+    subject,
+    title,
+    message
+) {
+
+    try {
+
+        let receiverEmail = "";
+
+        if (currentUser?.id === HAZIRAH_ID) {
+
+            receiverEmail =
+                "zulz4065@gmail.com";
+
+        } else if (
+            currentUser?.id === ZULKARNAIN_ID
+        ) {
+
+            receiverEmail =
+                "hazirahsyafiqah84@gmail.com";
+
+        } else {
+
+            return;
+        }
+
+        const { error } =
+            await supabaseClient.functions.invoke(
+                "send-notification",
+                {
+                    body: {
+                        to: receiverEmail,
+                        subject: subject,
+                        title: title,
+                        message: message
+                    }
+                }
+            );
+
+        if (error) {
+
+            console.error(
+                "Email notification error:",
+                error
+            );
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Email notification failed:",
+            error
+        );
+
+    }
+
+}
+
+
+// ======================================================
 // ADD NOTE
 // ======================================================
 
@@ -559,11 +624,42 @@ async function addNote() {
         "title"
     ).value = "";
 
-    document.getElementById(
-        "content"
-    ).value = "";
+   document.getElementById(
+    "content"
+).value = "";
 
-    loadNotes();
+await sendEmailNotification(
+    "New Note Added ❤️",
+    "📝 New Note Added",
+    "A new note has been added to Our Space.<br><br>" +
+    "<strong>Title:</strong> " +
+    escapeHTML(title) +
+    "<br>" +
+    "<strong>Note:</strong> " +
+    escapeHTML(content)
+);
+    document.getElementById(
+    "title"
+).value = "";
+
+document.getElementById(
+    "content"
+).value = "";
+
+await sendEmailNotification(
+    "New Note Added ❤️",
+    "📝 New Note Added",
+    "A new note has been added to Our Space.<br><br>" +
+    "<strong>Title:</strong> " +
+    escapeHTML(title) +
+    "<br>" +
+    "<strong>Note:</strong> " +
+    escapeHTML(content)
+);
+
+loadNotes();
+
+loadNotes();  
 
 }
 
