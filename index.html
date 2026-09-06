@@ -393,54 +393,57 @@
 
     <section id="memories-section">
 
-        <div class="section-card">
+        <div class="section-card timeline-section-card">
 
-            <h2>
-                💌 Our Memories
-            </h2>
-
-
-            <div class="memory">
-
-                <span>
-                    ❤️
-                </span>
-
-
+            <div class="timeline-heading">
                 <div>
-
-                    <h3>
-                        17 July 2021
-                    </h3>
-
-                    <p>
-                        The beginning of our story.
-                    </p>
-
+                    <h2>💌 Our Love Timeline</h2>
+                    <p>Little moments that became our story 🩷🩵</p>
                 </div>
-
+                <div class="timeline-heart">💕</div>
             </div>
 
+            <div class="timeline-form">
+                <input
+                    type="date"
+                    id="timelineDate"
+                >
 
-            <div class="memory">
+                <input
+                    type="text"
+                    id="timelineTitle"
+                    placeholder="Memory title..."
+                    maxlength="100"
+                >
 
-                <span>
-                    💕
-                </span>
+                <textarea
+                    id="timelineDescription"
+                    placeholder="Tell a little story about this moment..."
+                    maxlength="500"
+                ></textarea>
 
+                <select id="timelineIcon">
+                    <option value="❤️">❤️ Love</option>
+                    <option value="💕">💕 Special</option>
+                    <option value="🥰">🥰 Cute</option>
+                    <option value="📸">📸 Photo</option>
+                    <option value="🎂">🎂 Birthday</option>
+                    <option value="🎉">🎉 Celebration</option>
+                    <option value="✈️">✈️ Travel</option>
+                    <option value="💍">💍 Milestone</option>
+                </select>
 
-                <div>
+                <button
+                    type="button"
+                    class="timeline-add-btn"
+                    onclick="addTimelineEvent()"
+                >
+                    + Add to Our Story 💗
+                </button>
+            </div>
 
-                    <h3>
-                        Our First Memory
-                    </h3>
-
-                    <p>
-                        More memories coming soon...
-                    </p>
-
-                </div>
-
+            <div id="timeline" class="timeline">
+                <p class="timeline-loading">Loading our story... 💕</p>
             </div>
 
         </div>
