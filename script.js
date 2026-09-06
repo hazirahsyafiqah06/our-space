@@ -2583,6 +2583,14 @@ async function addBucketItem() {
         return;
     }
 
+    await sendEmailNotification(
+    "New Bucket List Item 🌷",
+    "🌷 New Bucket List Item",
+    "A new dream has been added to your Bucket List.<br><br>" +
+    "<strong>Dream:</strong> " +
+    escapeHTML(title)
+);
+
 
     input.value = "";
 
