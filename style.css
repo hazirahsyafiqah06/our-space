@@ -2528,4 +2528,86 @@ button:hover {
         font-size: 16px;
     }
 }
+
+   /* =========================================
+   BIRTHDAY COUNTDOWN
+   ========================================= */
+
+.birthday-countdown {
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 22px;
+    background: linear-gradient(
+        135deg,
+        #fff5fa,
+        #f5f9ff
+    );
+    border: 1px solid #f1dce7;
+}
+
+.birthday-title {
+    margin: 0 0 18px;
+    text-align: center;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.birthday-person {
+    padding: 15px;
+    margin-bottom: 14px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.8);
+}
+
+.birthday-person:last-child {
+    margin-bottom: 0;
+}
+
+.birthday-name {
+    text-align: center;
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.birthday-count {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.birthday-box {
+    padding: 12px 6px;
+    text-align: center;
+    border-radius: 14px;
+    background: #ffffff;
+    border: 1px solid #f1dce7;
+}
+
+.birthday-box strong {
+    display: block;
+    font-size: 22px;
+    line-height: 1.2;
+}
+
+.birthday-box span {
+    display: block;
+    margin-top: 4px;
+    font-size: 11px;
+}
+
+@media (max-width: 600px) {
+
+    .birthday-count {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .birthday-box strong {
+        font-size: 20px;
+    }
+
+    .birthday-title {
+        font-size: 18px;
+    }
+
 }
