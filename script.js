@@ -2557,25 +2557,30 @@ async function loadOurSongs() {
 
                 div.innerHTML = `
 
-                    <div class="song-info">
+                    <div class="song-romantic-top">
+    <img
+        class="song-cover"
+        src="https://img.youtube.com/vi/${encodeURIComponent(youtubeId)}/hqdefault.jpg"
+        alt="${escapeAttribute(song.title)} album cover"
+        loading="lazy"
+    >
 
-                        <div class="song-icon">
-                            🎵
-                        </div>
+    <div class="song-details">
+        <span class="song-label">🎵 OUR SONG</span>
 
-                        <div class="song-details">
+        <h3>${escapeHTML(song.title)}</h3>
 
-                            <h3>
-                                ${escapeHTML(song.title)}
-                            </h3>
+        <p>${escapeHTML(song.artist || "Our Song")}</p>
 
-                            <p>
-                                ${escapeHTML(song.artist || "Our Song")}
-                            </p>
+        <div class="song-love-line">
+            This song reminds me of you 🩷
+        </div>
+    </div>
 
-                        </div>
-
-                    </div>
+    <span class="song-floating-heart heart-one">♡</span>
+    <span class="song-floating-heart heart-two">♡</span>
+    <span class="song-floating-heart heart-three">♡</span>
+</div>
 
                     <p>
                         Invalid YouTube link.
