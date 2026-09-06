@@ -1724,3 +1724,328 @@ button:hover {
   .timeline-dot { width:36px; flex-basis:36px; }
   .timeline-content { padding:14px; }
 }
+
+/* ======================================================
+   BUCKET LIST
+====================================================== */
+
+.bucket-section-card {
+    overflow: hidden;
+}
+
+.bucket-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.bucket-heading h2 {
+    margin-bottom: 4px;
+}
+
+.bucket-heading p {
+    margin: 0;
+    color: #999;
+    font-size: 13px;
+}
+
+.bucket-heart {
+    width: 50px;
+    height: 50px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ffdce9,
+            #d8f3ff
+        );
+
+    font-size: 22px;
+    flex-shrink: 0;
+}
+
+
+/* PROGRESS */
+
+.bucket-progress-card {
+    background:
+        linear-gradient(
+            135deg,
+            #fff7fa,
+            #f3fbff
+        );
+
+    border: 1px solid #eadde3;
+
+    padding: 16px 18px;
+
+    border-radius: 17px;
+
+    margin-bottom: 20px;
+}
+
+.bucket-progress-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 10px;
+
+    margin-bottom: 10px;
+
+    color: #777;
+    font-size: 13px;
+}
+
+.bucket-progress-top strong {
+    color: #e75480;
+    font-size: 12px;
+}
+
+.bucket-progress {
+    width: 100%;
+    height: 10px;
+
+    background: #f3e7eb;
+
+    border-radius: 20px;
+
+    overflow: hidden;
+}
+
+.bucket-progress-bar {
+    width: 0%;
+    height: 100%;
+
+    border-radius: 20px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #e75480,
+            #72c9df
+        );
+
+    transition: width 0.35s ease;
+}
+
+
+/* FORM */
+
+.bucket-form {
+    background:
+        linear-gradient(
+            135deg,
+            #fff7fa,
+            #f3fbff
+        );
+
+    border: 1px solid #eadde3;
+
+    padding: 18px;
+
+    border-radius: 18px;
+
+    margin-bottom: 25px;
+}
+
+.bucket-form input {
+    width: 100%;
+
+    padding: 12px 14px;
+
+    margin-bottom: 11px;
+
+    border: 1px solid #ead5dc;
+
+    border-radius: 12px;
+
+    font-size: 14px;
+
+    outline: none;
+
+    background: rgba(255,255,255,.9);
+}
+
+.bucket-form input:focus {
+    border-color: #8ecde7;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(142,205,231,.12);
+}
+
+.bucket-add-btn {
+    background:
+        linear-gradient(
+            135deg,
+            #e75480,
+            #72c9df
+        );
+
+    font-weight: bold;
+
+    margin-top: 2px;
+}
+
+
+/* ITEMS */
+
+#bucketList {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 12px;
+}
+
+.bucket-item {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    background: #fffafb;
+
+    border: 1px solid #f5dce5;
+
+    border-radius: 16px;
+
+    padding: 13px 14px;
+
+    transition:
+        0.2s ease;
+}
+
+.bucket-item:hover {
+    box-shadow:
+        0 5px 15px
+        rgba(114,201,223,.10);
+}
+
+.bucket-check {
+    width: 24px;
+    height: 24px;
+
+    flex: 0 0 24px;
+
+    margin: 0;
+
+    cursor: pointer;
+
+    accent-color: #e75480;
+}
+
+.bucket-title {
+    flex: 1;
+
+    color: #555;
+
+    font-size: 14px;
+
+    line-height: 1.5;
+
+    word-break: break-word;
+}
+
+.bucket-item.completed .bucket-title {
+    color: #aaa;
+
+    text-decoration: line-through;
+}
+
+.bucket-delete {
+    width: auto;
+
+    flex: 0 0 auto;
+
+    padding: 7px 10px;
+
+    margin: 0;
+
+    background: #f5f5f5;
+
+    color: #999;
+
+    font-size: 11px;
+
+    border-radius: 9px;
+}
+
+.bucket-delete:hover {
+    background: #ffe5ec;
+
+    color: #e75480;
+}
+
+
+/* EMPTY / LOADING */
+
+.bucket-empty,
+.bucket-loading {
+    text-align: center;
+
+    color: #999;
+
+    padding: 28px 10px;
+}
+
+.bucket-empty .empty-icon {
+    font-size: 34px;
+
+    margin-bottom: 7px;
+}
+
+.bucket-empty strong {
+    display: block;
+
+    color: #e75480;
+
+    margin-bottom: 5px;
+}
+
+.bucket-empty p {
+    margin: 0;
+
+    font-size: 13px;
+}
+
+
+/* MOBILE */
+
+@media (max-width:600px) {
+
+    .bucket-heading {
+        align-items: flex-start;
+    }
+
+    .bucket-progress-top {
+        align-items: flex-start;
+
+        flex-direction: column;
+
+        gap: 4px;
+    }
+
+    .bucket-item {
+        align-items: flex-start;
+    }
+
+    .bucket-check {
+        margin-top: 2px;
+    }
+
+    .bucket-delete {
+        margin-top: 0;
+    }
+
+}
