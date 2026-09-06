@@ -202,6 +202,12 @@
             💬 Secret
         </button>
 
+        <button
+            onclick="showSection('bucket-section')"
+        >
+            🌷 Bucket List
+        </button>
+
     </nav>
 
 
@@ -449,6 +455,95 @@
         </div>
 
     </section>
+
+    <!-- =========================
+     BUCKET LIST
+========================= -->
+
+<section id="bucket-section">
+
+    <div class="section-card bucket-section-card">
+
+        <div class="bucket-heading">
+
+            <div>
+                <h2>🌷 Our Bucket List</h2>
+
+                <p>
+                    Things we want to do together 🩷🩵
+                </p>
+            </div>
+
+            <div class="bucket-heart">
+                🌷
+            </div>
+
+        </div>
+
+
+        <!-- PROGRESS -->
+
+        <div class="bucket-progress-card">
+
+            <div class="bucket-progress-top">
+
+                <span>
+                    💕 Our little dreams
+                </span>
+
+                <strong id="bucketProgressText">
+                    0 / 0 completed
+                </strong>
+
+            </div>
+
+            <div class="bucket-progress">
+
+                <div
+                    id="bucketProgressBar"
+                    class="bucket-progress-bar"
+                ></div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ADD BUCKET -->
+
+        <div class="bucket-form">
+
+            <input
+                type="text"
+                id="bucketTitle"
+                placeholder="What do we want to do together? 💕"
+                maxlength="150"
+            >
+
+            <button
+                type="button"
+                class="bucket-add-btn"
+                onclick="addBucketItem()"
+            >
+                + Add to Our Bucket List 🌷
+            </button>
+
+        </div>
+
+
+        <!-- BUCKET ITEMS -->
+
+        <div id="bucketList">
+
+            <p class="bucket-loading">
+                Loading our dreams... 💕
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
 
 
     <!-- =========================
