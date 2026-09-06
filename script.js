@@ -1095,6 +1095,18 @@ async function uploadImage() {
         "Photo added to Our Gallery ❤️"
     );
 
+    await sendEmailNotification(
+    "New Photo Added ❤️",
+    "📸 New Photo Added",
+    "A new photo has been added to Our Gallery.<br><br>" +
+    "<strong>Caption:</strong> " +
+    (escapeHTML(caption) || "No caption") +
+    "<br><br>" +
+    "<a href=\"" +
+    imageUrl +
+    "\" target=\"_blank\">View Photo ❤️</a>"
+);
+
     loadGallery();
 
 }
