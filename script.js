@@ -433,8 +433,6 @@ function updateBirthdayCountdown(month, date, daysId, hoursId, minutesId, second
                 </button>
             `;
         }
-          openBirthdaySurpriseOnce("hazirah");
-
 }
 
     } else if (birthdayPerson === "zulkarnain") {
@@ -452,7 +450,6 @@ function updateBirthdayCountdown(month, date, daysId, hoursId, minutesId, second
                 </button>
             `;
         }
-    openBirthdaySurpriseOnce("zulkarnain");
 
     }
 
