@@ -3045,6 +3045,21 @@ async function addOurSong() {
         return;
     }
 
+    await sendEmailNotification(
+    "New Song Added 🎵",
+    "🎵 New Song Added",
+    "A new song has been added to Our Space.<br><br>" +
+    "<strong>Song:</strong> " +
+    escapeHTML(title) +
+    "<br>" +
+    "<strong>Artist:</strong> " +
+    (escapeHTML(artist) || "Unknown artist") +
+    "<br><br>" +
+    "<a href=\"" +
+    escapeAttribute(youtubeUrl) +
+    "\" target=\"_blank\">Listen to the song 🎵</a>"
+);
+
 
     titleInput.value = "";
 
