@@ -3660,68 +3660,66 @@ button:hover {
     }
 }
 
-
 /* =========================================================
-   BIRTHDAY COUNTDOWN - FINAL COMPACT DESKTOP VERSION
-   Override previous birthday styles only
+   BIRTHDAY COUNTDOWN - SMALL & CLEAN VERSION
    ========================================================= */
 
 .birthday-countdown {
     width: 100%;
-    max-width: 620px;
-    margin: 25px auto 20px;
+    max-width: 430px;
+    margin: 22px auto 20px;
     padding: 0;
     box-sizing: border-box;
 }
 
 .birthday-heading {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 14px;
 }
 
 .birthday-heading .birthday-decoration {
     color: #e75480;
-    font-size: 14px;
-    letter-spacing: 3px;
-    margin-bottom: 3px;
+    font-size: 11px;
+    letter-spacing: 2px;
+    margin-bottom: 2px;
 }
 
 .birthday-heading h2 {
     margin: 0;
     color: #7b8d98;
-    font-size: 24px;
+    font-size: 18px;
     font-weight: 700;
 }
 
 .birthday-heading p {
-    margin: 5px 0 0;
+    margin: 4px 0 0;
     color: #999;
-    font-size: 13px;
+    font-size: 11px;
     font-style: italic;
 }
 
 .birthday-person {
     position: relative;
     width: 100%;
-    max-width: 620px;
-    min-height: 125px;
+    max-width: 430px;
+    min-height: 96px;
 
     display: grid;
-    grid-template-columns: 72px 155px minmax(0, 1fr);
+    grid-template-columns: 52px 120px minmax(0, 1fr);
     align-items: center;
-    column-gap: 14px;
+    column-gap: 9px;
 
     box-sizing: border-box;
-    padding: 18px 22px;
-    margin: 0 auto 18px;
+    padding: 12px 14px;
+    margin: 0 auto 12px;
 
-    border-radius: 20px;
+    border-radius: 17px;
     overflow: hidden;
 }
 
 .birthday-image {
-    width: 68px;
-    height: 68px;
+    width: 50px;
+    height: 50px;
     margin: 0;
     border-radius: 50%;
 
@@ -3731,33 +3729,33 @@ button:hover {
 }
 
 .birthday-image img {
-    width: 52px;
-    height: 52px;
+    width: 40px;
+    height: 40px;
     object-fit: contain;
     display: block;
-    border-radius: 10px;
+    border-radius: 8px;
 }
 
 .birthday-info {
-    width: 155px;
+    width: 120px;
     min-width: 0;
     text-align: center;
 }
 
 .birthday-name {
-    font-size: 21px;
+    font-size: 16px;
     line-height: 1.2;
-    margin-bottom: 4px;
+    margin-bottom: 3px;
     white-space: nowrap;
 }
 
 .birthday-date {
-    font-size: 14px;
-    margin-bottom: 7px;
+    font-size: 11px;
+    margin-bottom: 4px;
 }
 
 .birthday-next {
-    font-size: 9px;
+    font-size: 7px;
     white-space: nowrap;
 }
 
@@ -3768,208 +3766,204 @@ button:hover {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    gap: 6px;
+    gap: 4px;
     margin: 0;
 }
 
 .birthday-box {
-    width: 52px;
-    height: 58px;
-    flex: 0 0 52px;
+    width: 44px;
+    height: 48px;
+    flex: 0 0 44px;
 
-    padding: 5px 2px;
+    padding: 4px 1px;
     background: rgba(255,255,255,0.9);
-    border-radius: 14px;
+    border-radius: 11px;
 
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
 
-    box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
 }
 
 .birthday-box strong {
-    font-size: 20px;
+    font-size: 17px;
     line-height: 1;
-    margin-bottom: 4px;
+    margin-bottom: 3px;
 }
 
 .birthday-box span {
-    font-size: 9px;
+    font-size: 7px;
 }
 
 .birthday-decoration-side {
-    font-size: 18px;
+    font-size: 14px;
 }
 
 .birthday-decoration-side.left {
-    left: 10px;
-    top: 12px;
+    left: 7px;
+    top: 8px;
 }
 
 .birthday-decoration-side.right {
-    right: 10px;
-    top: 12px;
+    right: 7px;
+    top: 8px;
 }
 
-
-/* ---------- MEDIUM DESKTOP / TABLET ---------- */
-
+/* ---------- TABLET ---------- */
 @media (max-width: 900px) and (min-width: 601px) {
-
     .birthday-countdown {
-        max-width: 560px;
+        max-width: 400px;
     }
 
     .birthday-person {
-        max-width: 560px;
-        grid-template-columns: 65px 145px minmax(0, 1fr);
-        column-gap: 10px;
-        padding: 16px 18px;
+        max-width: 400px;
+        grid-template-columns: 48px 108px minmax(0, 1fr);
+        column-gap: 7px;
+        padding: 11px 12px;
     }
 
     .birthday-image {
-        width: 62px;
-        height: 62px;
+        width: 46px;
+        height: 46px;
     }
 
     .birthday-image img {
-        width: 48px;
-        height: 48px;
+        width: 37px;
+        height: 37px;
     }
 
     .birthday-info {
-        width: 145px;
+        width: 108px;
     }
 
     .birthday-name {
-        font-size: 19px;
+        font-size: 15px;
     }
 
     .birthday-box {
-        width: 49px;
-        flex-basis: 49px;
-        height: 56px;
+        width: 40px;
+        flex-basis: 40px;
+        height: 46px;
     }
 
     .birthday-box strong {
-        font-size: 18px;
+        font-size: 16px;
     }
 }
 
-
 /* ---------- MOBILE ---------- */
-
 @media (max-width: 600px) {
-
     .birthday-countdown {
         width: 100%;
-        max-width: 100%;
-        padding: 0 8px;
-        margin-top: 22px;
+        max-width: 350px;
+        padding: 0;
+        margin-top: 20px;
     }
 
     .birthday-heading {
-        margin-bottom: 18px;
+        margin-bottom: 14px;
+    }
+
+    .birthday-heading .birthday-decoration {
+        font-size: 10px;
     }
 
     .birthday-heading h2 {
-        font-size: 22px;
+        font-size: 17px;
     }
 
     .birthday-heading p {
-        font-size: 12px;
+        font-size: 10px;
     }
 
     .birthday-person {
         width: 100%;
-        max-width: 100%;
+        max-width: 350px;
         min-height: auto;
 
         display: flex;
         flex-direction: column;
         align-items: center;
 
-        padding: 18px 12px;
-        gap: 7px;
-        margin-bottom: 15px;
+        padding: 14px 10px;
+        gap: 5px;
+        margin-bottom: 12px;
 
-        border-radius: 18px;
+        border-radius: 16px;
     }
 
     .birthday-image {
-        width: 64px;
-        height: 64px;
-        margin: 0;
+        width: 52px;
+        height: 52px;
     }
 
     .birthday-image img {
-        width: 48px;
-        height: 48px;
+        width: 40px;
+        height: 40px;
     }
 
     .birthday-info {
         width: 100%;
-        text-align: center;
     }
 
     .birthday-name {
-        font-size: 20px;
+        font-size: 17px;
         white-space: normal;
     }
 
     .birthday-date {
-        font-size: 14px;
-        margin-bottom: 5px;
+        font-size: 11px;
+        margin-bottom: 3px;
     }
 
     .birthday-next {
-        font-size: 9px;
+        font-size: 7px;
         white-space: normal;
     }
 
     .birthday-count {
         width: 100%;
         justify-content: center;
-        gap: 5px;
-        margin-top: 4px;
+        gap: 4px;
+        margin-top: 3px;
     }
 
     .birthday-box {
-        width: calc((100% - 15px) / 4);
-        flex: 0 0 calc((100% - 15px) / 4);
-        height: 58px;
-        border-radius: 13px;
+        width: calc((100% - 12px) / 4);
+        flex: 0 0 calc((100% - 12px) / 4);
+        height: 48px;
+        border-radius: 11px;
     }
 
     .birthday-box strong {
-        font-size: 19px;
-    }
-
-    .birthday-box span {
-        font-size: 9px;
-    }
-
-    .birthday-decoration-side {
         font-size: 16px;
     }
 
+    .birthday-box span {
+        font-size: 7px;
+    }
+
+    .birthday-decoration-side {
+        font-size: 13px;
+    }
+
     .birthday-decoration-side.left {
-        left: 9px;
-        top: 9px;
+        left: 7px;
+        top: 7px;
     }
 
     .birthday-decoration-side.right {
-        right: 9px;
-        top: 9px;
+        right: 7px;
+        top: 7px;
     }
 }
 
-
-/* ---------- VERY SMALL PHONE ---------- */
-
 @media (max-width: 380px) {
+    .birthday-countdown {
+        max-width: 100%;
+    }
 
     .birthday-person {
         padding-left: 8px;
@@ -3977,14 +3971,14 @@ button:hover {
     }
 
     .birthday-box {
-        height: 54px;
+        height: 45px;
     }
 
     .birthday-box strong {
-        font-size: 17px;
+        font-size: 15px;
     }
 
     .birthday-box span {
-        font-size: 8px;
+        font-size: 6.5px;
     }
 }
