@@ -455,18 +455,6 @@ function updateBirthdayCountdown(month, date, daysId, hoursId, minutesId, second
 
 }
 
-// ======================================================
-// AUTO OPEN BIRTHDAY SURPRISE ON WEBSITE OPEN
-// ======================================================
-
-function openBirthdaySurpriseOnce(person) {
-
-    setTimeout(() => {
-        openBirthdaySurprise(person);
-    }, 800);
-
-}
-
 
 // ======================================================
 // OPEN BIRTHDAY SURPRISE
