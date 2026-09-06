@@ -2238,7 +2238,7 @@ async function addTimelineEvent() {
         return;
     }
 
-    await sendEmailNotification(
+   await sendEmailNotification(
     "New Memory Added ❤️",
     "💭 New Memory Added",
     "A new memory has been added to Our Space.<br><br>" +
@@ -2254,7 +2254,6 @@ async function addTimelineEvent() {
     "<strong>Icon:</strong> " +
     escapeHTML(icon || "❤️")
 );
-
 
     document
         .getElementById(
