@@ -2238,6 +2238,23 @@ async function addTimelineEvent() {
         return;
     }
 
+    await sendEmailNotification(
+    "New Memory Added ❤️",
+    "💭 New Memory Added",
+    "A new memory has been added to Our Space.<br><br>" +
+    "<strong>Date:</strong> " +
+    escapeHTML(date) +
+    "<br>" +
+    "<strong>Title:</strong> " +
+    escapeHTML(title) +
+    "<br>" +
+    "<strong>Description:</strong> " +
+    (escapeHTML(description) || "No description") +
+    "<br>" +
+    "<strong>Icon:</strong> " +
+    escapeHTML(icon || "❤️")
+);
+
 
     document
         .getElementById(
