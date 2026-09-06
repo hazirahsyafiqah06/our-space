@@ -2409,6 +2409,404 @@ async function deleteBucketItem(id) {
 }
 
 // ======================================================
+// OUR SONG
+// ======================================================
+
+function getYouTubeID(url) {
+
+    if (!url)
+        return null;
+
+    const patterns = [
+
+        /youtu\.be\/([^?&]+)/,
+
+        /youtube\.com\/watch\?v=([^?&]+)/,
+
+        /youtube\.com\/embed\/([^?&]+)/,
+
+        /youtube\.com\/shorts\/([^?&]+)/
+
+    ];
+
+    for (
+        const pattern of patterns
+    ) {
+
+        const match =
+            url.match(pattern);
+
+        if (match)
+            return match[1];
+
+    }
+
+    return null;
+}
+
+
+async function loadOurSongs() {
+
+    const songList =
+        document.getElementById(
+            "songList"
+        );
+
+    if (!songList)
+        return;
+
+
+    songList.innerHTML =
+        '<p class="song-loading">Loading our songs... 🎵💕</p>';
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("our_songs")
+            .select("*")
+            .order(
+                "created_at",
+                {
+                    ascending: true
+                }
+            );
+
+
+    if (error) {
+
+        console.error(
+            "Our Songs error:",
+            error
+        );
+
+        songList.innerHTML = `
+            <div class="song-empty">
+
+                <div class="empty-icon">
+                    💔
+                </div>
+
+                <strong>
+                    Unable to load our songs
+                </strong>
+
+                <p>
+                    Please check the our_songs table in Supabase.
+                </p>
+
+            </div>
+        `;
+
+        return;
+    }
+
+
+    songList.innerHTML = "";
+
+
+    if (
+        !data ||
+        data.length === 0
+    ) {
+
+        songList.innerHTML = `
+            <div class="song-empty">
+
+                <div class="empty-icon">
+                    🎵
+                </div>
+
+                <strong>
+                    Our song starts here
+                </strong>
+
+                <p>
+                    Add a song that reminds us of each other 🩷
+                </p>
+
+            </div>
+        `;
+
+        return;
+    }
+
+
+    data.forEach(
+        song => {
+
+            const youtubeId =
+                getYouTubeID(
+                    song.youtube_url
+                );
+
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+
+            div.className =
+                "song-card";
+
+
+            if (!youtubeId) {
+
+                div.innerHTML = `
+
+                    <div class="song-info">
+
+                        <div class="song-icon">
+                            🎵
+                        </div>
+
+                        <div class="song-details">
+
+                            <h3>
+                                ${escapeHTML(song.title)}
+                            </h3>
+
+                            <p>
+                                ${escapeHTML(song.artist || "Our Song")}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <p>
+                        Invalid YouTube link.
+                    </p>
+
+                    <button
+                        type="button"
+                        class="song-delete"
+                        onclick="deleteOurSong(${song.id})"
+                    >
+                        🗑️ Delete
+                    </button>
+
+                `;
+
+                songList.appendChild(div);
+
+                return;
+            }
+
+
+            div.innerHTML = `
+
+                <div class="song-info">
+
+                    <div class="song-icon">
+                        🎵
+                    </div>
+
+                    <div class="song-details">
+
+                        <h3>
+                            ${escapeHTML(song.title)}
+                        </h3>
+
+                        <p>
+                            ${escapeHTML(
+                                song.artist ||
+                                "Our Song"
+                            )}
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="song-player">
+
+                    <iframe
+                        src="https://www.youtube.com/embed/${encodeURIComponent(youtubeId)}"
+                        title="${escapeAttribute(song.title)}"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowfullscreen
+                    ></iframe>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="song-delete"
+                    onclick="deleteOurSong(${song.id})"
+                >
+                    🗑️ Delete
+                </button>
+
+            `;
+
+
+            songList.appendChild(div);
+
+        }
+    );
+
+}
+
+
+async function addOurSong() {
+
+    const titleInput =
+        document.getElementById(
+            "songTitle"
+        );
+
+    const artistInput =
+        document.getElementById(
+            "songArtist"
+        );
+
+    const urlInput =
+        document.getElementById(
+            "songURL"
+        );
+
+
+    if (
+        !titleInput ||
+        !artistInput ||
+        !urlInput
+    )
+        return;
+
+
+    const title =
+        titleInput.value.trim();
+
+    const artist =
+        artistInput.value.trim();
+
+    const youtubeUrl =
+        urlInput.value.trim();
+
+
+    if (
+        !title ||
+        !youtubeUrl
+    ) {
+
+        alert(
+            "Please enter the song title and YouTube link 🎵"
+        );
+
+        return;
+    }
+
+
+    const youtubeId =
+        getYouTubeID(
+            youtubeUrl
+        );
+
+
+    if (!youtubeId) {
+
+        alert(
+            "Please enter a valid YouTube link ❤️"
+        );
+
+        return;
+    }
+
+
+    const {
+        error
+    } =
+        await supabaseClient
+            .from("our_songs")
+            .insert([
+                {
+                    title:
+                        title,
+
+                    artist:
+                        artist,
+
+                    youtube_url:
+                        youtubeUrl
+                }
+            ]);
+
+
+    if (error) {
+
+        console.error(
+            "Our Song insert error:",
+            error
+        );
+
+        alert(
+            "Failed to add this song."
+        );
+
+        return;
+    }
+
+
+    titleInput.value = "";
+
+    artistInput.value = "";
+
+    urlInput.value = "";
+
+
+    loadOurSongs();
+
+}
+
+
+async function deleteOurSong(id) {
+
+    if (
+        !confirm(
+            "Remove this song from Our Songs? 🥺"
+        )
+    )
+        return;
+
+
+    const {
+        error
+    } =
+        await supabaseClient
+            .from("our_songs")
+            .delete()
+            .eq(
+                "id",
+                id
+            );
+
+
+    if (error) {
+
+        console.error(
+            "Our Song delete error:",
+            error
+        );
+
+        alert(
+            "Failed to delete this song."
+        );
+
+        return;
+    }
+
+
+    loadOurSongs();
+
+}
+
+// ======================================================
 // NAVIGATION
 // ======================================================
 
@@ -2425,6 +2823,10 @@ function showSection(
         "memories-section",
 
         "messages-section"
+        
+        "bucket-section",
+        
+        "song-section"
 
     ];
 
@@ -2477,6 +2879,12 @@ function showSection(
     "bucket-section"
 ) {
     loadBucketList();
+}
+    if (
+    sectionId ===
+    "song-section"
+) {
+    loadOurSongs();
 }
 
 }
