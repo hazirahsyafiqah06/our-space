@@ -2425,4 +2425,107 @@ button:hover {
     .song-player iframe {
         height: 190px;
     }
+
+   /* =========================================
+   ROMANTIC OUR SONG
+   ========================================= */
+
+.song-romantic-top {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 18px;
+    margin-bottom: 16px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #fff5fa, #f5f9ff);
+    overflow: hidden;
+}
+
+.song-cover {
+    width: 90px;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 16px;
+    flex-shrink: 0;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+.song-label {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: #d77fa1;
+    margin-bottom: 5px;
+}
+
+.song-details h3 {
+    margin: 0;
+}
+
+.song-details p {
+    margin: 4px 0 8px;
+}
+
+.song-love-line {
+    font-size: 13px;
+    font-style: italic;
+    color: #c77d9b;
+}
+
+.song-floating-heart {
+    position: absolute;
+    font-size: 20px;
+    opacity: 0.65;
+    animation: songFloat 3s ease-in-out infinite;
+}
+
+.heart-one {
+    top: 10px;
+    right: 35px;
+}
+
+.heart-two {
+    bottom: 12px;
+    right: 70px;
+    animation-delay: 1s;
+}
+
+.heart-three {
+    top: 45px;
+    right: 12px;
+    animation-delay: 2s;
+}
+
+@keyframes songFloat {
+    0%, 100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-7px);
+    }
+}
+
+@media (max-width: 600px) {
+    .song-romantic-top {
+        gap: 12px;
+        padding: 14px;
+    }
+
+    .song-cover {
+        width: 70px;
+        height: 70px;
+        border-radius: 12px;
+    }
+
+    .song-love-line {
+        font-size: 12px;
+    }
+
+    .song-floating-heart {
+        font-size: 16px;
+    }
+}
 }
