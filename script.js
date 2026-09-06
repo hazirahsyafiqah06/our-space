@@ -455,6 +455,39 @@ function updateBirthdayCountdown(month, date, daysId, hoursId, minutesId, second
 
 }
 
+// ======================================================
+// AUTO OPEN BIRTHDAY SURPRISE ON WEBSITE OPEN
+// ======================================================
+
+function openBirthdaySurpriseOnce(person) {
+
+    const today = new Date();
+
+    const todayKey =
+        today.getFullYear() +
+        "-" +
+        String(today.getMonth() + 1).padStart(2, "0") +
+        "-" +
+        String(today.getDate()).padStart(2, "0");
+
+    const storageKey =
+        "birthdaySurpriseShown_" +
+        person +
+        "_" +
+        todayKey;
+
+    if (sessionStorage.getItem(storageKey)) {
+        return;
+    }
+
+    sessionStorage.setItem(storageKey, "true");
+
+    setTimeout(() => {
+        openBirthdaySurprise(person);
+    }, 800);
+
+}
+
 
 // ======================================================
 // OPEN BIRTHDAY SURPRISE
