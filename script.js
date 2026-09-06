@@ -399,6 +399,239 @@ function birthdayCountdown() {
     );
 
 }
+// ======================================================
+// BIRTHDAY SURPRISE
+// ======================================================
+
+function checkBirthdaySurprise() {
+
+    const now = new Date();
+
+    const month = now.getMonth() + 1;
+    const date = now.getDate();
+
+    let birthdayPerson = "";
+
+    if (month === 2 && date === 27) {
+        birthdayPerson = "hazirah";
+    }
+
+    if (month === 9 && date === 9) {
+        birthdayPerson = "zulkarnain";
+    }
+
+    const hazirahNext =
+        document.querySelector(".birthday-hazirah .birthday-next");
+
+    const zulkarnainNext =
+        document.querySelector(".birthday-zulkarnain .birthday-next");
+
+    if (birthdayPerson === "hazirah") {
+
+        if (hazirahNext) {
+            hazirahNext.innerHTML = `
+                🎉 TODAY IS YOUR SPECIAL DAY! 🎉
+                <br>
+                <button
+                    type="button"
+                    class="birthday-surprise-btn"
+                    onclick="openBirthdaySurprise('hazirah')"
+                >
+                    💌 Open Your Surprise
+                </button>
+            `;
+        }
+
+    } else if (birthdayPerson === "zulkarnain") {
+
+        if (zulkarnainNext) {
+            zulkarnainNext.innerHTML = `
+                🎉 TODAY IS YOUR SPECIAL DAY! 🎉
+                <br>
+                <button
+                    type="button"
+                    class="birthday-surprise-btn"
+                    onclick="openBirthdaySurprise('zulkarnain')"
+                >
+                    💌 Open Your Surprise
+                </button>
+            `;
+        }
+
+    }
+
+}
+
+
+// ======================================================
+// OPEN BIRTHDAY SURPRISE
+// ======================================================
+
+function openBirthdaySurprise(person) {
+
+    let name = "";
+    let image = "";
+    let message = "";
+
+    if (person === "hazirah") {
+
+        name = "Nur Hazirah";
+        image = "zirah.jpeg";
+
+        message = `
+            Happy Birthday, Hazirah! 🎂❤️
+            <br><br>
+            Thank you for being such a special part
+            of this little space we built together.
+            <br><br>
+            May your days always be filled with
+            happiness, love and beautiful memories. 💕
+            <br><br>
+            You deserve all the happiness in the world. 🩷
+        `;
+
+    } else if (person === "zulkarnain") {
+
+        name = "Zulkarnain";
+        image = "zul.jpeg";
+
+        message = `
+            Happy Birthday, Zulkarnain! 🎂💙
+            <br><br>
+            Today is all about you.
+            Thank you for being part of
+            all these little memories with me.
+            <br><br>
+            I hope this year brings you
+            happiness, success and lots of love. 🩵
+            <br><br>
+            Here's to more beautiful memories together. ❤️
+        `;
+
+    }
+
+    const surprise = document.createElement("div");
+
+    surprise.className = "birthday-surprise-overlay";
+
+    surprise.innerHTML = `
+        <div class="birthday-surprise-card">
+
+            <button
+                class="birthday-surprise-close"
+                onclick="closeBirthdaySurprise()"
+            >
+                ✕
+            </button>
+
+            <div class="surprise-hearts">
+                💕 💗 💕
+            </div>
+
+            <h2>
+                🎉 Happy Birthday 🎉
+            </h2>
+
+            <img
+                src="${image}"
+                alt="${name}"
+                class="birthday-surprise-image"
+            >
+
+            <h3>
+                ${name} ❤️
+            </h3>
+
+            <p class="birthday-surprise-message">
+                ${message}
+            </p>
+
+            <div class="surprise-bottom">
+                ♡ With love, from Our Space ♡
+            </div>
+
+        </div>
+    `;
+
+    document.body.appendChild(surprise);
+
+    document.body.style.overflow = "hidden";
+
+    createBirthdayHearts();
+
+}
+
+
+// ======================================================
+// CLOSE BIRTHDAY SURPRISE
+// ======================================================
+
+function closeBirthdaySurprise() {
+
+    const surprise =
+        document.querySelector(".birthday-surprise-overlay");
+
+    if (surprise) {
+        surprise.remove();
+    }
+
+    document.body.style.overflow = "";
+
+}
+
+
+// ======================================================
+// FLOATING HEARTS
+// ======================================================
+
+function createBirthdayHearts() {
+
+    const hearts = [
+        "💕",
+        "💗",
+        "💖",
+        "❤️",
+        "🩷",
+        "🩵"
+    ];
+
+    for (let i = 0; i < 18; i++) {
+
+        const heart =
+            document.createElement("span");
+
+        heart.className =
+            "birthday-floating-heart";
+
+        heart.textContent =
+            hearts[
+                Math.floor(
+                    Math.random() * hearts.length
+                )
+            ];
+
+        heart.style.left =
+            Math.random() * 100 + "%";
+
+        heart.style.animationDelay =
+            Math.random() * 2 + "s";
+
+        heart.style.animationDuration =
+            3 + Math.random() * 3 + "s";
+
+        document.body.appendChild(heart);
+
+        setTimeout(() => {
+            heart.remove();
+        }, 7000);
+
+    }
+
+}
+
+
+// Check birthday immediately
+checkBirthdaySurprise();
 
 // ======================================================
 // NOTES
@@ -3309,5 +3542,10 @@ setInterval(
 
 setInterval(
     birthdayCountdown,
+    1000
+);
+
+setInterval(
+    checkBirthdaySurprise,
     1000
 );
