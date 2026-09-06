@@ -3659,3 +3659,332 @@ button:hover {
         top: 12px;
     }
 }
+
+
+/* =========================================================
+   BIRTHDAY COUNTDOWN - FINAL COMPACT DESKTOP VERSION
+   Override previous birthday styles only
+   ========================================================= */
+
+.birthday-countdown {
+    width: 100%;
+    max-width: 620px;
+    margin: 25px auto 20px;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.birthday-heading {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.birthday-heading .birthday-decoration {
+    color: #e75480;
+    font-size: 14px;
+    letter-spacing: 3px;
+    margin-bottom: 3px;
+}
+
+.birthday-heading h2 {
+    margin: 0;
+    color: #7b8d98;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.birthday-heading p {
+    margin: 5px 0 0;
+    color: #999;
+    font-size: 13px;
+    font-style: italic;
+}
+
+.birthday-person {
+    position: relative;
+    width: 100%;
+    max-width: 620px;
+    min-height: 125px;
+
+    display: grid;
+    grid-template-columns: 72px 155px minmax(0, 1fr);
+    align-items: center;
+    column-gap: 14px;
+
+    box-sizing: border-box;
+    padding: 18px 22px;
+    margin: 0 auto 18px;
+
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.birthday-image {
+    width: 68px;
+    height: 68px;
+    margin: 0;
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.birthday-image img {
+    width: 52px;
+    height: 52px;
+    object-fit: contain;
+    display: block;
+    border-radius: 10px;
+}
+
+.birthday-info {
+    width: 155px;
+    min-width: 0;
+    text-align: center;
+}
+
+.birthday-name {
+    font-size: 21px;
+    line-height: 1.2;
+    margin-bottom: 4px;
+    white-space: nowrap;
+}
+
+.birthday-date {
+    font-size: 14px;
+    margin-bottom: 7px;
+}
+
+.birthday-next {
+    font-size: 9px;
+    white-space: nowrap;
+}
+
+.birthday-count {
+    min-width: 0;
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    margin: 0;
+}
+
+.birthday-box {
+    width: 52px;
+    height: 58px;
+    flex: 0 0 52px;
+
+    padding: 5px 2px;
+    background: rgba(255,255,255,0.9);
+    border-radius: 14px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+}
+
+.birthday-box strong {
+    font-size: 20px;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.birthday-box span {
+    font-size: 9px;
+}
+
+.birthday-decoration-side {
+    font-size: 18px;
+}
+
+.birthday-decoration-side.left {
+    left: 10px;
+    top: 12px;
+}
+
+.birthday-decoration-side.right {
+    right: 10px;
+    top: 12px;
+}
+
+
+/* ---------- MEDIUM DESKTOP / TABLET ---------- */
+
+@media (max-width: 900px) and (min-width: 601px) {
+
+    .birthday-countdown {
+        max-width: 560px;
+    }
+
+    .birthday-person {
+        max-width: 560px;
+        grid-template-columns: 65px 145px minmax(0, 1fr);
+        column-gap: 10px;
+        padding: 16px 18px;
+    }
+
+    .birthday-image {
+        width: 62px;
+        height: 62px;
+    }
+
+    .birthday-image img {
+        width: 48px;
+        height: 48px;
+    }
+
+    .birthday-info {
+        width: 145px;
+    }
+
+    .birthday-name {
+        font-size: 19px;
+    }
+
+    .birthday-box {
+        width: 49px;
+        flex-basis: 49px;
+        height: 56px;
+    }
+
+    .birthday-box strong {
+        font-size: 18px;
+    }
+}
+
+
+/* ---------- MOBILE ---------- */
+
+@media (max-width: 600px) {
+
+    .birthday-countdown {
+        width: 100%;
+        max-width: 100%;
+        padding: 0 8px;
+        margin-top: 22px;
+    }
+
+    .birthday-heading {
+        margin-bottom: 18px;
+    }
+
+    .birthday-heading h2 {
+        font-size: 22px;
+    }
+
+    .birthday-heading p {
+        font-size: 12px;
+    }
+
+    .birthday-person {
+        width: 100%;
+        max-width: 100%;
+        min-height: auto;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        padding: 18px 12px;
+        gap: 7px;
+        margin-bottom: 15px;
+
+        border-radius: 18px;
+    }
+
+    .birthday-image {
+        width: 64px;
+        height: 64px;
+        margin: 0;
+    }
+
+    .birthday-image img {
+        width: 48px;
+        height: 48px;
+    }
+
+    .birthday-info {
+        width: 100%;
+        text-align: center;
+    }
+
+    .birthday-name {
+        font-size: 20px;
+        white-space: normal;
+    }
+
+    .birthday-date {
+        font-size: 14px;
+        margin-bottom: 5px;
+    }
+
+    .birthday-next {
+        font-size: 9px;
+        white-space: normal;
+    }
+
+    .birthday-count {
+        width: 100%;
+        justify-content: center;
+        gap: 5px;
+        margin-top: 4px;
+    }
+
+    .birthday-box {
+        width: calc((100% - 15px) / 4);
+        flex: 0 0 calc((100% - 15px) / 4);
+        height: 58px;
+        border-radius: 13px;
+    }
+
+    .birthday-box strong {
+        font-size: 19px;
+    }
+
+    .birthday-box span {
+        font-size: 9px;
+    }
+
+    .birthday-decoration-side {
+        font-size: 16px;
+    }
+
+    .birthday-decoration-side.left {
+        left: 9px;
+        top: 9px;
+    }
+
+    .birthday-decoration-side.right {
+        right: 9px;
+        top: 9px;
+    }
+}
+
+
+/* ---------- VERY SMALL PHONE ---------- */
+
+@media (max-width: 380px) {
+
+    .birthday-person {
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+
+    .birthday-box {
+        height: 54px;
+    }
+
+    .birthday-box strong {
+        font-size: 17px;
+    }
+
+    .birthday-box span {
+        font-size: 8px;
+    }
+}
