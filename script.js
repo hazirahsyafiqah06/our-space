@@ -271,7 +271,7 @@ function countdown() {
 
 function updateBirthdayCountdown(month, date, daysId, hoursId, minutesId, secondsId) {
 
-    const now = new Date(2026, 8, 9);
+    const now = new Date();
 
     let nextBirthday =
         new Date(
