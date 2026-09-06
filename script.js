@@ -389,7 +389,8 @@ function birthdayCountdown() {
         "zulkarnainBirthdayMinutes",
         "zulkarnainBirthdaySeconds"
     );
-        birthdaySurprise();
+    
+    birthdaySurprise();
 
 }
 
