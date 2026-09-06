@@ -395,9 +395,9 @@ function birthdayCountdown() {
 // BIRTHDAY SURPRISE
 // ======================================================
 
-function checkBirthdaySurprise() {
+function updateBirthdayCountdown(month, date, daysId, hoursId, minutesId, secondsId) {
 
-    const now = new Date(2026, 8, 9);
+    const now = new Date();
 
     const month = now.getMonth() + 1;
     const date = now.getDate();
