@@ -3043,6 +3043,53 @@ function showSection(
 }
 
 // ======================================================
+// WELCOME BACK ANIMATION
+// ======================================================
+
+function showWelcomeAnimation() {
+
+    const welcomeScreen =
+        document.getElementById(
+            "welcomeScreen"
+        );
+
+    const welcomeUser =
+        document.getElementById(
+            "welcomeUser"
+        );
+
+    if (
+        !welcomeScreen ||
+        !welcomeUser
+    ) {
+        return;
+    }
+
+    const savedUsername =
+        localStorage.getItem(
+            "username"
+        );
+
+    if (savedUsername) {
+
+        welcomeUser.textContent =
+            "Welcome back, " +
+            savedUsername +
+            " ❤️";
+
+    }
+
+    setTimeout(() => {
+
+        welcomeScreen.classList.add(
+            "hide"
+        );
+
+    }, 1800);
+
+}
+
+// ======================================================
 // START APP
 // ======================================================
 
@@ -3065,6 +3112,8 @@ async function startApp() {
     showSection(
         ""
     );
+    
+    showWelcomeAnimation();
 
 }
 
