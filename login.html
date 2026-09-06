@@ -123,6 +123,130 @@
 
         }
 
+
+        /* ==========================================
+           LOGIN ANIMATION - TAMBAHAN SAHAJA
+           ========================================== */
+
+        .login-card {
+            animation: loginCardIn 0.7s ease-out both;
+        }
+
+        .heart {
+            animation: heartFloat 2.2s ease-in-out infinite;
+            display: inline-block;
+        }
+
+        .login-card h1 {
+            animation: textFadeIn 0.8s ease-out 0.15s both;
+        }
+
+        .subtitle {
+            animation: textFadeIn 0.8s ease-out 0.25s both;
+        }
+
+        .login-card input {
+            animation: inputFadeIn 0.7s ease-out both;
+        }
+
+        .login-card input:nth-of-type(1) {
+            animation-delay: 0.35s;
+        }
+
+        .login-card input:nth-of-type(2) {
+            animation-delay: 0.45s;
+        }
+
+        .login-btn {
+            animation: buttonFadeIn 0.7s ease-out 0.55s both;
+        }
+
+        .footer {
+            animation: textFadeIn 0.8s ease-out 0.65s both;
+        }
+
+        @keyframes loginCardIn {
+            from {
+                opacity: 0;
+                transform: translateY(25px) scale(0.97);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes heartFloat {
+            0%, 100% {
+                transform: translateY(0) scale(1);
+            }
+            50% {
+                transform: translateY(-7px) scale(1.06);
+            }
+        }
+
+        @keyframes textFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes inputFadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(-12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes buttonFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .login-card,
+            .heart,
+            .login-card h1,
+            .subtitle,
+            .login-card input,
+            .login-btn,
+            .footer {
+                animation: none !important;
+            }
+        }
+
+
+        .login-success {
+            animation: loginSuccess 0.45s ease-out both !important;
+        }
+
+        @keyframes loginSuccess {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.025);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
     </style>
 
 </head>
@@ -418,6 +542,10 @@ async function login() {
 
         button.textContent =
             "💕 Welcome";
+
+
+        document.querySelector(".login-card").classList.add("login-success");
+
 
 
         // ==================================
