@@ -4537,6 +4537,79 @@ button:hover {
         rotate(25deg);
 }
 /* ======================================================
+   GIFT OPENING ANIMATION
+   ====================================================== */
+
+.birthday-gift {
+    animation: giftBounce 2s ease-in-out infinite;
+}
+
+.gift-lid {
+    transform-origin: center bottom;
+    animation: giftOpen 2s ease-in-out infinite;
+}
+
+.gift-ribbon-left {
+    animation: ribbonLeft 2s ease-in-out infinite;
+}
+
+.gift-ribbon-right {
+    animation: ribbonRight 2s ease-in-out infinite;
+}
+
+@keyframes giftBounce {
+
+    0%, 100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-6px);
+    }
+
+}
+
+@keyframes giftOpen {
+
+    0%, 35% {
+        transform: translateY(0) rotate(0deg);
+    }
+
+    50%, 70% {
+        transform: translateY(-18px) rotate(-4deg);
+    }
+
+    85%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+
+}
+
+@keyframes ribbonLeft {
+
+    0%, 35%, 85%, 100% {
+        transform: rotate(-25deg);
+    }
+
+    50%, 70% {
+        transform: rotate(-45deg);
+    }
+
+}
+
+@keyframes ribbonRight {
+
+    0%, 35%, 85%, 100% {
+        transform: rotate(25deg);
+    }
+
+    50%, 70% {
+        transform: rotate(45deg);
+    }
+
+}
+
+/* ======================================================
    GIFT ANIMATION
    ====================================================== */
 
