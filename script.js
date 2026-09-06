@@ -2991,14 +2991,34 @@ function showSection(
                     id
                 );
 
-            if (section) {
+if (section) {
 
-                section.style.display =
-                    id === sectionId
-                        ? "block"
-                        : "none";
+    if (id === sectionId) {
 
-            }
+        section.style.display = "block";
+
+        // Restart animation setiap kali section dibuka
+        section.classList.remove(
+            "section-opening"
+        );
+
+        void section.offsetWidth;
+
+        section.classList.add(
+            "section-opening"
+        );
+
+    } else {
+
+        section.style.display = "none";
+
+        section.classList.remove(
+            "section-opening"
+        );
+
+    }
+
+}
 
         }
     );
