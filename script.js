@@ -3063,7 +3063,7 @@ async function startApp() {
     loadSecretMessages();
 
     showSection(
-        "notes-section"
+        ""
     );
 
 }
