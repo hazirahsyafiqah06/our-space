@@ -4842,4 +4842,21 @@ button:hover {
     }
 
 }
+/* =========================================================
+   FINAL FIX - BIRTHDAY PROFILE IMAGE FULL CIRCLE
+   ========================================================= */
+
+.birthday-image {
+    border-radius: 50% !important;
+    overflow: hidden !important;
+}
+
+.birthday-image img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    border-radius: 50% !important;
+    display: block !important;
+}
 
