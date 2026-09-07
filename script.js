@@ -398,23 +398,40 @@ function birthdayCountdown() {
 // BIRTHDAY SURPRISE
 // ======================================================
 
+// ======================================================
+// BIRTHDAY SURPRISE - GIFT FIRST
+// ======================================================
+
 function birthdaySurprise() {
 
     const now = new Date();
 
-    const month = now.getMonth() + 1;
-    const date = now.getDate();
+    const month =
+        now.getMonth() + 1;
+
+    const date =
+        now.getDate();
 
     let person = "";
     let image = "";
     let message = "";
     let badge = "";
 
-    if (month === 9 && date === 9) {
+    // --------------------------------------------------
+    // ZULKARNAIN - 9 SEPTEMBER
+    // --------------------------------------------------
+
+    if (
+        month === 9 &&
+        date === 9
+    ) {
 
         person = "Zulkarnain 💙";
+
         image = "zul.jpeg";
-        badge = "🎁 Stay amazing, always ♡";
+
+        badge =
+            "🎁 Stay amazing, always ♡";
 
         message = `
             Happy Birthday, Zulkarnain! 🎂💙
@@ -432,11 +449,21 @@ function birthdaySurprise() {
 
     }
 
-    if (month === 2 && date === 27) {
+    // --------------------------------------------------
+    // HAZIRAH - 27 FEBRUARY
+    // --------------------------------------------------
+
+    if (
+        month === 2 &&
+        date === 27
+    ) {
 
         person = "Nur Hazirah 🩷";
+
         image = "zirah.jpeg";
-        badge = "🎀 Forever my favourite person ♡";
+
+        badge =
+            "🎀 Forever my favourite person ♡";
 
         message = `
             Happy Birthday, Hazirah! 🎂🩷
@@ -456,6 +483,10 @@ function birthdaySurprise() {
     if (person === "")
         return;
 
+    // --------------------------------------------------
+    // PREVENT REPEATED POPUP
+    // --------------------------------------------------
+
     const todayKey =
         "birthday_" +
         now.getFullYear() +
@@ -466,19 +497,33 @@ function birthdaySurprise() {
         "_" +
         person;
 
-    if (sessionStorage.getItem(todayKey))
+    if (
+        sessionStorage.getItem(
+            todayKey
+        )
+    )
         return;
 
-    sessionStorage.setItem(todayKey, "shown");
+    sessionStorage.setItem(
+        todayKey,
+        "shown"
+    );
+
+    // --------------------------------------------------
+    // GIFT POPUP
+    // --------------------------------------------------
 
     const popup =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
     popup.className =
         "birthday-overlay";
 
     popup.innerHTML = `
-        <div class="birthday-popup">
+
+        <div class="birthday-popup birthday-gift-stage">
 
             <button
                 class="close-button"
@@ -487,46 +532,29 @@ function birthdaySurprise() {
                 ✕
             </button>
 
-            <div class="birthday-gift">
+            <h2>
+                A Little Surprise For You 🎁
+            </h2>
+
+            <div class="birthday-gift gift-clickable"
+                 onclick="openBirthdayMessage()">
 
                 <div class="gift-ribbon-left"></div>
+
                 <div class="gift-ribbon-right"></div>
+
                 <div class="gift-lid"></div>
+
                 <div class="gift-box"></div>
 
             </div>
 
-            <h2>
-                Happy Birthday!
-            </h2>
-
             <div class="wish">
-                Wishing you a day as special as you are ♡
-            </div>
-
-            <img
-                src="${image}"
-                class="popup-photo"
-                alt="${person}"
-            >
-
-            <h3>
-                ${person}
-            </h3>
-
-            <div class="popup-message">
-                ${message}
-            </div>
-
-            <div class="special-badge">
-                ${badge}
-            </div>
-
-            <div class="popup-date">
-                🎁 TODAY IS YOUR SPECIAL DAY 🎁
+                Tap the gift to open your surprise ♡
             </div>
 
         </div>
+
     `;
 
     document.body.appendChild(
@@ -537,6 +565,26 @@ function birthdaySurprise() {
         "hidden";
 
     createBirthdayGifts();
+
+}
+
+// ======================================================
+// OPEN BIRTHDAY MESSAGE
+// ======================================================
+
+function openBirthdayMessage() {
+
+    const popup =
+        document.querySelector(
+            ".birthday-overlay"
+        );
+
+    if (!popup)
+        return;
+
+    popup.remove();
+
+    birthdayMessagePopup();
 
 }
 
@@ -3471,11 +3519,15 @@ function showWelcomeAnimation() {
 
     setTimeout(() => {
 
-        welcomeScreen.classList.add(
-            "hide"
-        );
+    welcomeScreen.classList.add(
+        "hide"
+    );
 
-    }, 1800);
+    setTimeout(() => {
+        birthdaySurprise();
+    }, 500);
+
+}, 1800);
 
 }
 
