@@ -1134,15 +1134,23 @@ async function loadNotes() {
         div.className =
             "note";
 
-        div.innerHTML = `
+       const noteDate =
+    note.created_at
+        ? formatNoteDate(note.created_at)
+        : "Date unavailable";
 
-            <h3>
-                ${escapeHTML(note.title)}
-            </h3>
+div.innerHTML = `
+    <div class="note-date">
+        📅 ${noteDate}
+    </div>
 
-            <p>
-                ${escapeHTML(note.content)}
-            </p>
+    <h3>
+        ${escapeHTML(note.title)}
+    </h3>
+
+    <p>
+        ${escapeHTML(note.content)}
+    </p>
 
             <div class="note-buttons">
 
