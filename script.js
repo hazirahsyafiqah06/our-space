@@ -1144,8 +1144,19 @@ const noteDate =
         : "Date unavailable";
 
 div.innerHTML = `
-    <div class="note-date">
-        📅 ${noteDate}
+
+    <div class="note-meta">
+
+        <span class="note-author">
+            ${escapeHTML(noteAuthor)}
+        </span>
+
+        <span class="note-separator">|</span>
+
+        <span class="note-date">
+            📅 ${escapeHTML(noteDate)}
+        </span>
+
     </div>
 
     <h3>
