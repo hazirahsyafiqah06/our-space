@@ -5294,3 +5294,60 @@ button:hover {
     }
 }
 }
+
+
+/* ======================================================
+   ONLINE / OFFLINE STATUS - FINAL STYLE
+====================================================== */
+
+.partner-online-status {
+    margin-top: 6px !important;
+    margin-bottom: 12px !important;
+    text-align: center !important;
+
+    font-family: Arial, sans-serif !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.2px !important;
+
+    color: #aaa !important;
+}
+
+.partner-online-status.is-online {
+    color: #62b88a !important;
+}
+
+.partner-online-status .online-dot,
+.partner-online-status .offline-dot {
+    display: inline-block !important;
+    width: 7px !important;
+    height: 7px !important;
+    border-radius: 50% !important;
+    margin-right: 5px !important;
+    vertical-align: middle !important;
+}
+
+.partner-online-status .online-dot {
+    background: #62b88a !important;
+    box-shadow: 0 0 6px rgba(98, 184, 138, 0.55) !important;
+}
+
+.partner-online-status .offline-dot {
+    background: #aaa !important;
+}
+
+@media (max-width: 600px) {
+
+    .partner-online-status {
+        font-size: 11px !important;
+        margin-top: 5px !important;
+        margin-bottom: 10px !important;
+    }
+
+    .partner-online-status .online-dot,
+    .partner-online-status .offline-dot {
+        width: 6px !important;
+        height: 6px !important;
+        margin-right: 4px !important;
+    }
+}
