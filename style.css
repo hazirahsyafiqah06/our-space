@@ -1192,18 +1192,13 @@ button:hover {
    CHAT BUBBLE  
 ------------------------------------------------------ */  
   
-.message-bubble {  
-    width: auto;  
-  
-    max-width: 68%;  
-  
-    min-width: 90px;  
-  
-    padding: 9px 11px 7px;  
-  
-    border-radius: 15px;  
-  
-    position: relative;  
+.message-bubble {
+    width: fit-content;
+    max-width: 68%;
+    min-width: 0;
+    padding: 9px 11px 7px;
+    border-radius: 15px;
+    position: relative;
   
     box-shadow:  
         0 2px 7px rgba(0,0,0,0.045);  
@@ -1532,15 +1527,13 @@ button:hover {
   
     /* Bubble lebih kecil */  
   
-    .message-bubble {  
-        max-width: 78%;  
-  
-        min-width: 75px;  
-  
-        padding: 8px 9px 6px;  
-  
-        border-radius: 14px;  
-    }  
+   .message-bubble {
+    max-width: 78%;
+    min-width: 0;
+    width: fit-content;
+    padding: 8px 9px 6px;
+    border-radius: 14px;
+}
   
   
     .mine .message-bubble {  
