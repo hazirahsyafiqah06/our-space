@@ -37,6 +37,135 @@ const USER_NAMES = {
 let currentUser = null;
 
 // ======================================================
+// ONLINE / OFFLINE STATUS
+// ======================================================
+
+let onlineStatusChannel = null;
+
+function setupOnlineStatus() {
+
+    if (!currentUser) {
+        return;
+    }
+
+    if (onlineStatusChannel) {
+        supabaseClient.removeChannel(
+            onlineStatusChannel
+        );
+    }
+
+    onlineStatusChannel =
+        supabaseClient.channel(
+            "our-space-online-status",
+            {
+                config: {
+                    presence: {
+                        key: currentUser.id
+                    }
+                }
+            }
+        );
+
+    onlineStatusChannel
+        .on(
+            "presence",
+            {
+                event: "sync"
+            },
+            () => {
+
+                updatePartnerOnlineStatus();
+
+            }
+        )
+        .on(
+            "presence",
+            {
+                event: "join"
+            },
+            () => {
+
+                updatePartnerOnlineStatus();
+
+            }
+        )
+        .on(
+            "presence",
+            {
+                event: "leave"
+            },
+            () => {
+
+                updatePartnerOnlineStatus();
+
+            }
+        )
+        .subscribe(
+            async status => {
+
+                if (status === "SUBSCRIBED") {
+
+                    await onlineStatusChannel.track({
+                        user_id: currentUser.id,
+                        online_at: new Date().toISOString()
+                    });
+
+                    updatePartnerOnlineStatus();
+                }
+
+            }
+        );
+}
+
+function updatePartnerOnlineStatus() {
+
+    if (!onlineStatusChannel || !currentUser) {
+        return;
+    }
+
+    const state =
+        onlineStatusChannel.presenceState();
+
+    const partnerId =
+        currentUser.id === HAZIRAH_ID
+            ? ZULKARNAIN_ID
+            : HAZIRAH_ID;
+
+    const partnerOnline =
+        state[partnerId] &&
+        state[partnerId].length > 0;
+
+    const statusElement =
+        document.getElementById(
+            "partnerOnlineStatus"
+        );
+
+    if (!statusElement) {
+        return;
+    }
+
+    if (partnerOnline) {
+
+        statusElement.innerHTML =
+            '<span class="online-dot"></span> Online';
+
+        statusElement.classList.add(
+            "is-online"
+        );
+
+    } else {
+
+        statusElement.innerHTML =
+            '<span class="offline-dot"></span> Offline';
+
+        statusElement.classList.remove(
+            "is-online"
+        );
+
+    }
+}
+
+// ======================================================
 // RELATIONSHIP DATE
 // ======================================================
 
