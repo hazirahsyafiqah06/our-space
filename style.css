@@ -4981,3 +4981,207 @@ button:hover {
     }
 
 }
+
+
+/* ======================================================
+   FINAL SECRET MESSAGE - WHATSAPP STYLE
+   OVERRIDE SAHAJA
+   Coding asal dikekalkan
+====================================================== */
+
+/* Chat area */
+#secretMessages {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 330px;
+    overflow-y: auto;
+    padding: 12px 10px;
+}
+
+/* Message row */
+.secret-message-card {
+    width: 100%;
+    display: flex;
+    margin: 0;
+    padding: 0;
+}
+
+.secret-message-card.mine {
+    justify-content: flex-end;
+}
+
+.secret-message-card.theirs {
+    justify-content: flex-start;
+}
+
+/* Bubble ikut panjang mesej */
+.message-bubble {
+    display: inline-block;
+    width: fit-content;
+    max-width: 72%;
+    min-width: 0;
+    padding: 7px 10px 6px;
+    border-radius: 13px;
+    position: relative;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.045);
+}
+
+/* My message */
+.mine .message-bubble {
+    background: #ffe1ec;
+    border: 1px solid #ffd3e2;
+    border-bottom-right-radius: 4px;
+}
+
+/* Partner message */
+.theirs .message-bubble {
+    background: #eaf8ff;
+    border: 1px solid #d5edf6;
+    border-bottom-left-radius: 4px;
+}
+
+/* Sender */
+.message-top {
+    display: flex;
+    align-items: center;
+    margin: 0 0 2px;
+}
+
+.message-sender {
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1.2;
+    color: #e75480;
+}
+
+.theirs .message-sender {
+    color: #62a9c4;
+}
+
+/* Message text */
+.message-text {
+    display: inline;
+    margin: 0;
+    color: #444;
+    font-size: 13px;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+}
+
+/* Time */
+.message-time {
+    display: inline;
+    margin-left: 6px;
+    margin-top: 0;
+    color: #9b9b9b;
+    font-size: 8px;
+    line-height: 1;
+    white-space: nowrap;
+    opacity: 0.8;
+}
+
+/* Seen / Sent */
+.message-seen {
+    display: inline;
+    margin-left: 4px;
+    color: #62a9c4;
+    font-size: 8.5px;
+    line-height: 1;
+    white-space: nowrap;
+    opacity: 0.9;
+}
+
+/* Edit + Delete */
+.message-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 5px;
+    margin-top: 6px;
+    padding-top: 5px;
+    border-top: 1px solid rgba(0,0,0,0.055);
+}
+
+.message-actions button {
+    width: auto;
+    min-height: 0;
+    padding: 4px 7px;
+    font-size: 8.5px;
+    line-height: 1;
+    border-radius: 8px;
+    box-shadow: none;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+
+    #secretMessages {
+        max-height: 300px;
+        padding: 10px 7px;
+        gap: 7px;
+    }
+
+    .message-bubble {
+        max-width: 82%;
+        min-width: 0;
+        padding: 7px 9px 5px;
+        border-radius: 13px;
+    }
+
+    .message-sender {
+        font-size: 9px;
+    }
+
+    .message-text {
+        font-size: 12px;
+        line-height: 1.4;
+    }
+
+    .message-time {
+        font-size: 7.5px;
+        margin-left: 5px;
+    }
+
+    .message-seen {
+        font-size: 8px;
+        margin-left: 3px;
+    }
+
+    .message-actions {
+        gap: 4px;
+        margin-top: 5px;
+        padding-top: 4px;
+    }
+
+    .message-actions button {
+        padding: 4px 6px;
+        font-size: 8px;
+    }
+}
+
+/* Very small mobile */
+@media (max-width: 380px) {
+
+    .message-bubble {
+        max-width: 86%;
+        padding: 6px 8px 5px;
+    }
+
+    .message-text {
+        font-size: 11.5px;
+    }
+
+    .message-sender {
+        font-size: 8.5px;
+    }
+
+    .message-time {
+        font-size: 7px;
+    }
+
+    .message-seen {
+        font-size: 7.5px;
+    }
+}
