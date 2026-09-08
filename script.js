@@ -2044,6 +2044,11 @@ async function loadSecretMessages() {
 
         }
     );
+    
+    // Scroll terus ke mesej paling baru
+    requestAnimationFrame(() => {
+        container.scrollTop = container.scrollHeight;
+    });
 
 }
 
