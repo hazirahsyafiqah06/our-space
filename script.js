@@ -1048,9 +1048,30 @@ function createBirthdayGifts() {
 
 }
 
+
 // ======================================================
 // NOTES
 // ======================================================
+function formatNoteDate(dateString) {
+
+    if (!dateString)
+        return "Date unavailable";
+
+    const date = new Date(dateString);
+
+    return date.toLocaleString(
+        "en-MY",
+        {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+            timeZone: "Asia/Kuala_Lumpur"
+        }
+    );
+}
 
 async function loadNotes() {
 
