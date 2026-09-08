@@ -5351,3 +5351,124 @@ button:hover {
         margin-right: 4px !important;
     }
 }
+
+
+/* ======================================================
+   FINAL NOTES DESIGN - LATEST VERSION
+   OVERRIDE SAHAJA
+====================================================== */
+
+#notes-section .notes-subtitle {
+    color: #999;
+    font-size: 13px;
+    margin: -2px 0 20px;
+    line-height: 1.5;
+}
+
+#notes-section #notes {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+#notes-section .note {
+    position: relative;
+    background: linear-gradient(145deg, #fffdfd, #fff7fa);
+    border: 1px solid #f1dce5;
+    padding: 17px;
+    border-radius: 17px;
+    box-shadow: 0 5px 16px rgba(170,110,135,0.07);
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#notes-section .note::before {
+    content: "♡";
+    position: absolute;
+    top: 9px;
+    right: 12px;
+    color: #e9a4bd;
+    font-size: 18px;
+}
+
+#notes-section .note:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(170,110,135,0.11);
+}
+
+#notes-section .note-date {
+    color: #72b9ca;
+    font-size: 10px;
+    margin-bottom: 8px;
+    letter-spacing: 0.15px;
+}
+
+#notes-section .note h3 {
+    margin: 0 28px 9px 0;
+    color: #e75480;
+    font-size: 16px;
+    line-height: 1.35;
+}
+
+#notes-section .note p {
+    margin: 0;
+    color: #555;
+    font-size: 13px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+#notes-section .note-buttons {
+    display: flex;
+    gap: 7px;
+    margin-top: 14px;
+}
+
+#notes-section .note-buttons button {
+    min-height: 0;
+    padding: 7px 9px;
+    border-radius: 9px;
+    font-size: 10px;
+    box-shadow: none;
+}
+
+#notes-section .note-buttons button:last-child {
+    background: #f2f2f2;
+    color: #888;
+}
+
+#notes-section .note-buttons button:last-child:hover {
+    background: #ffe5ec;
+    color: #e75480;
+}
+
+@media (max-width: 600px) {
+
+    #notes-section .notes-subtitle {
+        font-size: 12px;
+        margin-bottom: 17px;
+    }
+
+    #notes-section #notes {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    #notes-section .note {
+        padding: 15px;
+    }
+
+    #notes-section .note-date {
+        font-size: 9px;
+    }
+
+    #notes-section .note h3 {
+        font-size: 15px;
+    }
+
+    #notes-section .note p {
+        font-size: 13px;
+    }
+}
