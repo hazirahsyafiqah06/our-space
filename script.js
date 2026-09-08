@@ -3979,6 +3979,8 @@ async function startApp() {
 
     setupSecretMessageRealtime();
 
+    setupOnlineStatus();
+
     updateTogetherTime();
 
     countdown();
