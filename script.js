@@ -1135,8 +1135,11 @@ async function loadNotes() {
             "note";
 
        const noteAuthor =
-    USER_NAMES[note.user_id] ||
-    "Our Love";
+    note.user_id === ZULKARNAIN_ID
+        ? "Zul"
+        : note.user_id === HAZIRAH_ID
+            ? "Zirah"
+            : "";
 
 const noteDate =
     note.created_at
@@ -1147,17 +1150,17 @@ div.innerHTML = `
 
     <div class="note-meta">
 
-        <span class="note-author">
-            ${escapeHTML(noteAuthor)}
-        </span>
+    <span class="note-author">
+        ${escapeHTML(noteAuthor)}
+    </span>
 
-        <span class="note-separator">|</span>
+    <span class="note-separator">|</span>
 
-        <span class="note-date">
-            📅 ${escapeHTML(noteDate)}
-        </span>
+    <span class="note-date">
+        📅 ${escapeHTML(noteDate)}
+    </span>
 
-    </div>
+</div>
 
     <h3>
         ${escapeHTML(note.title)}
