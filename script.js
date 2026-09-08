@@ -1972,10 +1972,21 @@ if (unreadMessages.length > 0) {
         );
 
     if (seenError) {
+
         console.error(
             "Mark messages as seen error:",
             seenError
         );
+
+    } else {
+
+        // Update data locally too
+        unreadMessages.forEach(
+            message => {
+                message.seen = true;
+            }
+        );
+
     }
 }
 
