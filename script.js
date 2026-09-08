@@ -1134,7 +1134,11 @@ async function loadNotes() {
         div.className =
             "note";
 
-       const noteDate =
+       const noteAuthor =
+    USER_NAMES[note.user_id] ||
+    "Our Love";
+
+const noteDate =
     note.created_at
         ? formatNoteDate(note.created_at)
         : "Date unavailable";
@@ -1275,16 +1279,19 @@ async function addNote() {
         error
     } =
         await supabaseClient
-            .from("notes")
-            .insert([
-                {
-                    title:
-                        title,
+           .from("notes")
+.insert([
+    {
+        title:
+            title,
 
-                    content:
-                        content
-                }
-            ]);
+        content:
+            content,
+
+        user_id:
+            currentUser.id
+    }
+]);
 
     if (error) {
 
