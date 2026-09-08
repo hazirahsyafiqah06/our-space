@@ -5233,4 +5233,64 @@ button:hover {
         height: 6px;
     }
 }
+
+   /* ======================================================
+   ONLINE / OFFLINE STATUS - FINAL
+====================================================== */
+
+.partner-online-status {
+    margin-top: 6px;
+    margin-bottom: 12px;
+    text-align: center;
+
+    /* Font */
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+
+    /* Offline default */
+    color: #aaa;
+    letter-spacing: 0.2px;
+}
+
+.partner-online-status.is-online {
+    color: #62b88a;
+}
+
+/* Dot */
+.online-dot,
+.offline-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    margin-right: 5px;
+    vertical-align: middle;
+}
+
+.online-dot {
+    background: #62b88a;
+    box-shadow: 0 0 6px rgba(98, 184, 138, 0.55);
+}
+
+.offline-dot {
+    background: #aaa;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+
+    .partner-online-status {
+        font-size: 11px;
+        margin-top: 5px;
+        margin-bottom: 10px;
+    }
+
+    .online-dot,
+    .offline-dot {
+        width: 6px;
+        height: 6px;
+        margin-right: 4px;
+    }
+}
 }
