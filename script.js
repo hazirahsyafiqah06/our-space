@@ -2171,19 +2171,22 @@ async function sendSecretMessage() {
         error
     } =
         await supabaseClient
-            .from("secret_message")
-            .insert([
-                {
-                    sender_id:
-                        currentUser.id,
+           .from("secret_message")
+.insert([
+    {
+        sender_id:
+            currentUser.id,
 
-                    receiver_id:
-                        receiverId,
+        receiver_id:
+            receiverId,
 
-                    message:
-                        message
-                }
-            ]);
+        message:
+            message,
+
+        seen:
+            false
+    }
+]);
 
     if (error) {
 
