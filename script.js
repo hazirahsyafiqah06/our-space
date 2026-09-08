@@ -78,6 +78,57 @@ async function getCurrentUser() {
 }
 
 // ======================================================
+// REALTIME SECRET MESSAGES
+// ======================================================
+
+let secretMessageChannel = null;
+
+function setupSecretMessageRealtime() {
+
+    if (!currentUser) {
+        return;
+    }
+
+    // Elak subscription duplicate
+    if (secretMessageChannel) {
+        supabaseClient.removeChannel(
+            secretMessageChannel
+        );
+    }
+
+    secretMessageChannel =
+        supabaseClient
+            .channel("secret-message-realtime")
+
+            .on(
+                "postgres_changes",
+                {
+                    event: "*",
+                    schema: "public",
+                    table: "secret_message"
+                },
+                payload => {
+
+                    console.log(
+                        "Secret message realtime:",
+                        payload
+                    );
+
+                    loadSecretMessages();
+                }
+            )
+
+            .subscribe(status => {
+
+                console.log(
+                    "Secret message realtime status:",
+                    status
+                );
+
+            });
+}
+
+// ======================================================
 // TOGETHER YEARS + DAYS
 // ======================================================
 
@@ -3796,6 +3847,8 @@ function showWelcomeAnimation() {
 async function startApp() {
 
     await getCurrentUser();
+
+    setupSecretMessageRealtime();
 
     updateTogetherTime();
 
