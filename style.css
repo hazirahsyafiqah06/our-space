@@ -5551,4 +5551,102 @@ button:hover {
         line-height: 1.6;
     }
 }
+
+   /* ======================================================
+   NOTES - CLEAN AUTHOR + DATE
+   ====================================================== */
+
+#notes-section .note-meta {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 6px;
+    width: 100%;
+    margin-bottom: 12px;
+    padding: 0 24px 0 0;
+    text-align: left;
+    line-height: 1;
+}
+
+#notes-section .note-author {
+    display: inline-block;
+    color: #666;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+#notes-section .note-separator {
+    display: inline-block;
+    color: #aaa;
+    font-size: 12px;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+#notes-section .note-date {
+    display: inline-block;
+    color: #72b9ca;
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+    margin: 0;
+    letter-spacing: 0;
+}
+
+/* Tajuk note */
+#notes-section .note h3 {
+    text-align: left;
+    margin: 0 28px 10px 0;
+    color: #e75480;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.35;
+}
+
+/* Isi note */
+#notes-section .note p {
+    text-align: left;
+    margin: 0;
+    color: #555;
+    font-size: 13px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+
+    #notes-section .note-meta {
+        gap: 5px;
+        padding-right: 20px;
+    }
+
+    #notes-section .note-author {
+        font-size: 11px;
+    }
+
+    #notes-section .note-separator {
+        font-size: 11px;
+    }
+
+    #notes-section .note-date {
+        font-size: 9px;
+    }
+
+    #notes-section .note h3 {
+        font-size: 15px;
+    }
+
+    #notes-section .note p {
+        font-size: 12px;
+        line-height: 1.6;
+    }
+}
 }
