@@ -144,25 +144,30 @@ function updatePartnerOnlineStatus() {
         return;
     }
 
-    if (partnerOnline) {
+   const partnerName =
+    currentUser.id === HAZIRAH_ID
+        ? "Zul"
+        : "Zirah";
 
-        statusElement.innerHTML =
-            '<span class="online-dot"></span> Online';
+if (partnerOnline) {
 
-        statusElement.classList.add(
-            "is-online"
-        );
+    statusElement.innerHTML =
+        `<span class="online-dot"></span> ${partnerName} is online`;
 
-    } else {
+    statusElement.classList.add(
+        "is-online"
+    );
 
-        statusElement.innerHTML =
-            '<span class="offline-dot"></span> Offline';
+} else {
 
-        statusElement.classList.remove(
-            "is-online"
-        );
+    statusElement.innerHTML =
+        `<span class="offline-dot"></span> ${partnerName} is offline`;
 
-    }
+    statusElement.classList.remove(
+        "is-online"
+    );
+
+}
 }
 
 // ======================================================
