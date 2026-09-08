@@ -5184,4 +5184,53 @@ button:hover {
     .message-seen {
         font-size: 7.5px;
     }
+   /* ======================================================
+   ONLINE / OFFLINE STATUS
+====================================================== */
+
+.partner-online-status {
+    margin-top: 6px;
+    margin-bottom: 12px;
+    text-align: center;
+    font-size: 11px;
+    color: #999;
+    font-weight: 600;
+}
+
+.partner-online-status.is-online {
+    color: #62b88a;
+}
+
+.online-dot,
+.offline-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.online-dot {
+    background: #62b88a;
+    box-shadow: 0 0 5px rgba(98, 184, 138, 0.5);
+}
+
+.offline-dot {
+    background: #aaa;
+}
+
+@media (max-width: 600px) {
+
+    .partner-online-status {
+        font-size: 10px;
+        margin-top: 5px;
+        margin-bottom: 10px;
+    }
+
+    .online-dot,
+    .offline-dot {
+        width: 6px;
+        height: 6px;
+    }
+}
 }
