@@ -5471,4 +5471,84 @@ button:hover {
     #notes-section .note p {
         font-size: 13px;
     }
+   /* ======================================================
+   NOTES - AUTHOR + ALIGNMENT
+   ====================================================== */
+
+#notes-section .note-meta {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding-right: 25px;
+    text-align: left;
+}
+
+#notes-section .note-author {
+    color: #e75480;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+#notes-section .note-separator {
+    color: #d9a8b9;
+    font-size: 12px;
+}
+
+#notes-section .note-date {
+    color: #72b9ca;
+    font-size: 10px;
+    white-space: nowrap;
+}
+
+#notes-section .note h3 {
+    text-align: left;
+    margin: 0 28px 10px 0;
+    color: #e75480;
+    font-size: 16px;
+    line-height: 1.35;
+}
+
+#notes-section .note p {
+    text-align: left;
+    margin: 0;
+    color: #555;
+    font-size: 13px;
+    line-height: 1.65;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+#notes-section .note-buttons {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+@media (max-width: 600px) {
+
+    #notes-section .note-meta {
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
+    #notes-section .note-author {
+        font-size: 11px;
+    }
+
+    #notes-section .note-date {
+        font-size: 9px;
+    }
+
+    #notes-section .note h3 {
+        font-size: 15px;
+    }
+
+    #notes-section .note p {
+        font-size: 12px;
+        line-height: 1.6;
+    }
+}
 }
