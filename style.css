@@ -5690,114 +5690,109 @@ button:hover {
     }
 
 }
-   /* ======================================================
+
+/* ======================================================
    NOTES - COMPACT CARD
    ====================================================== */
 
 #notes-section #notes {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    justify-content: flex-start;
-    gap: 16px;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+    gap: 16px !important;
 }
 
-/* Card ikut kandungan */
-#notes-section .note {
-    width: fit-content;
-    max-width: 100%;
-    min-width: 280px;
-    box-sizing: border-box;
-    text-align: left;
+/* Card lebih compact - ikut content, bukan penuh satu column */
+#notes-section #notes .note {
+    flex: 0 0 auto !important;
+    width: max-content !important;
+    min-width: 280px !important;
+    max-width: calc(50% - 8px) !important;
+    box-sizing: border-box !important;
+    text-align: left !important;
 }
 
-/* Nama + tarikh rapat ke kiri */
 #notes-section .note-meta {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 6px;
-    width: 100%;
-    margin: 0 0 8px 0;
-    padding: 0;
-    text-align: left;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 6px !important;
+    width: auto !important;
+    margin: 0 0 8px 0 !important;
+    padding: 0 !important;
+    text-align: left !important;
 }
 
-/* Nama */
 #notes-section .note-author {
-    color: #666;
-    font-family: Arial, sans-serif;
-    font-size: 12px;
-    font-weight: 600;
-    white-space: nowrap;
+    color: #666 !important;
+    font-family: Arial, sans-serif !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    white-space: nowrap !important;
 }
 
-/* | */
 #notes-section .note-separator {
-    color: #aaa;
-    font-size: 12px;
+    color: #aaa !important;
+    font-size: 12px !important;
 }
 
-/* Tarikh */
 #notes-section .note-date {
-    color: #72b9ca;
-    font-family: Arial, sans-serif;
-    font-size: 10px;
-    white-space: nowrap;
+    color: #72b9ca !important;
+    font-family: Arial, sans-serif !important;
+    font-size: 10px !important;
+    white-space: nowrap !important;
 }
 
-/* Tajuk */
 #notes-section .note h3 {
-    width: auto;
-    margin: 0 28px 12px 0;
-    padding: 0;
-    text-align: left;
-    color: #e75480;
-    font-family: Arial, sans-serif;
-    font-size: 16px;
-    font-weight: 700;
+    width: auto !important;
+    margin: 0 28px 12px 0 !important;
+    padding: 0 !important;
+    text-align: left !important;
+    color: #e75480 !important;
+    font-family: Arial, sans-serif !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
 }
 
-/* Isi */
 #notes-section .note p {
-    width: auto;
-    margin: 0;
-    padding: 0;
-    text-align: left;
-    color: #555;
-    font-size: 13px;
-    line-height: 1.6;
-    white-space: pre-wrap;
-    word-break: break-word;
+    width: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    text-align: left !important;
+    color: #555 !important;
+    font-size: 13px !important;
+    line-height: 1.6 !important;
+    white-space: pre-wrap !important;
+    word-break: break-word !important;
+    overflow-wrap: anywhere !important;
 }
 
-/* Button */
 #notes-section .note-buttons {
-    display: flex;
-    justify-content: flex-start;
-    gap: 8px;
-    margin-top: 18px;
+    display: flex !important;
+    justify-content: flex-start !important;
+    gap: 8px !important;
+    margin-top: 18px !important;
 }
 
-/* Mobile */
 @media (max-width: 600px) {
 
-    #notes-section .note {
-        width: 100%;
-        min-width: 0;
+    #notes-section #notes .note {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
     }
 
     #notes-section .note-meta {
-        gap: 5px;
+        gap: 5px !important;
     }
 
     #notes-section .note-author {
-        font-size: 11px;
+        font-size: 11px !important;
     }
 
     #notes-section .note-date {
-        font-size: 9px;
+        font-size: 9px !important;
     }
-
 }
 }
