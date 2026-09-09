@@ -5690,4 +5690,114 @@ button:hover {
     }
 
 }
+   /* ======================================================
+   NOTES - COMPACT CARD
+   ====================================================== */
+
+#notes-section #notes {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 16px;
+}
+
+/* Card ikut kandungan */
+#notes-section .note {
+    width: fit-content;
+    max-width: 100%;
+    min-width: 280px;
+    box-sizing: border-box;
+    text-align: left;
+}
+
+/* Nama + tarikh rapat ke kiri */
+#notes-section .note-meta {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 6px;
+    width: 100%;
+    margin: 0 0 8px 0;
+    padding: 0;
+    text-align: left;
+}
+
+/* Nama */
+#notes-section .note-author {
+    color: #666;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* | */
+#notes-section .note-separator {
+    color: #aaa;
+    font-size: 12px;
+}
+
+/* Tarikh */
+#notes-section .note-date {
+    color: #72b9ca;
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+    white-space: nowrap;
+}
+
+/* Tajuk */
+#notes-section .note h3 {
+    width: auto;
+    margin: 0 28px 12px 0;
+    padding: 0;
+    text-align: left;
+    color: #e75480;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+/* Isi */
+#notes-section .note p {
+    width: auto;
+    margin: 0;
+    padding: 0;
+    text-align: left;
+    color: #555;
+    font-size: 13px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* Button */
+#notes-section .note-buttons {
+    display: flex;
+    justify-content: flex-start;
+    gap: 8px;
+    margin-top: 18px;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+
+    #notes-section .note {
+        width: 100%;
+        min-width: 0;
+    }
+
+    #notes-section .note-meta {
+        gap: 5px;
+    }
+
+    #notes-section .note-author {
+        font-size: 11px;
+    }
+
+    #notes-section .note-date {
+        font-size: 9px;
+    }
+
+}
 }
