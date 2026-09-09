@@ -37,10 +37,123 @@ const USER_NAMES = {
 let currentUser = null;
 
 // ======================================================
-// ONLINE / OFFLINE STATUS
+// ONLINE / OFFLINE + LAST SEEN
 // ======================================================
 
 let onlineStatusChannel = null;
+let lastSeenInterval = null;
+
+
+// ------------------------------------------------------
+// UPDATE MY LAST SEEN
+// ------------------------------------------------------
+
+async function updateMyLastSeen() {
+
+    if (!currentUser) {
+        return;
+    }
+
+    const { error } =
+        await supabaseClient
+            .from("online_status")
+            .upsert(
+                {
+                    user_id:
+                        currentUser.id,
+
+                    last_seen:
+                        new Date().toISOString()
+                },
+                {
+                    onConflict:
+                        "user_id"
+                }
+            );
+
+    if (error) {
+
+        console.error(
+            "Last seen update error:",
+            error
+        );
+
+    }
+
+}
+
+
+// ------------------------------------------------------
+// FORMAT LAST SEEN
+// ------------------------------------------------------
+
+function formatLastSeen(dateString) {
+
+    if (!dateString) {
+        return "Unknown";
+    }
+
+    const date =
+        new Date(dateString);
+
+    return date.toLocaleString(
+        "en-MY",
+        {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+            timeZone:
+                "Asia/Kuala_Lumpur"
+        }
+    );
+}
+
+
+// ------------------------------------------------------
+// GET PARTNER LAST SEEN
+// ------------------------------------------------------
+
+async function getPartnerLastSeen() {
+
+    if (!currentUser) {
+        return null;
+    }
+
+    const partnerId =
+        currentUser.id === HAZIRAH_ID
+            ? ZULKARNAIN_ID
+            : HAZIRAH_ID;
+
+    const { data, error } =
+        await supabaseClient
+            .from("online_status")
+            .select("last_seen")
+            .eq(
+                "user_id",
+                partnerId
+            )
+            .maybeSingle();
+
+    if (error) {
+
+        console.error(
+            "Get last seen error:",
+            error
+        );
+
+        return null;
+    }
+
+    return data?.last_seen || null;
+}
+
+
+// ------------------------------------------------------
+// SETUP ONLINE STATUS
+// ------------------------------------------------------
 
 function setupOnlineStatus() {
 
@@ -49,10 +162,33 @@ function setupOnlineStatus() {
     }
 
     if (onlineStatusChannel) {
+
         supabaseClient.removeChannel(
             onlineStatusChannel
         );
+
     }
+
+    if (lastSeenInterval) {
+
+        clearInterval(
+            lastSeenInterval
+        );
+
+    }
+
+
+    // Update last seen immediately
+    updateMyLastSeen();
+
+
+    // Update last seen every 30 seconds
+    lastSeenInterval =
+        setInterval(
+            updateMyLastSeen,
+            30000
+        );
+
 
     onlineStatusChannel =
         supabaseClient.channel(
@@ -60,11 +196,13 @@ function setupOnlineStatus() {
             {
                 config: {
                     presence: {
-                        key: currentUser.id
+                        key:
+                            currentUser.id
                     }
                 }
             }
         );
+
 
     onlineStatusChannel
         .on(
@@ -78,6 +216,7 @@ function setupOnlineStatus() {
 
             }
         )
+
         .on(
             "presence",
             {
@@ -89,6 +228,7 @@ function setupOnlineStatus() {
 
             }
         )
+
         .on(
             "presence",
             {
@@ -100,74 +240,125 @@ function setupOnlineStatus() {
 
             }
         )
+
+
         .subscribe(
             async status => {
 
-                if (status === "SUBSCRIBED") {
+                if (
+                    status ===
+                    "SUBSCRIBED"
+                ) {
 
-                    await onlineStatusChannel.track({
-                        user_id: currentUser.id,
-                        online_at: new Date().toISOString()
-                    });
+                    await onlineStatusChannel.track(
+                        {
+                            user_id:
+                                currentUser.id,
+
+                            online_at:
+                                new Date().toISOString()
+                        }
+                    );
 
                     updatePartnerOnlineStatus();
+
                 }
 
             }
         );
+
 }
 
-function updatePartnerOnlineStatus() {
 
-    if (!onlineStatusChannel || !currentUser) {
+// ------------------------------------------------------
+// UPDATE DISPLAY
+// ------------------------------------------------------
+
+async function updatePartnerOnlineStatus() {
+
+    if (
+        !onlineStatusChannel ||
+        !currentUser
+    ) {
         return;
     }
 
+
     const state =
-        onlineStatusChannel.presenceState();
+        onlineStatusChannel
+            .presenceState();
+
 
     const partnerId =
         currentUser.id === HAZIRAH_ID
             ? ZULKARNAIN_ID
             : HAZIRAH_ID;
 
+
     const partnerOnline =
         state[partnerId] &&
         state[partnerId].length > 0;
+
 
     const statusElement =
         document.getElementById(
             "partnerOnlineStatus"
         );
 
+
     if (!statusElement) {
         return;
     }
 
-   const partnerName =
-    currentUser.id === HAZIRAH_ID
-        ? "Zul"
-        : "Zirah";
 
-if (partnerOnline) {
+    const partnerName =
+        currentUser.id === HAZIRAH_ID
+            ? "Zul"
+            : "Zirah";
 
-    statusElement.innerHTML =
-        `<span class="online-dot"></span> ${partnerName} is online`;
 
-    statusElement.classList.add(
-        "is-online"
-    );
+    // --------------------------------------------------
+    // ONLINE
+    // --------------------------------------------------
 
-} else {
+    if (partnerOnline) {
 
-    statusElement.innerHTML =
-        `<span class="offline-dot"></span> ${partnerName} is offline`;
+        statusElement.innerHTML =
+            `<span class="online-dot"></span> ${partnerName} is online`;
+
+        statusElement.classList.add(
+            "is-online"
+        );
+
+        return;
+    }
+
+
+    // --------------------------------------------------
+    // OFFLINE + LAST SEEN
+    // --------------------------------------------------
+
+    const lastSeen =
+        await getPartnerLastSeen();
+
+
+    if (lastSeen) {
+
+        statusElement.innerHTML =
+            `<span class="offline-dot"></span> ${partnerName} was last seen at ${formatLastSeen(lastSeen)}`;
+
+    } else {
+
+        statusElement.innerHTML =
+            `<span class="offline-dot"></span> ${partnerName} is offline`;
+
+    }
+
 
     statusElement.classList.remove(
         "is-online"
     );
 
-}
 }
 
 // ======================================================
