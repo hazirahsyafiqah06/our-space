@@ -5795,4 +5795,40 @@ button:hover {
         font-size: 9px !important;
     }
 }
+
+   /* ======================================================
+   QUIZ BUTTONS
+====================================================== */
+
+.quiz-save-btn {
+    background: linear-gradient(135deg, #e75480, #72c9df);
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 16px;
+    padding: 13px 18px;
+    box-shadow: 0 5px 15px rgba(231, 84, 128, 0.18);
+    transition: all 0.25s ease;
+}
+
+.quiz-save-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(231, 84, 128, 0.25);
+}
+
+.quiz-back-btn {
+    width: auto;
+    background: white;
+    color: #e75480;
+    border: 1px solid #f2c8d7;
+    border-radius: 12px;
+    padding: 9px 15px;
+    font-weight: bold;
+    transition: all 0.2s ease;
+}
+
+.quiz-back-btn:hover {
+    background: #fff1f6;
+    transform: translateX(-2px);
+}
 }
