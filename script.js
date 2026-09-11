@@ -5451,4 +5451,3 @@ async function startQuiz() {
     );
 }
 
-}
