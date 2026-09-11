@@ -4268,3 +4268,15 @@ setInterval(
     birthdayCountdown,
     1000
 );
+
+// ======================================================
+// QUIZ - BASIC BUTTON TEST
+// ======================================================
+
+function startQuizSetup() {
+    alert("Quiz setup coming soon 💗");
+}
+
+function startQuiz() {
+    alert("Quiz starting soon 🎮💗");
+}
