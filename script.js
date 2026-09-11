@@ -5393,10 +5393,10 @@ async function startQuiz() {
         return;
     }
 
-    if (!partnerAnswers || partnerAnswers.length < 30) {
+    if (!partnerAnswers || partnerAnswers.length < 50) {
 
         alert(
-            "Your partner has not completed all 30 answers yet. 💗"
+            "Your partner has not completed all 50 answers yet. 💗"
         );
 
         return;
@@ -5423,7 +5423,7 @@ async function startQuiz() {
         return;
     }
 
-    if (!questions || questions.length < 30) {
+    if (!questions || questions.length < 50) {
 
         alert(
             "Quiz questions are incomplete."
@@ -5438,9 +5438,9 @@ async function startQuiz() {
             () => Math.random() - 0.5
         );
 
-    // Pick only 10
+    // Pick only 15
     currentQuizQuestions =
-        shuffledQuestions.slice(0, 10);
+        shuffledQuestions.slice(0, 15);
 
     currentQuizIndex = 0;
     currentQuizScore = 0;
