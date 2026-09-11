@@ -4545,4 +4545,90 @@ async function saveMyQuizAnswers() {
     showQuizHome();
 }
 
+    // ======================================================
+// QUIZ - QUIZ HOME
+// ======================================================
+
+async function showQuizHome() {
+
+    const quizContent = document.getElementById("quizContent");
+
+    if (!quizContent) return;
+
+    let hasAnswers = false;
+
+    if (currentUser) {
+
+        const { data, error } = await supabaseClient
+            .from("quiz_answers")
+            .select("question_id")
+            .eq("user_id", currentUser.id)
+            .limit(1);
+
+        if (!error && data && data.length > 0) {
+            hasAnswers = true;
+        }
+    }
+
+    const partnerName =
+        currentUser?.id === HAZIRAH_ID
+            ? "Zul"
+            : "Zirah";
+
+    const partnerColor =
+        currentUser?.id === HAZIRAH_ID
+            ? "💙"
+            : "🩷";
+
+    quizContent.innerHTML = `
+        <div class="quiz-intro">
+
+            <div class="quiz-big-emoji">
+                🧠💗
+            </div>
+
+            <h3>
+                How Well Do You Know Your Partner?
+            </h3>
+
+            <p id="quizPartnerText">
+                ${partnerColor}
+                Let’s see how well you know ${partnerName}. 🥹
+            </p>
+
+            <button
+                type="button"
+                id="setAnswersBtn"
+                onclick="startQuizSetup()"
+            >
+                📝 ${hasAnswers ? "Edit My Answers" : "Set My Answers"}
+            </button>
+
+            <button
+                type="button"
+                id="startQuizBtn"
+                onclick="startQuiz()"
+                ${hasAnswers ? "" : "disabled"}
+            >
+                🎮 Start Quiz
+            </button>
+
+            ${
+                hasAnswers
+                    ? `
+                        <p class="quiz-ready-text">
+                            ✅ Your answers are ready!
+                        </p>
+                    `
+                    : `
+                        <p class="quiz-ready-text">
+                            📝 Set your answers first before playing.
+                        </p>
+                    `
+            }
+
+        </div>
+    `;
+}
+
 }
