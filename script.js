@@ -4270,10 +4270,6 @@ setInterval(
 );
 
 // ======================================================
-// QUIZ - BASIC BUTTON TEST
-// ======================================================
-
-// ======================================================
 // QUIZ - SET MY ANSWERS
 // ======================================================
 
@@ -4426,5 +4422,127 @@ async function startQuizSetup() {
         );
 
     });
+
+    // ======================================================
+// QUIZ - SAVE MY ANSWERS
+// ======================================================
+
+async function saveMyQuizAnswers() {
+
+    if (!currentUser) {
+        alert("Please login first.");
+        return;
+    }
+
+    const { data: questions, error } = await supabaseClient
+        .from("quiz_questions")
+        .select("*")
+        .order("id", { ascending: true });
+
+    if (error) {
+        console.error("Load questions error:", error);
+        alert("Unable to load quiz questions.");
+        return;
+    }
+
+    const answersToSave = [];
+
+    for (const q of questions) {
+
+        let answer = "";
+
+        if (q.question_type === "mcq") {
+
+            const selectedAnswer =
+                document.getElementById(`answer_${q.id}`)?.value;
+
+            const optionA =
+                document.getElementById(`optionA_${q.id}`)?.value.trim();
+
+            const optionB =
+                document.getElementById(`optionB_${q.id}`)?.value.trim();
+
+            const optionC =
+                document.getElementById(`optionC_${q.id}`)?.value.trim();
+
+            const optionD =
+                document.getElementById(`optionD_${q.id}`)?.value.trim();
+
+            if (
+                !optionA ||
+                !optionB ||
+                !optionC ||
+                !optionD ||
+                !selectedAnswer
+            ) {
+                alert(
+                    `Please complete all options and choose an answer for:\n\n${q.question}`
+                );
+                return;
+            }
+
+            answer = selectedAnswer;
+
+            answersToSave.push({
+                question_id: q.id,
+                user_id: currentUser.id,
+                answer: answer,
+                option_a: optionA,
+                option_b: optionB,
+                option_c: optionC,
+                option_d: optionD
+            });
+
+        } else {
+
+            const textAnswer =
+                document.getElementById(`answer_${q.id}`)?.value.trim();
+
+            if (!textAnswer) {
+                alert(
+                    `Please answer this question:\n\n${q.question}`
+                );
+                return;
+            }
+
+            answer = textAnswer;
+
+            answersToSave.push({
+                question_id: q.id,
+                user_id: currentUser.id,
+                answer: answer,
+                option_a: null,
+                option_b: null,
+                option_c: null,
+                option_d: null
+            });
+        }
+    }
+
+    const { error: saveError } = await supabaseClient
+        .from("quiz_answers")
+        .upsert(
+            answersToSave,
+            {
+                onConflict: "question_id,user_id"
+            }
+        );
+
+    if (saveError) {
+
+        console.error("Save quiz answers error:", saveError);
+
+        alert(
+            "Unable to save your answers.\n\n" +
+            saveError.message
+        );
+
+        return;
+    }
+
+    alert("Your answers have been saved successfully! 💗");
+
+    showQuizHome();
+}
 
 }
