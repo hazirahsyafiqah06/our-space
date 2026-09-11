@@ -4163,6 +4163,12 @@ if (section) {
 ) {
     loadOurSongs();
 }
+    if (
+    sectionId ===
+    "quiz-section"
+) {
+    showQuizHome();
+}
 
 }
 
