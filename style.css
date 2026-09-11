@@ -5831,4 +5831,50 @@ button:hover {
     background: #fff1f6;
     transform: translateX(-2px);
 }
+
+   /* ======================================================
+   QUIZ HOME BUTTONS
+====================================================== */
+
+#setAnswersBtn,
+#startQuizBtn {
+    width: 100%;
+    border: none;
+    border-radius: 16px;
+    padding: 14px 18px;
+    margin-top: 10px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+/* Edit / Set Answers */
+#setAnswersBtn {
+    background: linear-gradient(135deg, #ffd6e5, #e7f7fc);
+    color: #d94f78;
+    border: 1px solid #f3c5d6;
+}
+
+/* Start Quiz */
+#startQuizBtn {
+    background: linear-gradient(135deg, #e75480, #72c9df);
+    color: white;
+    box-shadow: 0 5px 15px rgba(231, 84, 128, 0.18);
+}
+
+/* Hover */
+#setAnswersBtn:hover,
+#startQuizBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 18px rgba(0,0,0,0.10);
+}
+
+/* Disabled */
+#startQuizBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
 }
