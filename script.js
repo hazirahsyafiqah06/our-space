@@ -4273,10 +4273,158 @@ setInterval(
 // QUIZ - BASIC BUTTON TEST
 // ======================================================
 
-function startQuizSetup() {
-    alert("Quiz setup coming soon 💗");
-}
+// ======================================================
+// QUIZ - SET MY ANSWERS
+// ======================================================
 
-function startQuiz() {
-    alert("Quiz starting soon 🎮💗");
+async function startQuizSetup() {
+
+    const quizContent = document.getElementById("quizContent");
+
+    if (!quizContent) return;
+
+    const { data: questions, error } = await supabaseClient
+        .from("quiz_questions")
+        .select("*")
+        .order("id", { ascending: true });
+
+    if (error) {
+        console.error("Quiz questions error:", error);
+
+        quizContent.innerHTML = `
+            <div class="quiz-error">
+                ❌ Unable to load quiz questions.
+            </div>
+        `;
+
+        return;
+    }
+
+    if (!questions || questions.length === 0) {
+
+        quizContent.innerHTML = `
+            <div class="quiz-error">
+                No quiz questions found.
+            </div>
+        `;
+
+        return;
+    }
+
+    quizContent.innerHTML = `
+        <div class="quiz-setup">
+
+            <div class="quiz-setup-header">
+
+                <button
+                    type="button"
+                    onclick="showQuizHome()"
+                    class="quiz-back-btn"
+                >
+                    ← Back
+                </button>
+
+                <div>
+                    <h3>📝 Set My Answers</h3>
+                    <p>
+                        Answer these questions about yourself 💗
+                    </p>
+                </div>
+
+            </div>
+
+            <div id="quizSetupQuestions"></div>
+
+            <button
+                type="button"
+                onclick="saveMyQuizAnswers()"
+                class="quiz-save-btn"
+            >
+                💾 Save My Answers
+            </button>
+
+        </div>
+    `;
+
+    const container =
+        document.getElementById("quizSetupQuestions");
+
+    questions.forEach((q, index) => {
+
+        const questionNumber = index + 1;
+
+        let answerHTML = "";
+
+        if (q.question_type === "mcq") {
+
+            answerHTML = `
+                <div class="quiz-options">
+
+                    <input
+                        type="text"
+                        id="optionA_${q.id}"
+                        placeholder="Option A"
+                    >
+
+                    <input
+                        type="text"
+                        id="optionB_${q.id}"
+                        placeholder="Option B"
+                    >
+
+                    <input
+                        type="text"
+                        id="optionC_${q.id}"
+                        placeholder="Option C"
+                    >
+
+                    <input
+                        type="text"
+                        id="optionD_${q.id}"
+                        placeholder="Option D"
+                    >
+
+                    <select id="answer_${q.id}">
+                        <option value="">Choose my answer</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                    </select>
+
+                </div>
+            `;
+
+        } else {
+
+            answerHTML = `
+                <textarea
+                    id="answer_${q.id}"
+                    rows="3"
+                    placeholder="Type my answer here..."
+                ></textarea>
+            `;
+        }
+
+        container.insertAdjacentHTML(
+            "beforeend",
+            `
+            <div class="quiz-question-card">
+
+                <div class="quiz-question-number">
+                    Question ${questionNumber}
+                </div>
+
+                <div class="quiz-question-text">
+                    ${escapeHTML(q.question)}
+                </div>
+
+                ${answerHTML}
+
+            </div>
+            `
+        );
+
+    });
+
 }
