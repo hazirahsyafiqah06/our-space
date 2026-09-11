@@ -4081,7 +4081,9 @@ function showSection(
         
         "bucket-section",
         
-        "song-section"
+        "song-section",
+
+         "quiz-section"
 
     ];
 
