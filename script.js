@@ -4631,4 +4631,104 @@ async function showQuizHome() {
     `;
 }
 
+    // ======================================================
+// QUIZ - START QUIZ
+// ======================================================
+
+let currentQuizQuestions = [];
+let currentQuizIndex = 0;
+let currentQuizScore = 0;
+let currentQuizAnswers = {};
+
+async function startQuiz() {
+
+    if (!currentUser) {
+        alert("Please login first.");
+        return;
+    }
+
+    const partnerId =
+        currentUser.id === HAZIRAH_ID
+            ? ZULKARNAIN_ID
+            : HAZIRAH_ID;
+
+    // Get partner's answers
+    const { data: partnerAnswers, error: answerError } =
+        await supabaseClient
+            .from("quiz_answers")
+            .select("*")
+            .eq("user_id", partnerId);
+
+    if (answerError) {
+
+        console.error(
+            "Partner quiz answers error:",
+            answerError
+        );
+
+        alert(
+            "Unable to load your partner's answers."
+        );
+
+        return;
+    }
+
+    if (!partnerAnswers || partnerAnswers.length < 30) {
+
+        alert(
+            "Your partner has not completed all 30 answers yet. 💗"
+        );
+
+        return;
+    }
+
+    // Get all 30 questions
+    const { data: questions, error: questionError } =
+        await supabaseClient
+            .from("quiz_questions")
+            .select("*")
+            .order("id", { ascending: true });
+
+    if (questionError) {
+
+        console.error(
+            "Quiz questions error:",
+            questionError
+        );
+
+        alert(
+            "Unable to load quiz questions."
+        );
+
+        return;
+    }
+
+    if (!questions || questions.length < 30) {
+
+        alert(
+            "Quiz questions are incomplete."
+        );
+
+        return;
+    }
+
+    // Randomize the 30 questions
+    const shuffledQuestions =
+        [...questions].sort(
+            () => Math.random() - 0.5
+        );
+
+    // Pick only 10
+    currentQuizQuestions =
+        shuffledQuestions.slice(0, 10);
+
+    currentQuizIndex = 0;
+    currentQuizScore = 0;
+    currentQuizAnswers = {};
+
+    showQuizQuestion(
+        partnerAnswers
+    );
+}
+
 }
