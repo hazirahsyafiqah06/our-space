@@ -5372,7 +5372,7 @@ async function startQuiz() {
             ? ZULKARNAIN_ID
             : HAZIRAH_ID;
 
-    // Get partner's answers
+    // Get partner's 50 answers
     const { data: partnerAnswers, error: answerError } =
         await supabaseClient
             .from("quiz_answers")
@@ -5380,7 +5380,6 @@ async function startQuiz() {
             .eq("user_id", partnerId);
 
     if (answerError) {
-
         console.error(
             "Partner quiz answers error:",
             answerError
@@ -5393,16 +5392,23 @@ async function startQuiz() {
         return;
     }
 
+    console.log(
+        "Partner answers:",
+        partnerAnswers?.length
+    );
+
     if (!partnerAnswers || partnerAnswers.length < 50) {
 
         alert(
-            "Your partner has not completed all 50 answers yet. 💗"
+            `Your partner has only completed ${
+                partnerAnswers?.length || 0
+            } / 50 answers. 💗`
         );
 
         return;
     }
 
-    // Get all 30 questions
+    // Get question text
     const { data: questions, error: questionError } =
         await supabaseClient
             .from("quiz_questions")
@@ -5423,24 +5429,38 @@ async function startQuiz() {
         return;
     }
 
-    if (!questions || questions.length < 50) {
+    // Random 15 from partner's 50 answers
+    const shuffled =
+        [...partnerAnswers]
+            .sort(() => Math.random() - 0.5);
 
-        alert(
-            "Quiz questions are incomplete."
-        );
+    const selected =
+        shuffled.slice(0, 15);
 
-        return;
-    }
-
-    // Randomize the 30 questions
-    const shuffledQuestions =
-        [...questions].sort(
-            () => Math.random() - 0.5
-        );
-
-    // Pick only 15
     currentQuizQuestions =
-        shuffledQuestions.slice(0, 15);
+        selected.map(answer => {
+
+            const question =
+                questions.find(
+                    q =>
+                        Number(q.id) ===
+                        Number(answer.question_id)
+                );
+
+            return {
+                ...(question || {}),
+
+                id:
+                    answer.question_id,
+
+                question:
+                    question?.question ||
+                    "Question unavailable",
+
+                __partnerAnswer:
+                    answer
+            };
+        });
 
     currentQuizIndex = 0;
     currentQuizScore = 0;
@@ -5451,3 +5471,525 @@ async function startQuiz() {
     );
 }
 
+function showQuizQuestion(partnerAnswers) {
+
+    const quizContent =
+        document.getElementById("quizContent");
+
+    if (!quizContent) return;
+
+    const question =
+        currentQuizQuestions[currentQuizIndex];
+
+    if (!question) {
+        showQuizResult();
+        return;
+    }
+
+    const partnerAnswer =
+        question.__partnerAnswer;
+
+    if (!partnerAnswer) {
+
+        quizContent.innerHTML = `
+            <div class="quiz-intro">
+                <h3>❌ Question Error</h3>
+
+                <p>
+                    Unable to find partner's answer.
+                </p>
+
+                <button
+                    type="button"
+                    onclick="showQuizHome()"
+                >
+                    ← Back
+                </button>
+            </div>
+        `;
+
+        return;
+    }
+
+    const answerType =
+        partnerAnswer.question_type ||
+        "open";
+
+    let answerHTML = "";
+
+    // ==============================
+    // TEXT
+    // ==============================
+
+    if (answerType === "open") {
+
+        answerHTML = `
+
+            <textarea
+                id="quizUserAnswer"
+                rows="4"
+                placeholder="Type your answer here... 💗"
+            ></textarea>
+
+        `;
+
+    }
+
+    // ==============================
+    // MCQ
+    // ==============================
+
+    else if (answerType === "mcq") {
+
+        answerHTML = `
+
+            <div class="quiz-play-options">
+
+                <label>
+                    <input
+                        type="radio"
+                        name="quizUserAnswer"
+                        value="A"
+                    >
+
+                    A. ${escapeHTML(
+                        partnerAnswer.option_a || ""
+                    )}
+                </label>
+
+                <label>
+                    <input
+                        type="radio"
+                        name="quizUserAnswer"
+                        value="B"
+                    >
+
+                    B. ${escapeHTML(
+                        partnerAnswer.option_b || ""
+                    )}
+                </label>
+
+                <label>
+                    <input
+                        type="radio"
+                        name="quizUserAnswer"
+                        value="C"
+                    >
+
+                    C. ${escapeHTML(
+                        partnerAnswer.option_c || ""
+                    )}
+                </label>
+
+                <label>
+                    <input
+                        type="radio"
+                        name="quizUserAnswer"
+                        value="D"
+                    >
+
+                    D. ${escapeHTML(
+                        partnerAnswer.option_d || ""
+                    )}
+                </label>
+
+            </div>
+
+        `;
+
+    }
+
+    // ==============================
+    // CHECKBOX
+    // ==============================
+
+    else if (answerType === "checkbox") {
+
+        answerHTML = `
+
+            <div class="quiz-play-options">
+
+                <label>
+                    <input
+                        type="checkbox"
+                        name="quizUserCheckbox"
+                        value="A"
+                    >
+
+                    A. ${escapeHTML(
+                        partnerAnswer.option_a || ""
+                    )}
+                </label>
+
+                <label>
+                    <input
+                        type="checkbox"
+                        name="quizUserCheckbox"
+                        value="B"
+                    >
+
+                    B. ${escapeHTML(
+                        partnerAnswer.option_b || ""
+                    )}
+                </label>
+
+                <label>
+                    <input
+                        type="checkbox"
+                        name="quizUserCheckbox"
+                        value="C"
+                    >
+
+                    C. ${escapeHTML(
+                        partnerAnswer.option_c || ""
+                    )}
+                </label>
+
+                <label>
+                    <input
+                        type="checkbox"
+                        name="quizUserCheckbox"
+                        value="D"
+                    >
+
+                    D. ${escapeHTML(
+                        partnerAnswer.option_d || ""
+                    )}
+                </label>
+
+            </div>
+
+        `;
+    }
+
+    quizContent.innerHTML = `
+
+        <div class="quiz-intro">
+
+            <p>
+                Question
+                ${currentQuizIndex + 1}
+                /
+                ${currentQuizQuestions.length}
+            </p>
+
+            <h3>
+                ${escapeHTML(
+                    question.question
+                )}
+            </h3>
+
+            <div id="quizAnswerArea">
+
+                ${answerHTML}
+
+            </div>
+
+            <div
+                id="quizFeedback"
+                style="margin-top:15px;"
+            ></div>
+
+            <button
+                type="button"
+                id="quizCheckBtn"
+                onclick="submitQuizAnswer()"
+            >
+                💕 Check Answer
+            </button>
+
+            <button
+                type="button"
+                id="quizNextBtn"
+                onclick="goToNextQuizQuestion()"
+                style="display:none;"
+            >
+                Next Question →
+            </button>
+
+        </div>
+
+    `;
+}
+
+function submitQuizAnswer() {
+
+    const question =
+        currentQuizQuestions[currentQuizIndex];
+
+    const partnerAnswer =
+        question.__partnerAnswer;
+
+    const answerType =
+        partnerAnswer.question_type ||
+        "open";
+
+    let correct = false;
+    let userAnswer = "";
+    let correctAnswer = "";
+
+    // ==============================
+    // TEXT
+    // ==============================
+
+    if (answerType === "open") {
+
+        const input =
+            document.getElementById(
+                "quizUserAnswer"
+            );
+
+        userAnswer =
+            input?.value.trim() || "";
+
+        if (!userAnswer) {
+
+            alert(
+                "Please answer first 💗"
+            );
+
+            return;
+        }
+
+        correctAnswer =
+            partnerAnswer.answer || "";
+
+        correct =
+            userAnswer
+                .trim()
+                .toLowerCase() ===
+            correctAnswer
+                .trim()
+                .toLowerCase();
+    }
+
+    // ==============================
+    // MCQ
+    // ==============================
+
+    else if (answerType === "mcq") {
+
+        const selected =
+            document.querySelector(
+                'input[name="quizUserAnswer"]:checked'
+            );
+
+        if (!selected) {
+
+            alert(
+                "Please choose an answer 💗"
+            );
+
+            return;
+        }
+
+        userAnswer =
+            selected.value;
+
+        correctAnswer =
+            partnerAnswer.answer;
+
+        correct =
+            userAnswer ===
+            correctAnswer;
+    }
+
+    // ==============================
+    // CHECKBOX
+    // ==============================
+
+    else if (answerType === "checkbox") {
+
+        const selected =
+            Array.from(
+                document.querySelectorAll(
+                    'input[name="quizUserCheckbox"]:checked'
+                )
+            )
+            .map(input => input.value)
+            .sort();
+
+        if (selected.length === 0) {
+
+            alert(
+                "Please select at least one answer 💗"
+            );
+
+            return;
+        }
+
+        let expected = [];
+
+        try {
+
+            expected =
+                JSON.parse(
+                    partnerAnswer.answer || "[]"
+                );
+
+        } catch (error) {
+
+            expected = [];
+
+        }
+
+        expected =
+            expected
+                .map(String)
+                .sort();
+
+        correct =
+            JSON.stringify(selected) ===
+            JSON.stringify(expected);
+
+        userAnswer =
+            selected.join(", ");
+
+        correctAnswer =
+            expected.join(", ");
+    }
+
+    currentQuizAnswers[currentQuizIndex] = {
+
+        userAnswer:
+            userAnswer,
+
+        correctAnswer:
+            correctAnswer,
+
+        correct:
+            correct
+
+    };
+
+    if (correct) {
+
+        currentQuizScore++;
+
+    }
+
+    const feedback =
+        document.getElementById(
+            "quizFeedback"
+        );
+
+    if (feedback) {
+
+        feedback.innerHTML =
+            correct
+
+                ? `
+                    <div>
+                        🎉 <strong>Correct!</strong> 💗
+                    </div>
+                  `
+
+                : `
+                    <div>
+                        ❌ <strong>Wrong!</strong>
+                        <br><br>
+
+                        Your answer:
+                        ${escapeHTML(
+                            userAnswer
+                        )}
+
+                        <br><br>
+
+                        Correct answer:
+                        ${escapeHTML(
+                            correctAnswer
+                        )}
+                    </div>
+                  `;
+    }
+
+    const checkButton =
+        document.getElementById(
+            "quizCheckBtn"
+        );
+
+    const nextButton =
+        document.getElementById(
+            "quizNextBtn"
+        );
+
+    if (checkButton)
+        checkButton.style.display =
+            "none";
+
+    if (nextButton)
+        nextButton.style.display =
+            "block";
+}
+
+function goToNextQuizQuestion() {
+
+    currentQuizIndex++;
+
+    if (
+        currentQuizIndex >=
+        currentQuizQuestions.length
+    ) {
+
+        showQuizResult();
+
+        return;
+    }
+
+    showQuizQuestion(
+        currentQuizQuestions.map(
+            question =>
+                question.__partnerAnswer
+        )
+    );
+}
+
+function showQuizResult() {
+
+    const quizContent =
+        document.getElementById(
+            "quizContent"
+        );
+
+    if (!quizContent) return;
+
+    const total =
+        currentQuizQuestions.length;
+
+    const percentage =
+        Math.round(
+            (currentQuizScore / total) * 100
+        );
+
+    quizContent.innerHTML = `
+
+        <div class="quiz-intro">
+
+            <div style="font-size:50px;">
+                🏆
+            </div>
+
+            <h3>
+                Quiz Completed! 🎉
+            </h3>
+
+            <h2>
+                ${currentQuizScore} / ${total}
+            </h2>
+
+            <p>
+                Score: ${percentage}%
+            </p>
+
+            <button
+                type="button"
+                onclick="showQuizHome()"
+            >
+                ← Back to Quiz
+            </button>
+
+        </div>
+
+    `;
+}
