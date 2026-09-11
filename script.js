@@ -4281,17 +4281,23 @@ setInterval(
 
 async function startQuizSetup() {
 
-    const quizContent = document.getElementById("quizContent");
+    const quizContent =
+        document.getElementById("quizContent");
 
     if (!quizContent) return;
 
-    const { data: questions, error } = await supabaseClient
-        .from("quiz_questions")
-        .select("*")
-        .order("id", { ascending: true });
+    const { data: questions, error } =
+        await supabaseClient
+            .from("quiz_questions")
+            .select("*")
+            .order("id", { ascending: true });
 
     if (error) {
-        console.error("Quiz questions error:", error);
+
+        console.error(
+            "Quiz questions error:",
+            error
+        );
 
         quizContent.innerHTML = `
             <div class="quiz-error">
@@ -4313,7 +4319,38 @@ async function startQuizSetup() {
         return;
     }
 
+
+    // --------------------------------------------------
+    // LOAD MY EXISTING ANSWERS
+    // --------------------------------------------------
+
+    const { data: existingAnswers } =
+        await supabaseClient
+            .from("quiz_answers")
+            .select("*")
+            .eq("user_id", currentUser.id);
+
+
+    const savedAnswers = {};
+
+    if (existingAnswers) {
+
+        existingAnswers.forEach(answer => {
+
+            savedAnswers[answer.question_id] =
+                answer;
+
+        });
+
+    }
+
+
+    // --------------------------------------------------
+    // QUIZ SETUP HTML
+    // --------------------------------------------------
+
     quizContent.innerHTML = `
+
         <div class="quiz-setup">
 
             <div class="quiz-setup-header">
@@ -4327,15 +4364,22 @@ async function startQuizSetup() {
                 </button>
 
                 <div>
-                    <h3>📝 Set My Answers</h3>
+
+                    <h3>
+                        📝 Set My Answers
+                    </h3>
+
                     <p>
                         Answer these questions about yourself 💗
                     </p>
+
                 </div>
 
             </div>
 
+
             <div id="quizSetupQuestions"></div>
+
 
             <button
                 type="button"
@@ -4346,133 +4390,700 @@ async function startQuizSetup() {
             </button>
 
         </div>
+
     `;
 
+
     const container =
-        document.getElementById("quizSetupQuestions");
+        document.getElementById(
+            "quizSetupQuestions"
+        );
+
+
+    // --------------------------------------------------
+    // CREATE EACH QUESTION
+    // --------------------------------------------------
 
     questions.forEach((q, index) => {
 
-        const questionNumber = index + 1;
+        const questionNumber =
+            index + 1;
+
+        const saved =
+            savedAnswers[q.id] || null;
+
+
+        const selectedType =
+            saved?.question_type ||
+            q.question_type ||
+            "open";
+
 
         let answerHTML = "";
 
-        if (q.question_type === "mcq") {
+
+        // ------------------------------------------------
+        // OPEN / TEXT
+        // ------------------------------------------------
+
+        if (selectedType === "open") {
 
             answerHTML = `
+
+                <textarea
+                    id="answer_${q.id}"
+                    rows="3"
+                    placeholder="Type my answer here..."
+                >${escapeHTML(
+                    saved?.answer || ""
+                )}</textarea>
+
+            `;
+
+        }
+
+
+        // ------------------------------------------------
+        // MCQ / OPTION
+        // ------------------------------------------------
+
+        else if (selectedType === "mcq") {
+
+            answerHTML = `
+
                 <div class="quiz-options">
 
                     <input
                         type="text"
                         id="optionA_${q.id}"
                         placeholder="Option A"
+                        value="${escapeHTML(
+                            saved?.option_a || ""
+                        )}"
                     >
 
                     <input
                         type="text"
                         id="optionB_${q.id}"
                         placeholder="Option B"
+                        value="${escapeHTML(
+                            saved?.option_b || ""
+                        )}"
                     >
 
                     <input
                         type="text"
                         id="optionC_${q.id}"
                         placeholder="Option C"
+                        value="${escapeHTML(
+                            saved?.option_c || ""
+                        )}"
                     >
 
                     <input
                         type="text"
                         id="optionD_${q.id}"
                         placeholder="Option D"
+                        value="${escapeHTML(
+                            saved?.option_d || ""
+                        )}"
                     >
 
-                    <select id="answer_${q.id}">
-                        <option value="">Choose my answer</option>
-                        <option value="A">A</option>
-                        <option value="B">B</option>
-                        <option value="C">C</option>
-                        <option value="D">D</option>
+                    <select
+                        id="answer_${q.id}"
+                    >
+
+                        <option value="">
+                            Choose my correct answer
+                        </option>
+
+                        <option
+                            value="A"
+                            ${saved?.answer === "A"
+                                ? "selected"
+                                : ""}
+                        >
+                            A
+                        </option>
+
+                        <option
+                            value="B"
+                            ${saved?.answer === "B"
+                                ? "selected"
+                                : ""}
+                        >
+                            B
+                        </option>
+
+                        <option
+                            value="C"
+                            ${saved?.answer === "C"
+                                ? "selected"
+                                : ""}
+                        >
+                            C
+                        </option>
+
+                        <option
+                            value="D"
+                            ${saved?.answer === "D"
+                                ? "selected"
+                                : ""}
+                        >
+                            D
+                        </option>
+
                     </select>
 
                 </div>
+
             `;
 
-        } else {
+        }
+
+
+        // ------------------------------------------------
+        // CHECKBOX
+        // ------------------------------------------------
+
+        else if (selectedType === "checkbox") {
+
+            let selectedCheckboxes = [];
+
+            try {
+
+                selectedCheckboxes =
+                    JSON.parse(
+                        saved?.answer || "[]"
+                    );
+
+            } catch (e) {
+
+                selectedCheckboxes = [];
+
+            }
+
 
             answerHTML = `
-                <textarea
-                    id="answer_${q.id}"
-                    rows="3"
-                    placeholder="Type my answer here..."
-                ></textarea>
+
+                <div class="quiz-options">
+
+                    <input
+                        type="text"
+                        id="optionA_${q.id}"
+                        placeholder="Option A"
+                        value="${escapeHTML(
+                            saved?.option_a || ""
+                        )}"
+                    >
+
+                    <label>
+                        <input
+                            type="checkbox"
+                            name="correct_${q.id}"
+                            value="A"
+                            ${
+                                selectedCheckboxes.includes("A")
+                                    ? "checked"
+                                    : ""
+                            }
+                        >
+                        Correct A
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="optionB_${q.id}"
+                        placeholder="Option B"
+                        value="${escapeHTML(
+                            saved?.option_b || ""
+                        )}"
+                    >
+
+                    <label>
+                        <input
+                            type="checkbox"
+                            name="correct_${q.id}"
+                            value="B"
+                            ${
+                                selectedCheckboxes.includes("B")
+                                    ? "checked"
+                                    : ""
+                            }
+                        >
+                        Correct B
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="optionC_${q.id}"
+                        placeholder="Option C"
+                        value="${escapeHTML(
+                            saved?.option_c || ""
+                        )}"
+                    >
+
+                    <label>
+                        <input
+                            type="checkbox"
+                            name="correct_${q.id}"
+                            value="C"
+                            ${
+                                selectedCheckboxes.includes("C")
+                                    ? "checked"
+                                    : ""
+                            }
+                        >
+                        Correct C
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="optionD_${q.id}"
+                        placeholder="Option D"
+                        value="${escapeHTML(
+                            saved?.option_d || ""
+                        )}"
+                    >
+
+                    <label>
+                        <input
+                            type="checkbox"
+                            name="correct_${q.id}"
+                            value="D"
+                            ${
+                                selectedCheckboxes.includes("D")
+                                    ? "checked"
+                                    : ""
+                            }
+                        >
+                        Correct D
+                    </label>
+
+                </div>
+
             `;
+
         }
+
+
+        // ------------------------------------------------
+        // INSERT QUESTION CARD
+        // ------------------------------------------------
 
         container.insertAdjacentHTML(
             "beforeend",
+
             `
-            <div class="quiz-question-card">
+
+            <div
+                class="quiz-question-card"
+                id="quizCard_${q.id}"
+            >
 
                 <div class="quiz-question-number">
                     Question ${questionNumber}
                 </div>
 
+
                 <div class="quiz-question-text">
                     ${escapeHTML(q.question)}
                 </div>
 
-                ${answerHTML}
+
+                <div class="quiz-answer-type">
+
+                    <label>
+                        Answer Type
+                    </label>
+
+                    <select
+                        id="type_${q.id}"
+                        onchange="changeQuizAnswerType(${q.id})"
+                    >
+
+                        <option
+                            value="open"
+                            ${
+                                selectedType === "open"
+                                    ? "selected"
+                                    : ""
+                            }
+                        >
+                            ✍️ Text
+                        </option>
+
+                        <option
+                            value="mcq"
+                            ${
+                                selectedType === "mcq"
+                                    ? "selected"
+                                    : ""
+                            }
+                        >
+                            🔘 Option
+                        </option>
+
+                        <option
+                            value="checkbox"
+                            ${
+                                selectedType === "checkbox"
+                                    ? "selected"
+                                    : ""
+                            }
+                        >
+                            ☑️ Checkbox
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div id="answerArea_${q.id}">
+
+                    ${answerHTML}
+
+                </div>
 
             </div>
+
             `
+
         );
 
     });
 
-    // ======================================================
+}
+
+
+// ======================================================
+// QUIZ - CHANGE ANSWER TYPE
+// ======================================================
+
+async function changeQuizAnswerType(questionId) {
+
+    const type =
+        document.getElementById(
+            `type_${questionId}`
+        )?.value;
+
+
+    const answerArea =
+        document.getElementById(
+            `answerArea_${questionId}`
+        );
+
+
+    if (!answerArea) return;
+
+
+    // --------------------------------------------------
+    // TEXT
+    // --------------------------------------------------
+
+    if (type === "open") {
+
+        answerArea.innerHTML = `
+
+            <textarea
+                id="answer_${questionId}"
+                rows="3"
+                placeholder="Type my answer here..."
+            ></textarea>
+
+        `;
+
+    }
+
+
+    // --------------------------------------------------
+    // MCQ
+    // --------------------------------------------------
+
+    else if (type === "mcq") {
+
+        answerArea.innerHTML = `
+
+            <div class="quiz-options">
+
+                <input
+                    type="text"
+                    id="optionA_${questionId}"
+                    placeholder="Option A"
+                >
+
+                <input
+                    type="text"
+                    id="optionB_${questionId}"
+                    placeholder="Option B"
+                >
+
+                <input
+                    type="text"
+                    id="optionC_${questionId}"
+                    placeholder="Option C"
+                >
+
+                <input
+                    type="text"
+                    id="optionD_${questionId}"
+                    placeholder="Option D"
+                >
+
+                <select
+                    id="answer_${questionId}"
+                >
+
+                    <option value="">
+                        Choose my correct answer
+                    </option>
+
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+
+                </select>
+
+            </div>
+
+        `;
+
+    }
+
+
+    // --------------------------------------------------
+    // CHECKBOX
+    // --------------------------------------------------
+
+    else if (type === "checkbox") {
+
+        answerArea.innerHTML = `
+
+            <div class="quiz-options">
+
+                <input
+                    type="text"
+                    id="optionA_${questionId}"
+                    placeholder="Option A"
+                >
+
+                <label>
+                    <input
+                        type="checkbox"
+                        name="correct_${questionId}"
+                        value="A"
+                    >
+                    Correct A
+                </label>
+
+
+                <input
+                    type="text"
+                    id="optionB_${questionId}"
+                    placeholder="Option B"
+                >
+
+                <label>
+                    <input
+                        type="checkbox"
+                        name="correct_${questionId}"
+                        value="B"
+                    >
+                    Correct B
+                </label>
+
+
+                <input
+                    type="text"
+                    id="optionC_${questionId}"
+                    placeholder="Option C"
+                >
+
+                <label>
+                    <input
+                        type="checkbox"
+                        name="correct_${questionId}"
+                        value="C"
+                    >
+                    Correct C
+                </label>
+
+
+                <input
+                    type="text"
+                    id="optionD_${questionId}"
+                    placeholder="Option D"
+                >
+
+                <label>
+                    <input
+                        type="checkbox"
+                        name="correct_${questionId}"
+                        value="D"
+                    >
+                    Correct D
+                </label>
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+// ======================================================
 // QUIZ - SAVE MY ANSWERS
 // ======================================================
 
 async function saveMyQuizAnswers() {
 
     if (!currentUser) {
+
         alert("Please login first.");
+
         return;
+
     }
 
-    const { data: questions, error } = await supabaseClient
-        .from("quiz_questions")
-        .select("*")
-        .order("id", { ascending: true });
+
+    const { data: questions, error } =
+        await supabaseClient
+            .from("quiz_questions")
+            .select("*")
+            .order("id", { ascending: true });
+
 
     if (error) {
-        console.error("Load questions error:", error);
-        alert("Unable to load quiz questions.");
+
+        console.error(
+            "Load questions error:",
+            error
+        );
+
+        alert(
+            "Unable to load quiz questions."
+        );
+
         return;
+
     }
+
 
     const answersToSave = [];
 
+
     for (const q of questions) {
 
-        let answer = "";
+        const selectedType =
+            document.getElementById(
+                `type_${q.id}`
+            )?.value;
 
-        if (q.question_type === "mcq") {
 
-            const selectedAnswer =
-                document.getElementById(`answer_${q.id}`)?.value;
+        if (!selectedType) {
+
+            alert(
+                `Please choose an answer type for:\n\n${q.question}`
+            );
+
+            return;
+
+        }
+
+
+        // ------------------------------------------------
+        // OPEN / TEXT
+        // ------------------------------------------------
+
+        if (selectedType === "open") {
+
+            const textAnswer =
+                document.getElementById(
+                    `answer_${q.id}`
+                )?.value.trim();
+
+
+            if (!textAnswer) {
+
+                alert(
+                    `Please answer this question:\n\n${q.question}`
+                );
+
+                return;
+
+            }
+
+
+            answersToSave.push({
+
+                question_id:
+                    q.id,
+
+                user_id:
+                    currentUser.id,
+
+                question_type:
+                    "open",
+
+                answer:
+                    textAnswer,
+
+                option_a:
+                    null,
+
+                option_b:
+                    null,
+
+                option_c:
+                    null,
+
+                option_d:
+                    null
+
+            });
+
+        }
+
+
+        // ------------------------------------------------
+        // MCQ / OPTION
+        // ------------------------------------------------
+
+        else if (selectedType === "mcq") {
 
             const optionA =
-                document.getElementById(`optionA_${q.id}`)?.value.trim();
+                document.getElementById(
+                    `optionA_${q.id}`
+                )?.value.trim();
 
             const optionB =
-                document.getElementById(`optionB_${q.id}`)?.value.trim();
+                document.getElementById(
+                    `optionB_${q.id}`
+                )?.value.trim();
 
             const optionC =
-                document.getElementById(`optionC_${q.id}`)?.value.trim();
+                document.getElementById(
+                    `optionC_${q.id}`
+                )?.value.trim();
 
             const optionD =
-                document.getElementById(`optionD_${q.id}`)?.value.trim();
+                document.getElementById(
+                    `optionD_${q.id}`
+                )?.value.trim();
+
+
+            const selectedAnswer =
+                document.getElementById(
+                    `answer_${q.id}`
+                )?.value;
+
 
             if (
                 !optionA ||
@@ -4481,62 +5092,159 @@ async function saveMyQuizAnswers() {
                 !optionD ||
                 !selectedAnswer
             ) {
+
                 alert(
-                    `Please complete all options and choose an answer for:\n\n${q.question}`
+                    `Please complete all options and choose the correct answer for:\n\n${q.question}`
                 );
+
                 return;
+
             }
 
-            answer = selectedAnswer;
 
             answersToSave.push({
-                question_id: q.id,
-                user_id: currentUser.id,
-                answer: answer,
-                option_a: optionA,
-                option_b: optionB,
-                option_c: optionC,
-                option_d: optionD
+
+                question_id:
+                    q.id,
+
+                user_id:
+                    currentUser.id,
+
+                question_type:
+                    "mcq",
+
+                answer:
+                    selectedAnswer,
+
+                option_a:
+                    optionA,
+
+                option_b:
+                    optionB,
+
+                option_c:
+                    optionC,
+
+                option_d:
+                    optionD
+
             });
 
-        } else {
-
-            const textAnswer =
-                document.getElementById(`answer_${q.id}`)?.value.trim();
-
-            if (!textAnswer) {
-                alert(
-                    `Please answer this question:\n\n${q.question}`
-                );
-                return;
-            }
-
-            answer = textAnswer;
-
-            answersToSave.push({
-                question_id: q.id,
-                user_id: currentUser.id,
-                answer: answer,
-                option_a: null,
-                option_b: null,
-                option_c: null,
-                option_d: null
-            });
         }
+
+
+        // ------------------------------------------------
+        // CHECKBOX
+        // ------------------------------------------------
+
+        else if (selectedType === "checkbox") {
+
+            const optionA =
+                document.getElementById(
+                    `optionA_${q.id}`
+                )?.value.trim();
+
+            const optionB =
+                document.getElementById(
+                    `optionB_${q.id}`
+                )?.value.trim();
+
+            const optionC =
+                document.getElementById(
+                    `optionC_${q.id}`
+                )?.value.trim();
+
+            const optionD =
+                document.getElementById(
+                    `optionD_${q.id}`
+                )?.value.trim();
+
+
+            const checkedAnswers =
+                Array.from(
+                    document.querySelectorAll(
+                        `input[name="correct_${q.id}"]:checked`
+                    )
+                ).map(
+                    checkbox =>
+                        checkbox.value
+                );
+
+
+            if (
+                !optionA ||
+                !optionB ||
+                !optionC ||
+                !optionD ||
+                checkedAnswers.length === 0
+            ) {
+
+                alert(
+                    `Please complete all options and select at least one correct answer for:\n\n${q.question}`
+                );
+
+                return;
+
+            }
+
+
+            answersToSave.push({
+
+                question_id:
+                    q.id,
+
+                user_id:
+                    currentUser.id,
+
+                question_type:
+                    "checkbox",
+
+                answer:
+                    JSON.stringify(
+                        checkedAnswers
+                    ),
+
+                option_a:
+                    optionA,
+
+                option_b:
+                    optionB,
+
+                option_c:
+                    optionC,
+
+                option_d:
+                    optionD
+
+            });
+
+        }
+
     }
 
-    const { error: saveError } = await supabaseClient
-        .from("quiz_answers")
-        .upsert(
-            answersToSave,
-            {
-                onConflict: "question_id,user_id"
-            }
-        );
+
+    // --------------------------------------------------
+    // SAVE TO SUPABASE
+    // --------------------------------------------------
+
+    const { error: saveError } =
+        await supabaseClient
+            .from("quiz_answers")
+            .upsert(
+                answersToSave,
+                {
+                    onConflict:
+                        "question_id,user_id"
+                }
+            );
+
 
     if (saveError) {
 
-        console.error("Save quiz answers error:", saveError);
+        console.error(
+            "Save quiz answers error:",
+            saveError
+        );
 
         alert(
             "Unable to save your answers.\n\n" +
@@ -4544,11 +5252,17 @@ async function saveMyQuizAnswers() {
         );
 
         return;
+
     }
 
-    alert("Your answers have been saved successfully! 💗");
+
+    alert(
+        "Your answers have been saved successfully! 💗"
+    );
+
 
     showQuizHome();
+
 }
 
     // ======================================================
