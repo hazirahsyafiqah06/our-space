@@ -5566,7 +5566,14 @@ function checkDinoHatch() {
         hunger >= 80 &&
         xp >= 100
     ) {
-        console.log("🥚 Dino is ready to hatch!");
+        const dinoEmoji =
+            document.getElementById("petEmoji");
+
+        if (dinoEmoji) {
+            dinoEmoji.textContent = "🐣";
+        }
+
+        console.log("🐣 Dino has hatched!");
     }
 }
 
