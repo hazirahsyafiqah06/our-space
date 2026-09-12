@@ -6331,3 +6331,28 @@ async function restartQuiz() {
 
     await startQuiz();
 }
+/* ======================================================
+   MOBILE HAMBURGER MENU
+====================================================== */
+
+function toggleMobileMenu() {
+
+    const menu = document.querySelector(".navigation");
+    const button = document.getElementById("mobileMenuBtn");
+
+    if (!menu || !button) return;
+
+    menu.classList.toggle("mobile-menu-open");
+
+    if (menu.classList.contains("mobile-menu-open")) {
+
+        button.textContent = "✕";
+        button.setAttribute("aria-label", "Close menu");
+
+    } else {
+
+        button.textContent = "☰";
+        button.setAttribute("aria-label", "Open menu");
+
+    }
+}
