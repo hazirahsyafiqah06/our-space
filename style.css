@@ -6626,12 +6626,6 @@ html {
     box-shadow: 0 4px 12px rgba(0,0,0,0.06);
 }
 
-/* Every section remains visible.
-   The navbar only scrolls to the selected section. */
-section {
-    display: block !important;
-}
-
 /* Make each destination comfortable when it is scrolled into view. */
 #notes-section,
 #gallery-section,
