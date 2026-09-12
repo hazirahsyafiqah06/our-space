@@ -4065,9 +4065,21 @@ async function deleteOurSong(id) {
 // NAVIGATION
 // ======================================================
 
-function showSection(
-    sectionId
-) {
+function showSection(sectionId) {
+
+    const menu = document.querySelector(".navigation");
+    const button = document.getElementById("mobileMenuBtn");
+
+    if (menu) {
+        menu.classList.remove("mobile-menu-open");
+    }
+
+    if (button) {
+        button.textContent = "☰";
+        button.setAttribute("aria-label", "Open menu");
+    }
+
+}
 
     const sections = [
 
