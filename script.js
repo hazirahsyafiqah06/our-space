@@ -4072,22 +4072,31 @@ function showSection(sectionId) {
     const button =
         document.getElementById("mobileMenuBtn");
 
-    // Tutup mobile menu
+
+    // Close mobile menu
     if (menu) {
-        menu.classList.remove("mobile-menu-open");
+        menu.classList.remove(
+            "mobile-menu-open"
+        );
     }
 
     if (button) {
         button.textContent = "☰";
+
         button.setAttribute(
             "aria-label",
             "Open menu"
         );
     }
 
-    // Semua section
+
+    // --------------------------------------------------
+    // SECTIONS SAHAJA
+    // JANGAN MASUKKAN HOME / HERO
+    // SEBAB COUNTDOWN MESTI KEKAL
+    // --------------------------------------------------
+
     const sections = [
-        "home-section",
         "notes-section",
         "gallery-section",
         "memories-section",
@@ -4097,27 +4106,38 @@ function showSection(sectionId) {
         "quiz-section"
     ];
 
-    // Sembunyikan semua section
+
+    // --------------------------------------------------
+    // HIDE SEMUA SECTION
+    // --------------------------------------------------
+
     sections.forEach(id => {
 
         const section =
             document.getElementById(id);
 
         if (section) {
+
             section.style.display = "none";
+
+            section.classList.remove(
+                "section-opening"
+            );
+
         }
 
     });
 
-    // HOME
-    if (!sectionId || sectionId === "home-section") {
 
-        const home =
-            document.getElementById("home-section");
+    // --------------------------------------------------
+    // KALAU HOME
+    // COUNTDOWN KEKAL SAHAJA
+    // --------------------------------------------------
 
-        if (home) {
-            home.style.display = "block";
-        }
+    if (
+        !sectionId ||
+        sectionId === "home-section"
+    ) {
 
         window.scrollTo({
             top: 0,
@@ -4127,59 +4147,117 @@ function showSection(sectionId) {
         return;
     }
 
-    // Tunjukkan section yang dipilih
+
+    // --------------------------------------------------
+    // TUNJUK SECTION YANG DIPILIH
+    // --------------------------------------------------
+
     const selectedSection =
-        document.getElementById(sectionId);
+        document.getElementById(
+            sectionId
+        );
 
     if (!selectedSection) {
         return;
     }
 
-    selectedSection.style.display = "block";
 
-    // Scroll ke section
-    selectedSection.scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-    });
+    selectedSection.style.display =
+        "block";
+
 
     // Animation
-    selectedSection.classList.remove(
-        "section-opening"
-    );
-
     void selectedSection.offsetWidth;
 
     selectedSection.classList.add(
         "section-opening"
     );
 
-    // Reload content
-    if (sectionId === "messages-section") {
-        loadSecretMessages();
+
+    // --------------------------------------------------
+    // LOAD CONTENT
+    // --------------------------------------------------
+
+    if (
+        sectionId ===
+        "notes-section"
+    ) {
+
+        loadNotes();
+
     }
 
-    if (sectionId === "gallery-section") {
+
+    if (
+        sectionId ===
+        "gallery-section"
+    ) {
+
         loadGallery();
+
     }
 
-    if (sectionId === "memories-section") {
+
+    if (
+        sectionId ===
+        "memories-section"
+    ) {
+
         loadTimeline();
+
     }
 
-    if (sectionId === "bucket-section") {
+
+    if (
+        sectionId ===
+        "messages-section"
+    ) {
+
+        loadSecretMessages();
+
+    }
+
+
+    if (
+        sectionId ===
+        "bucket-section"
+    ) {
+
         loadBucketList();
+
     }
 
-    if (sectionId === "song-section") {
+
+    if (
+        sectionId ===
+        "song-section"
+    ) {
+
         loadOurSongs();
+
     }
 
-    if (sectionId === "quiz-section") {
+
+    if (
+        sectionId ===
+        "quiz-section"
+    ) {
+
         showQuizHome();
-    }
-}
 
+    }
+
+
+    // --------------------------------------------------
+    // SCROLL KE SECTION
+    // --------------------------------------------------
+
+    selectedSection.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+
+}
 // ======================================================
 // WELCOME BACK ANIMATION
 // ======================================================
