@@ -5182,6 +5182,8 @@ function updatePetUI() {
             percentage + "%";
     }
 
+    updateDinoFoodPointsUI();
+    checkDinoHatch();
     updatePetMood();
 
 }
@@ -5547,6 +5549,25 @@ async function playPet() {
         randomMessage
     );
 
+}
+
+function checkDinoHatch() {
+
+    if (!petData) {
+        return;
+    }
+
+    const love = Number(petData.love) || 0;
+    const hunger = Number(petData.hunger) || 0;
+    const xp = Number(petData.xp) || 0;
+
+    if (
+        love >= 80 &&
+        hunger >= 80 &&
+        xp >= 100
+    ) {
+        console.log("🥚 Dino is ready to hatch!");
+    }
 }
 
 
