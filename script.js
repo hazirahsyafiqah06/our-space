@@ -4064,6 +4064,7 @@ async function deleteOurSong(id) {
 // ======================================================
 // NAVIGATION
 // ======================================================
+
 function showSection(sectionId) {
 
     const menu =
@@ -4075,41 +4076,53 @@ function showSection(sectionId) {
 
     // Close mobile menu
     if (menu) {
+
         menu.classList.remove(
             "mobile-menu-open"
         );
+
     }
 
+
     if (button) {
+
         button.textContent = "☰";
 
         button.setAttribute(
             "aria-label",
             "Open menu"
         );
+
     }
 
 
-    // --------------------------------------------------
-    // SECTIONS SAHAJA
-    // JANGAN MASUKKAN HOME / HERO
-    // SEBAB COUNTDOWN MESTI KEKAL
-    // --------------------------------------------------
+    // ==================================================
+    // CONTENT SECTIONS ONLY
+    // HERO / COUNTDOWN JANGAN DISOROK
+    // ==================================================
 
     const sections = [
+
         "notes-section",
+
         "gallery-section",
-        "memories-section",
+
+        "calendar-section",
+
         "messages-section",
+
         "bucket-section",
+
         "song-section",
+
         "quiz-section"
+
     ];
 
 
-    // --------------------------------------------------
-    // HIDE SEMUA SECTION
-    // --------------------------------------------------
+    // ==================================================
+    // HIDE SEMUA CONTENT SECTION
+    // ==================================================
 
     sections.forEach(id => {
 
@@ -4118,7 +4131,8 @@ function showSection(sectionId) {
 
         if (section) {
 
-            section.style.display = "none";
+            section.style.display =
+                "none";
 
             section.classList.remove(
                 "section-opening"
@@ -4129,10 +4143,10 @@ function showSection(sectionId) {
     });
 
 
-    // --------------------------------------------------
-    // KALAU HOME
-    // COUNTDOWN KEKAL SAHAJA
-    // --------------------------------------------------
+    // ==================================================
+    // HOME
+    // HERO / COUNTDOWN SAHAJA
+    // ==================================================
 
     if (
         !sectionId ||
@@ -4140,25 +4154,32 @@ function showSection(sectionId) {
     ) {
 
         window.scrollTo({
+
             top: 0,
+
             behavior: "smooth"
+
         });
 
         return;
+
     }
 
 
-    // --------------------------------------------------
-    // TUNJUK SECTION YANG DIPILIH
-    // --------------------------------------------------
+    // ==================================================
+    // SELECTED SECTION
+    // ==================================================
 
     const selectedSection =
         document.getElementById(
             sectionId
         );
 
+
     if (!selectedSection) {
+
         return;
+
     }
 
 
@@ -4174,9 +4195,9 @@ function showSection(sectionId) {
     );
 
 
-    // --------------------------------------------------
+    // ==================================================
     // LOAD CONTENT
-    // --------------------------------------------------
+    // ==================================================
 
     if (
         sectionId ===
@@ -4200,10 +4221,10 @@ function showSection(sectionId) {
 
     if (
         sectionId ===
-        "memories-section"
+        "calendar-section"
     ) {
 
-        loadTimeline();
+        loadCalendar();
 
     }
 
@@ -4248,16 +4269,698 @@ function showSection(sectionId) {
     }
 
 
-    // --------------------------------------------------
-    // SCROLL KE SECTION
-    // --------------------------------------------------
+    // ==================================================
+    // SCROLL
+    // ==================================================
 
     selectedSection.scrollIntoView({
+
         behavior: "smooth",
+
         block: "start"
+
     });
 
 }
+
+// ======================================================
+// OUR CALENDAR
+// ======================================================
+
+let calendarViewDate = new Date();
+
+let calendarEvents = [];
+
+
+// ======================================================
+// LOAD CALENDAR EVENTS
+// ======================================================
+
+async function loadCalendar() {
+
+    const grid =
+        document.getElementById(
+            "calendarGrid"
+        );
+
+    const eventsContainer =
+        document.getElementById(
+            "calendarEvents"
+        );
+
+
+    if (!grid || !eventsContainer) {
+
+        return;
+
+    }
+
+
+    grid.innerHTML =
+        '<p class="calendar-loading">Loading our calendar... 💕</p>';
+
+    eventsContainer.innerHTML =
+        '<p class="calendar-loading">Loading our special dates... 💕</p>';
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("timeline")
+            .select("*")
+            .order(
+                "event_date",
+                {
+                    ascending: true
+                }
+            );
+
+
+    if (error) {
+
+        console.error(
+            "Calendar error:",
+            error
+        );
+
+        calendarEvents = [];
+
+    } else {
+
+        calendarEvents =
+            data || [];
+
+    }
+
+
+    renderCalendar();
+
+    renderCalendarEvents();
+
+}
+
+
+// ======================================================
+// RENDER CALENDAR
+// ======================================================
+
+function renderCalendar() {
+
+    const grid =
+        document.getElementById(
+            "calendarGrid"
+        );
+
+    const title =
+        document.getElementById(
+            "calendarMonthTitle"
+        );
+
+
+    if (!grid || !title) {
+
+        return;
+
+    }
+
+
+    const year =
+        calendarViewDate.getFullYear();
+
+    const month =
+        calendarViewDate.getMonth();
+
+
+    const monthName =
+        calendarViewDate.toLocaleString(
+            "en-MY",
+            {
+                month: "long"
+            }
+        );
+
+
+    title.textContent =
+        monthName +
+        " " +
+        year;
+
+
+    grid.innerHTML = "";
+
+
+    // First day of month
+    const firstDay =
+        new Date(
+            year,
+            month,
+            1
+        ).getDay();
+
+
+    // Number of days
+    const daysInMonth =
+        new Date(
+            year,
+            month + 1,
+            0
+        ).getDate();
+
+
+    // Empty boxes before first day
+    for (
+        let i = 0;
+        i < firstDay;
+        i++
+    ) {
+
+        const empty =
+            document.createElement(
+                "div"
+            );
+
+        empty.className =
+            "calendar-day empty";
+
+        grid.appendChild(
+            empty
+        );
+
+    }
+
+
+    const today =
+        new Date();
+
+
+    for (
+        let day = 1;
+        day <= daysInMonth;
+        day++
+    ) {
+
+        const cell =
+            document.createElement(
+                "div"
+            );
+
+        cell.className =
+            "calendar-day";
+
+
+        // Today
+        if (
+            day === today.getDate() &&
+            month === today.getMonth() &&
+            year === today.getFullYear()
+        ) {
+
+            cell.classList.add(
+                "today"
+            );
+
+        }
+
+
+        const number =
+            document.createElement(
+                "span"
+            );
+
+        number.className =
+            "calendar-day-number";
+
+        number.textContent =
+            day;
+
+
+        cell.appendChild(
+            number
+        );
+
+
+        // YYYY-MM-DD
+        const dateString =
+            year +
+            "-" +
+            String(
+                month + 1
+            ).padStart(2, "0") +
+            "-" +
+            String(day).padStart(
+                2,
+                "0"
+            );
+
+
+        const dayEvents =
+            calendarEvents.filter(
+                event =>
+                    event.event_date ===
+                    dateString
+            );
+
+
+        dayEvents.forEach(
+            event => {
+
+                const eventDot =
+                    document.createElement(
+                        "span"
+                    );
+
+                eventDot.className =
+                    "calendar-event-dot";
+
+
+                eventDot.textContent =
+                    (
+                        event.icon ||
+                        "❤️"
+                    ) +
+                    " " +
+                    event.title;
+
+
+                eventDot.title =
+                    event.title;
+
+
+                cell.appendChild(
+                    eventDot
+                );
+
+            }
+        );
+
+
+        grid.appendChild(
+            cell
+        );
+
+    }
+
+}
+
+
+// ======================================================
+// CHANGE MONTH
+// ======================================================
+
+function changeCalendarMonth(
+    amount
+) {
+
+    calendarViewDate.setMonth(
+        calendarViewDate.getMonth() +
+        amount
+    );
+
+
+    renderCalendar();
+
+}
+
+
+// ======================================================
+// GO TO TODAY
+// ======================================================
+
+function goToCalendarToday() {
+
+    calendarViewDate =
+        new Date();
+
+    renderCalendar();
+
+}
+
+
+// ======================================================
+// RENDER EVENT LIST
+// ======================================================
+
+function renderCalendarEvents() {
+
+    const container =
+        document.getElementById(
+            "calendarEvents"
+        );
+
+
+    if (!container) {
+
+        return;
+
+    }
+
+
+    container.innerHTML = "";
+
+
+    if (
+        !calendarEvents ||
+        calendarEvents.length === 0
+    ) {
+
+        container.innerHTML = `
+
+            <div class="calendar-empty">
+
+                <div style="font-size:32px;">
+                    💕
+                </div>
+
+                <strong>
+                    No special dates yet
+                </strong>
+
+                <p>
+                    Add your first special date above ♡
+                </p>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    calendarEvents.forEach(
+        event => {
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+            card.className =
+                "calendar-event-card";
+
+
+            const formattedDate =
+                formatCalendarDate(
+                    event.event_date
+                );
+
+
+            card.innerHTML = `
+
+                <div class="calendar-event-icon">
+
+                    ${escapeHTML(
+                        event.icon ||
+                        "❤️"
+                    )}
+
+                </div>
+
+
+                <div class="calendar-event-info">
+
+                    <span class="calendar-event-date">
+
+                        ${escapeHTML(
+                            formattedDate
+                        )}
+
+                    </span>
+
+
+                    <h3>
+
+                        ${escapeHTML(
+                            event.title
+                        )}
+
+                    </h3>
+
+
+                    <p>
+
+                        ${escapeHTML(
+                            event.description ||
+                            ""
+                        )}
+
+                    </p>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="calendar-delete"
+                    onclick="deleteCalendarEvent(${event.id})"
+                >
+
+                    🗑️ Delete
+
+                </button>
+
+            `;
+
+
+            container.appendChild(
+                card
+            );
+
+        }
+    );
+
+}
+
+
+// ======================================================
+// FORMAT CALENDAR DATE
+// ======================================================
+
+function formatCalendarDate(
+    dateString
+) {
+
+    if (!dateString) {
+
+        return "";
+
+    }
+
+
+    const parts =
+        dateString.split("-");
+
+
+    if (parts.length !== 3) {
+
+        return dateString;
+
+    }
+
+
+    const date =
+        new Date(
+            Number(parts[0]),
+            Number(parts[1]) - 1,
+            Number(parts[2])
+        );
+
+
+    return date.toLocaleDateString(
+        "en-MY",
+        {
+            day: "numeric",
+            month: "long",
+            year: "numeric"
+        }
+    );
+
+}
+
+
+// ======================================================
+// ADD CALENDAR EVENT
+// ======================================================
+
+async function addCalendarEvent() {
+
+    const date =
+        document
+            .getElementById(
+                "calendarDate"
+            )
+            .value;
+
+
+    const title =
+        document
+            .getElementById(
+                "calendarTitle"
+            )
+            .value
+            .trim();
+
+
+    const description =
+        document
+            .getElementById(
+                "calendarDescription"
+            )
+            .value
+            .trim();
+
+
+    const icon =
+        document
+            .getElementById(
+                "calendarIcon"
+            )
+            .value;
+
+
+    if (
+        !date ||
+        !title
+    ) {
+
+        alert(
+            "Please choose a date and enter an event title ❤️"
+        );
+
+        return;
+
+    }
+
+
+    const {
+        error
+    } =
+        await supabaseClient
+            .from("timeline")
+            .insert([
+                {
+                    event_date:
+                        date,
+
+                    title:
+                        title,
+
+                    description:
+                        description,
+
+                    icon:
+                        icon
+                }
+            ]);
+
+
+    if (error) {
+
+        console.error(
+            "Calendar insert error:",
+            error
+        );
+
+        alert(
+            "Failed to save this event."
+        );
+
+        return;
+
+    }
+
+
+    // Clear form
+
+    document
+        .getElementById(
+            "calendarDate"
+        )
+        .value = "";
+
+
+    document
+        .getElementById(
+            "calendarTitle"
+        )
+        .value = "";
+
+
+    document
+        .getElementById(
+            "calendarDescription"
+        )
+        .value = "";
+
+
+    document
+        .getElementById(
+            "calendarIcon"
+        )
+        .value = "❤️";
+
+
+    // Reload
+
+    await loadCalendar();
+
+}
+
+
+// ======================================================
+// DELETE CALENDAR EVENT
+// ======================================================
+
+async function deleteCalendarEvent(
+    id
+) {
+
+    if (
+        !confirm(
+            "Delete this special date? 🥺"
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    const {
+        error
+    } =
+        await supabaseClient
+            .from("timeline")
+            .delete()
+            .eq(
+                "id",
+                id
+            );
+
+
+    if (error) {
+
+        console.error(
+            "Calendar delete error:",
+            error
+        );
+
+        alert(
+            "Failed to delete this event."
+        );
+
+        return;
+
+    }
+
+
+    await loadCalendar();
+
+}
+
 // ======================================================
 // WELCOME BACK ANIMATION
 // ======================================================
