@@ -5979,6 +5979,9 @@ function showQuizResult() {
         document.getElementById("quizContent");
 
     if (!quizContent) return;
+    
+        // Save this quiz attempt
+    saveQuizAttempt();
 
     const total =
         currentQuizQuestions.length;
