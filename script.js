@@ -5197,6 +5197,29 @@ function updatePetUI() {
 
 }
 
+// TAMBAH FUNCTION NI DI SINI
+function updateDinoFoodPointsUI() {
+
+    const foodPointsText =
+        document.getElementById("petFoodPointsText");
+
+    const foodPointsBar =
+        document.getElementById("petFoodPointsBar");
+
+    if (foodPointsText) {
+        foodPointsText.textContent =
+            dinoFoodPoints + " 🍎";
+    }
+
+    if (foodPointsBar) {
+        const percentage =
+            Math.min(dinoFoodPoints, 100);
+
+        foodPointsBar.style.width =
+            percentage + "%";
+    }
+}
+
 
 // ------------------------------------------------------
 // PET MOOD
