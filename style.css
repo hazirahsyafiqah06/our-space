@@ -6139,3 +6139,104 @@ button:hover {
 .quiz-feedback-wrong::first-letter {
     display: inline-block;
 }
+
+/* ======================================================
+   QUIZ CHECK ANSWER BUTTON
+====================================================== */
+
+#quizCheckBtn {
+    width: 100% !important;
+    min-height: 54px !important;
+
+    margin-top: 15px !important;
+    padding: 14px 20px !important;
+
+    border: none !important;
+    border-radius: 16px !important;
+
+    background: linear-gradient(
+        135deg,
+        #e75480,
+        #f58bb0,
+        #72c9df
+    ) !important;
+
+    background-size: 200% 200% !important;
+
+    color: white !important;
+    font-size: 15px !important;
+    font-weight: bold !important;
+
+    cursor: pointer !important;
+
+    box-shadow:
+        0 6px 18px rgba(231, 84, 128, 0.22);
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+    
+    animation: checkButtonGlow 3s ease infinite;
+}
+
+
+/* Hover */
+
+#quizCheckBtn:hover {
+    transform: translateY(-3px) scale(1.01);
+
+    box-shadow:
+        0 10px 25px rgba(231, 84, 128, 0.30);
+}
+
+
+/* Click */
+
+#quizCheckBtn:active {
+    transform: scale(0.97);
+}
+
+
+/* Gradient bergerak */
+
+@keyframes checkButtonGlow {
+
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+#quizCheckBtn {
+    position: relative;
+    overflow: hidden;
+}
+
+#quizCheckBtn::after {
+    content: "💗";
+    position: absolute;
+    right: 22px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+
+    animation: heartPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes heartPulse {
+
+    0%, 100% {
+        transform: translateY(-50%) scale(1);
+    }
+
+    50% {
+        transform: translateY(-50%) scale(1.25);
+    }
+}
