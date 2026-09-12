@@ -5920,7 +5920,7 @@ button:hover {
 .quiz-result-buttons {
     display: flex;
     flex-direction: column;
-    gap: 0;
+    gap: 14px !important;
     margin-top: 20px;
 }
 
