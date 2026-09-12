@@ -5912,3 +5912,74 @@ button:hover {
     transform: translateY(-2px);
     box-shadow: 0 7px 18px rgba(0,0,0,0.10);
 }
+
+/* ======================================================
+   QUIZ RESULT BUTTONS
+====================================================== */
+
+.quiz-result-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-top: 20px;
+}
+
+.quiz-result-buttons button {
+    width: 100% !important;
+    min-height: 54px;
+    padding: 14px 18px !important;
+    margin: 0 !important;
+
+    border: none !important;
+    border-radius: 16px !important;
+
+    background:
+        linear-gradient(
+            135deg,
+            #e75480,
+            #72c9df
+        ) !important;
+
+    color: white !important;
+
+    font-size: 15px !important;
+    font-weight: bold !important;
+
+    box-shadow:
+        0 5px 15px
+        rgba(231,84,128,0.18);
+
+    cursor: pointer;
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.quiz-result-buttons button:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 8px 20px
+        rgba(114,201,223,0.25);
+}
+
+
+/* Quiz Home button */
+.quiz-result-buttons .quiz-back-btn {
+    width: 100% !important;
+
+    background:
+        linear-gradient(
+            135deg,
+            #e75480,
+            #72c9df
+        ) !important;
+
+    color: white !important;
+
+    border: none !important;
+    border-radius: 16px !important;
+
+    padding: 14px 18px !important;
+}
