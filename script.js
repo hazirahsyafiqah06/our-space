@@ -5560,7 +5560,7 @@ async function playPet() {
 
 }
 
-function checkDinoHatch() {
+async function checkDinoHatch() {
 
     if (!petData) {
         return;
@@ -5583,6 +5583,14 @@ function checkDinoHatch() {
         }
 
         console.log("🐣 Dino has hatched!");
+        await supabaseClient
+        .from("pet")
+        .update({
+            is_hatched: true
+        })
+        .eq("id", 1);
+    
+    petData.is_hatched = true;
     }
 }
 
