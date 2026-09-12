@@ -5873,36 +5873,64 @@ function submitQuizAnswer() {
             "quizFeedback"
         );
 
-    if (feedback) {
+   if (correct) {
 
-        feedback.innerHTML =
-            correct
+    feedback.innerHTML = `
+        <div class="quiz-feedback-correct">
 
-                ? `
-                    <div>
-                        🎉 <strong>Correct!</strong> 💗
-                    </div>
-                  `
+            <div style="font-size:32px;">
+                🎉💗✨
+            </div>
 
-                : `
-                    <div>
-                        ❌ <strong>Wrong!</strong>
-                        <br><br>
+            <div style="font-size:18px; margin-top:5px;">
+                Correct!
+            </div>
 
-                        Your answer:
-                        ${escapeHTML(
-                            userAnswer
-                        )}
+            <div style="
+                font-size:13px;
+                font-weight:normal;
+                margin-top:5px;
+            ">
+                You really know your partner! 🥰
+            </div>
 
-                        <br><br>
+        </div>
+    `;
 
-                        Correct answer:
-                        ${escapeHTML(
-                            correctAnswer
-                        )}
-                    </div>
-                  `;
-    }
+} else {
+
+    feedback.innerHTML = `
+        <div class="quiz-feedback-wrong">
+
+            <div style="font-size:32px;">
+                🥺💔
+            </div>
+
+            <div style="font-size:18px; margin-top:5px;">
+                Not quite!
+            </div>
+
+            <div style="
+                font-size:13px;
+                font-weight:normal;
+                margin-top:8px;
+            ">
+                <strong>Your answer:</strong><br>
+                ${escapeHTML(userAnswer)}
+            </div>
+
+            <div style="
+                font-size:13px;
+                font-weight:normal;
+                margin-top:8px;
+            ">
+                <strong>Correct answer:</strong><br>
+                ${escapeHTML(correctAnswer)}
+            </div>
+
+        </div>
+    `;
+}
 
     const checkButton =
         document.getElementById(
