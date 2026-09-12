@@ -5983,3 +5983,159 @@ button:hover {
 
     padding: 14px 18px !important;
 }
+
+/* ======================================================
+   QUIZ PLAY - NEXT BUTTON
+====================================================== */
+
+#quizNextBtn {
+    width: 100% !important;
+    min-height: 54px !important;
+    margin-top: 12px !important;
+    padding: 14px 20px !important;
+
+    border: none !important;
+    border-radius: 16px !important;
+
+    background: linear-gradient(
+        135deg,
+        #e75480,
+        #72c9df
+    ) !important;
+
+    color: white !important;
+    font-size: 15px !important;
+    font-weight: bold !important;
+
+    cursor: pointer !important;
+
+    box-shadow:
+        0 6px 18px rgba(231,84,128,0.20);
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+#quizNextBtn:hover {
+    transform: translateY(-3px) scale(1.01);
+
+    box-shadow:
+        0 10px 24px rgba(114,201,223,0.30);
+}
+
+
+/* ======================================================
+   QUIZ FEEDBACK
+====================================================== */
+
+.quiz-feedback-correct,
+.quiz-feedback-wrong {
+    margin: 18px auto !important;
+    padding: 15px 20px !important;
+
+    border-radius: 16px !important;
+
+    font-size: 15px !important;
+    font-weight: bold !important;
+
+    animation-duration: 0.5s;
+    animation-fill-mode: both;
+}
+
+
+/* CORRECT */
+
+.quiz-feedback-correct {
+    background: linear-gradient(
+        135deg,
+        #fff0f7,
+        #e8faff
+    ) !important;
+
+    border: 1px solid #f4c5d8 !important;
+
+    color: #e75480 !important;
+
+    animation-name: correctPop;
+}
+
+
+/* WRONG */
+
+.quiz-feedback-wrong {
+    background: linear-gradient(
+        135deg,
+        #fff3f3,
+        #fff8f0
+    ) !important;
+
+    border: 1px solid #f2caca !important;
+
+    color: #d95f72 !important;
+
+    animation-name: wrongShake;
+}
+
+
+/* ======================================================
+   CORRECT ANIMATION
+====================================================== */
+
+@keyframes correctPop {
+
+    0% {
+        opacity: 0;
+        transform: scale(0.7);
+    }
+
+    60% {
+        opacity: 1;
+        transform: scale(1.08);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+
+/* ======================================================
+   WRONG ANIMATION
+====================================================== */
+
+@keyframes wrongShake {
+
+    0% {
+        opacity: 0;
+        transform: translateX(0);
+    }
+
+    25% {
+        opacity: 1;
+        transform: translateX(-8px);
+    }
+
+    50% {
+        transform: translateX(8px);
+    }
+
+    75% {
+        transform: translateX(-5px);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}
+
+
+/* ======================================================
+   FEEDBACK EMOJI ANIMATION
+====================================================== */
+
+.quiz-feedback-correct::first-letter,
+.quiz-feedback-wrong::first-letter {
+    display: inline-block;
+}
