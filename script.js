@@ -5923,6 +5923,9 @@ function submitQuizAnswer() {
             "block";
 }
 
+// ===============================
+// NEXT QUIZ QUESTION
+// ===============================
 function goToNextQuizQuestion() {
 
     currentQuizIndex++;
@@ -5931,65 +5934,194 @@ function goToNextQuizQuestion() {
         currentQuizIndex >=
         currentQuizQuestions.length
     ) {
-
         showQuizResult();
-
         return;
     }
 
-    showQuizQuestion(
-        currentQuizQuestions.map(
-            question =>
-                question.__partnerAnswer
-        )
-    );
+    showQuizQuestion();
 }
 
+
+// ===============================
+// QUIZ RESULT
+// ===============================
 function showQuizResult() {
 
     const quizContent =
-        document.getElementById(
-            "quizContent"
-        );
+        document.getElementById("quizContent");
 
     if (!quizContent) return;
 
     const total =
         currentQuizQuestions.length;
 
-    const percentage =
-        Math.round(
-            (currentQuizScore / total) * 100
-        );
+    const score =
+        currentQuizScore;
+
+    let message = "";
+
+    if (score === total) {
+        message = "Perfect! You really know your partner! 💕😍";
+    }
+    else if (score >= 12) {
+        message = "Amazing! You know your partner very well! 🥰";
+    }
+    else if (score >= 8) {
+        message = "Not bad! You know your partner quite well! 💗";
+    }
+    else if (score >= 5) {
+        message = "Aww, maybe you need to know each other better! 🥺💕";
+    }
+    else {
+        message = "Oops! Time for more couple conversations! 😂💗";
+    }
 
     quizContent.innerHTML = `
-
         <div class="quiz-intro">
 
-            <div style="font-size:50px;">
-                🏆
+            <div class="quiz-result-icon">
+                🎉
             </div>
 
-            <h3>
-                Quiz Completed! 🎉
-            </h3>
+            <h2>Quiz Completed! 💕</h2>
 
-            <h2>
-                ${currentQuizScore} / ${total}
-            </h2>
+            <div class="quiz-score">
+                ${score} / ${total}
+            </div>
 
-            <p>
-                Score: ${percentage}%
-            </p>
+            <p>${message}</p>
+
+            <div class="quiz-result-buttons">
+
+                <button
+                    type="button"
+                    onclick="showQuizReview()"
+                >
+                    📖 Review Answers
+                </button>
+
+                <button
+                    type="button"
+                    onclick="restartQuiz()"
+                >
+                    🔄 Try Again
+                </button>
+
+                <button
+                    type="button"
+                    class="quiz-back-btn"
+                    onclick="showQuizHome()"
+                >
+                    ← Quiz Home
+                </button>
+
+            </div>
+
+        </div>
+    `;
+}
+
+
+// ===============================
+// REVIEW ANSWERS
+// ===============================
+function showQuizReview() {
+
+    const quizContent =
+        document.getElementById("quizContent");
+
+    if (!quizContent) return;
+
+    let reviewHTML = "";
+
+    currentQuizQuestions.forEach(
+        (question, index) => {
+
+            const result =
+                currentQuizAnswers[index];
+
+            if (!result) return;
+
+            const statusClass =
+                result.correct
+                    ? "review-correct"
+                    : "review-wrong";
+
+            const statusText =
+                result.correct
+                    ? "✅ Correct"
+                    : "❌ Incorrect";
+
+            reviewHTML += `
+                <div class="quiz-review-card ${statusClass}">
+
+                    <div class="quiz-review-number">
+                        Question ${index + 1}
+                    </div>
+
+                    <h3>
+                        ${escapeHTML(
+                            question.question || ""
+                        )}
+                    </h3>
+
+                    <p>
+                        <strong>Status:</strong>
+                        ${statusText}
+                    </p>
+
+                    <p>
+                        <strong>Your answer:</strong><br>
+                        ${escapeHTML(
+                            result.userAnswer || "-"
+                        )}
+                    </p>
+
+                    <p>
+                        <strong>Correct answer:</strong><br>
+                        ${escapeHTML(
+                            result.correctAnswer || "-"
+                        )}
+                    </p>
+
+                </div>
+            `;
+        }
+    );
+
+    quizContent.innerHTML = `
+        <div class="quiz-intro">
 
             <button
                 type="button"
-                onclick="showQuizHome()"
+                class="quiz-back-btn"
+                onclick="showQuizResult()"
             >
-                ← Back to Quiz
+                ← Back to Result
             </button>
 
-        </div>
+            <h2>📖 Review Answers</h2>
 
+            <p>Here's how you did! 💕</p>
+
+            <div class="quiz-review-list">
+                ${reviewHTML}
+            </div>
+
+        </div>
     `;
+}
+
+
+// ===============================
+// RESTART QUIZ
+// ===============================
+async function restartQuiz() {
+
+    currentQuizIndex = 0;
+    currentQuizScore = 0;
+    currentQuizAnswers = {};
+    currentQuizQuestions = [];
+
+    await startQuiz();
 }
