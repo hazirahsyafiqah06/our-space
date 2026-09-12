@@ -5359,6 +5359,173 @@ async function showQuizHome() {
     `;
 }
 
+// ======================================================
+// QUIZ HISTORY
+// ======================================================
+
+async function showQuizHistory() {
+
+    const quizContent =
+        document.getElementById("quizContent");
+
+    if (!quizContent || !currentUser)
+        return;
+
+    quizContent.innerHTML = `
+        <div class="quiz-loading">
+            Loading Quiz History... 💕
+        </div>
+    `;
+
+    const { data, error } =
+        await supabaseClient
+            .from("quiz_attempts")
+            .select("*")
+            .or(
+                `user_id.eq.${currentUser.id},partner_id.eq.${currentUser.id}`
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
+
+    if (error) {
+
+        console.error(
+            "Quiz history error:",
+            error
+        );
+
+        quizContent.innerHTML = `
+            <div class="quiz-history-empty">
+                <p>Failed to load Quiz History 😭</p>
+
+                <button
+                    type="button"
+                    class="quiz-back-btn"
+                    onclick="showQuizHome()"
+                >
+                    ← Quiz Home
+                </button>
+            </div>
+        `;
+
+        return;
+    }
+
+    if (!data || data.length === 0) {
+
+        quizContent.innerHTML = `
+            <div class="quiz-history-empty">
+
+                <div style="font-size:50px;">
+                    📖💕
+                </div>
+
+                <h2>No Quiz History Yet</h2>
+
+                <p>
+                    Complete a quiz first to see
+                    your quiz history here ♡
+                </p>
+
+                <button
+                    type="button"
+                    class="quiz-back-btn"
+                    onclick="showQuizHome()"
+                >
+                    ← Quiz Home
+                </button>
+
+            </div>
+        `;
+
+        return;
+    }
+
+    const historyHTML =
+        data.map(attempt => {
+
+            const answeredBy =
+                USER_NAMES[attempt.user_id]
+                || "Unknown";
+
+            const answeredAbout =
+                USER_NAMES[attempt.partner_id]
+                || "Unknown";
+
+            const date =
+                formatNoteDate(
+                    attempt.created_at
+                );
+
+            return `
+                <div class="quiz-history-card">
+
+                    <div class="quiz-history-info">
+
+                        <h3>
+                            💕 ${escapeHTML(answeredBy)}
+                            answered about
+                            ${escapeHTML(answeredAbout)}
+                        </h3>
+
+                        <div class="quiz-history-score">
+                            ${attempt.score} / ${attempt.total}
+                        </div>
+
+                        <div class="quiz-history-date">
+                            📅 ${escapeHTML(date)}
+                        </div>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        class="quiz-history-view-btn"
+                        onclick="viewQuizAttempt('${attempt.id}')"
+                    >
+                        👀 View Answers
+                    </button>
+
+                </div>
+            `;
+
+        }).join("");
+
+    quizContent.innerHTML = `
+
+        <div class="quiz-history-container">
+
+            <div class="quiz-history-header">
+
+                <h2>📖 Quiz History</h2>
+
+                <p>
+                    All your quiz attempts are saved here ♡
+                </p>
+
+            </div>
+
+            <div class="quiz-history-list">
+                ${historyHTML}
+            </div>
+
+            <button
+                type="button"
+                class="quiz-back-btn"
+                onclick="showQuizHome()"
+            >
+                ← Quiz Home
+            </button>
+
+        </div>
+
+    `;
+}
+
     // ======================================================
 // QUIZ - START QUIZ
 // ======================================================
