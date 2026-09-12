@@ -28,6 +28,41 @@
 <div class="container">
 
     <!-- =========================
+         TOP NAVBAR
+    ========================== -->
+    <header class="top-navbar">
+
+        <div class="nav-logo">
+            💕 Our Space
+        </div>
+
+        <button
+            type="button"
+            id="mobileMenuBtn"
+            class="mobile-menu-btn"
+            onclick="toggleMobileMenu()"
+            aria-label="Open menu"
+        >
+            ☰
+        </button>
+
+        <nav class="navigation">
+
+        <button onclick="showSection('notes-section')">📝 Notes</button>
+        <button onclick="showSection('gallery-section')">📸 Gallery</button>
+        <button onclick="showSection('memories-section')">💌 Memories</button>
+        <button onclick="showSection('messages-section')">💬 Secret</button>
+        <button onclick="showSection('bucket-section')">🌷 Bucket List</button>
+        <button onclick="showSection('song-section')">🎵 Our Song</button>
+        <button onclick="showSection('quiz-section')">🧠 Quiz</button>
+        <button type="button" class="nav-logout-btn" onclick="logout()">🚪 Logout</button>
+
+        </nav>
+
+    </header>
+
+
+    <!-- =========================
          HERO
     ========================== -->
 
@@ -307,80 +342,6 @@
         <button class="surprise-close-btn" onclick="closeBirthdaySurprise()">💗 Keep this moment</button>
     </div>
 </div>
-        <!-- MOBILE HAMBURGER -->
-        <button
-            type="button"
-            id="mobileMenuBtn"
-            class="mobile-menu-btn"
-            onclick="toggleMobileMenu()"
-            aria-label="Open menu"
-        >
-            ☰
-        </button>
-
-
-    <!-- =========================
-         NAVIGATION
-    ========================== -->
-
-    <nav class="navigation">
-
-        <button
-            onclick="showSection('notes-section')"
-        >
-            📝 Notes
-        </button>
-
-
-        <button
-            onclick="showSection('gallery-section')"
-        >
-            📸 Gallery
-        </button>
-
-
-        <button
-            onclick="showSection('memories-section')"
-        >
-            💌 Memories
-        </button>
-
-
-        <button
-            onclick="showSection('messages-section')"
-        >
-            💬 Secret
-        </button>
-
-        <button
-            onclick="showSection('bucket-section')"
-        >
-            🌷 Bucket List
-        </button>
-
-        <button
-            onclick="showSection('song-section')"
-        >
-            🎵 Our Song
-        </button>
-
-        <button
-            onclick="showSection('quiz-section')"
-        >
-            🧠 Quiz
-        </button>
-
-        <button
-            type="button"
-            class="nav-logout-btn"
-            onclick="logout()"
-        >
-            🚪 Logout
-        </button>
-
-    </nav>
-
-
     <!-- =========================
          NOTES
     ========================== -->
