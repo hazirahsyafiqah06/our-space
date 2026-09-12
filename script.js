@@ -4079,8 +4079,6 @@ function showSection(sectionId) {
         button.setAttribute("aria-label", "Open menu");
     }
 
-}
-
     const sections = [
 
         "notes-section",
