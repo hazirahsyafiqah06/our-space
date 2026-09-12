@@ -4115,7 +4115,9 @@ function showSection(sectionId) {
 
         "song-section",
 
-        "quiz-section"
+        "quiz-section",
+
+        "pet-section"
 
     ];
 
@@ -4266,6 +4268,13 @@ function showSection(sectionId) {
 
         showQuizHome();
 
+    }
+
+    if (
+        sectionId ===
+        "pet-section"
+    ) {
+        loadPet();
     }
 
 
@@ -4960,6 +4969,634 @@ async function deleteCalendarEvent(
     await loadCalendar();
 
 }
+
+// ======================================================
+// OUR LITTLE PET
+// ======================================================
+
+let petData = null;
+
+
+// ------------------------------------------------------
+// LOAD PET
+// ------------------------------------------------------
+
+async function loadPet() {
+
+    if (!currentUser) {
+        return;
+    }
+
+    const { data, error } =
+        await supabaseClient
+            .from("pet")
+            .select("*")
+            .eq("id", 1)
+            .maybeSingle();
+
+
+    if (error) {
+
+        console.error(
+            "Pet loading error:",
+            error
+        );
+
+        const message =
+            document.getElementById("petMessage");
+
+        if (message) {
+            message.textContent =
+                "Unable to load our little pet 😭";
+        }
+
+        return;
+    }
+
+
+    if (!data) {
+
+        const message =
+            document.getElementById("petMessage");
+
+        if (message) {
+            message.textContent =
+                "Our little pet is waiting for us 🐣💕";
+        }
+
+        return;
+    }
+
+
+    petData = data;
+
+    updatePetUI();
+
+}
+
+
+// ------------------------------------------------------
+// UPDATE PET UI
+// ------------------------------------------------------
+
+function updatePetUI() {
+
+    if (!petData) {
+        return;
+    }
+
+
+    const love =
+        Math.max(
+            0,
+            Math.min(
+                100,
+                Number(petData.love) || 0
+            )
+        );
+
+
+    const hunger =
+        Math.max(
+            0,
+            Math.min(
+                100,
+                Number(petData.hunger) || 0
+            )
+        );
+
+
+    const xp =
+        Math.max(
+            0,
+            Number(petData.xp) || 0
+        );
+
+
+    const loveText =
+        document.getElementById(
+            "petLoveText"
+        );
+
+
+    const hungerText =
+        document.getElementById(
+            "petHungerText"
+        );
+
+
+    const xpText =
+        document.getElementById(
+            "petXPText"
+        );
+
+
+    const loveBar =
+        document.getElementById(
+            "petLoveBar"
+        );
+
+
+    const hungerBar =
+        document.getElementById(
+            "petHungerBar"
+        );
+
+
+    const xpBar =
+        document.getElementById(
+            "petXPBar"
+        );
+
+
+    if (loveText) {
+        loveText.textContent =
+            love + "%";
+    }
+
+
+    if (hungerText) {
+        hungerText.textContent =
+            hunger + "%";
+    }
+
+
+    if (xpText) {
+        xpText.textContent =
+            xp + " XP";
+    }
+
+
+    if (loveBar) {
+        loveBar.style.width =
+            love + "%";
+    }
+
+
+    if (hungerBar) {
+        hungerBar.style.width =
+            hunger + "%";
+    }
+
+
+    if (xpBar) {
+
+        const xpProgress =
+            xp % 100;
+
+        xpBar.style.width =
+            xpProgress + "%";
+    }
+
+
+    updatePetMood();
+
+}
+
+
+// ------------------------------------------------------
+// PET MOOD
+// ------------------------------------------------------
+
+function updatePetMood() {
+
+    if (!petData) {
+        return;
+    }
+
+
+    const hunger =
+        Number(petData.hunger) || 0;
+
+
+    const love =
+        Number(petData.love) || 0;
+
+
+    let mood =
+        "😊 Happy";
+
+
+    let emoji =
+        "🐣";
+
+
+    if (hunger <= 20) {
+
+        mood =
+            "😭 Hungry";
+
+        emoji =
+            "🐣";
+
+    } else if (love >= 80) {
+
+        mood =
+            "🥰 Loved";
+
+        emoji =
+            "🐣";
+
+    } else {
+
+        mood =
+            "😊 Happy";
+
+        emoji =
+            "🐣";
+    }
+
+
+    const petEmoji =
+        document.getElementById(
+            "petEmoji"
+        );
+
+
+    const petMood =
+        document.getElementById(
+            "petMood"
+        );
+
+
+    if (petEmoji) {
+        petEmoji.textContent =
+            emoji;
+    }
+
+
+    if (petMood) {
+        petMood.textContent =
+            mood;
+    }
+
+}
+
+
+// ------------------------------------------------------
+// UPDATE PET DATABASE
+// ------------------------------------------------------
+
+async function updatePet(values) {
+
+    if (!petData) {
+        return false;
+    }
+
+
+    const { data, error } =
+        await supabaseClient
+            .from("pet")
+            .update(values)
+            .eq("id", 1)
+            .select()
+            .single();
+
+
+    if (error) {
+
+        console.error(
+            "Pet update error:",
+            error
+        );
+
+        alert(
+            "Unable to update our pet 😭"
+        );
+
+        return false;
+    }
+
+
+    petData = data;
+
+    updatePetUI();
+
+    return true;
+
+}
+
+
+// ------------------------------------------------------
+// FEED PET
+// ------------------------------------------------------
+
+async function feedPet() {
+
+    if (!petData) {
+        await loadPet();
+    }
+
+
+    if (!petData) {
+        return;
+    }
+
+
+    const hunger =
+        Math.min(
+            100,
+            Number(petData.hunger) + 10
+        );
+
+
+    const xp =
+        Number(petData.xp) + 5;
+
+
+    const success =
+        await updatePet({
+
+            hunger:
+                hunger,
+
+            xp:
+                xp,
+
+            mood:
+                "😊 Happy",
+
+            last_interaction:
+                new Date().toISOString()
+
+        });
+
+
+    if (!success) {
+        return;
+    }
+
+
+    showPetMessage(
+        "Nom nom nom! Thank you for feeding me 🍎🥰"
+    );
+
+}
+
+
+// ------------------------------------------------------
+// LOVE PET
+// ------------------------------------------------------
+
+async function lovePet() {
+
+    if (!petData) {
+        await loadPet();
+    }
+
+
+    if (!petData) {
+        return;
+    }
+
+
+    const love =
+        Math.min(
+            100,
+            Number(petData.love) + 5
+        );
+
+
+    const xp =
+        Number(petData.xp) + 5;
+
+
+    const success =
+        await updatePet({
+
+            love:
+                love,
+
+            xp:
+                xp,
+
+            mood:
+                "🥰 Loved",
+
+            last_interaction:
+                new Date().toISOString()
+
+        });
+
+
+    if (!success) {
+        return;
+    }
+
+
+    showPetMessage(
+        "Awww! I feel so loved! ❤️🥰"
+    );
+
+}
+
+
+// ------------------------------------------------------
+// PLAY PET
+// ------------------------------------------------------
+
+async function playPet() {
+
+    if (!petData) {
+        await loadPet();
+    }
+
+
+    if (!petData) {
+        return;
+    }
+
+
+    const xp =
+        Number(petData.xp) + 10;
+
+
+    const hunger =
+        Math.max(
+            0,
+            Number(petData.hunger) - 5
+        );
+
+
+    const petEmoji =
+        document.getElementById(
+            "petEmoji"
+        );
+
+
+    if (petEmoji) {
+
+        petEmoji.classList.remove(
+            "pet-playing"
+        );
+
+        void petEmoji.offsetWidth;
+
+        petEmoji.classList.add(
+            "pet-playing"
+        );
+
+    }
+
+
+    const playMessages = [
+
+        "Let's play!! 🎾🥰",
+
+        "Yayyy! That was fun! 🐣💕",
+
+        "Again again! 🎾😂",
+
+        "Hehehe, I love playing with you! 🥹❤️",
+
+        "Best playtime ever! 🐣✨"
+
+    ];
+
+
+    const randomMessage =
+        playMessages[
+            Math.floor(
+                Math.random() *
+                playMessages.length
+            )
+        ];
+
+
+    const success =
+        await updatePet({
+
+            xp:
+                xp,
+
+            hunger:
+                hunger,
+
+            mood:
+                "😍 Excited",
+
+            last_interaction:
+                new Date().toISOString()
+
+        });
+
+
+    if (!success) {
+        return;
+    }
+
+
+    showPetMessage(
+        randomMessage
+    );
+
+}
+
+
+// ------------------------------------------------------
+// PET MESSAGE
+// ------------------------------------------------------
+
+function showPetMessage(message) {
+
+    const petMessage =
+        document.getElementById(
+            "petMessage"
+        );
+
+
+    if (!petMessage) {
+        return;
+    }
+
+
+    petMessage.textContent =
+        message;
+
+
+    petMessage.classList.remove(
+        "pet-message-pop"
+    );
+
+
+    void petMessage.offsetWidth;
+
+
+    petMessage.classList.add(
+        "pet-message-pop"
+    );
+
+}
+
+
+// ------------------------------------------------------
+// LAST INTERACTION
+// ------------------------------------------------------
+
+function updatePetLastInteraction() {
+
+    if (!petData) {
+        return;
+    }
+
+
+    const element =
+        document.getElementById(
+            "petLastInteraction"
+        );
+
+
+    if (!element) {
+        return;
+    }
+
+
+    if (!petData.last_interaction) {
+
+        element.textContent =
+            "Waiting for our first interaction... 💕";
+
+        return;
+    }
+
+
+    const date =
+        new Date(
+            petData.last_interaction
+        );
+
+
+    element.textContent =
+        "Last interaction: " +
+        date.toLocaleString(
+            "en-MY",
+            {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: true,
+                timeZone:
+                    "Asia/Kuala_Lumpur"
+            }
+        ) +
+        " 🇲🇾";
+
+}
+
+
+// Update UI + last interaction together
+const originalUpdatePetUI =
+    updatePetUI;
+
+updatePetUI = function () {
+
+    originalUpdatePetUI();
+
+    updatePetLastInteraction();
+
+};
 
 // ======================================================
 // WELCOME BACK ANIMATION
