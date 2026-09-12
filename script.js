@@ -4064,123 +4064,115 @@ async function deleteOurSong(id) {
 // ======================================================
 // NAVIGATION
 // ======================================================
-
 function showSection(sectionId) {
 
-    const menu = document.querySelector(".navigation");
-    const button = document.getElementById("mobileMenuBtn");
+    const menu =
+        document.querySelector(".navigation");
 
+    const button =
+        document.getElementById("mobileMenuBtn");
+
+    // Close mobile menu after choosing a section
     if (menu) {
-        menu.classList.remove("mobile-menu-open");
+        menu.classList.remove(
+            "mobile-menu-open"
+        );
     }
 
     if (button) {
         button.textContent = "☰";
-        button.setAttribute("aria-label", "Open menu");
+        button.setAttribute(
+            "aria-label",
+            "Open menu"
+        );
     }
 
-    const sections = [
+    // HOME = scroll to the very top
+    if (
+        !sectionId ||
+        sectionId === "home-section"
+    ) {
 
-        "notes-section",
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
 
-        "gallery-section",
-
-        "memories-section",
-
-        "messages-section",
-        
-        "bucket-section",
-        
-        "song-section",
-
-         "quiz-section"
-
-    ];
-
-    sections.forEach(
-        id => {
-
-            const section =
-                document.getElementById(
-                    id
-                );
-
-if (section) {
-
-    if (id === sectionId) {
-
-        section.style.display = "block";
-
-        // Restart animation setiap kali section dibuka
-        section.classList.remove(
-            "section-opening"
-        );
-
-        void section.offsetWidth;
-
-        section.classList.add(
-            "section-opening"
-        );
-
-    } else {
-
-        section.style.display = "none";
-
-        section.classList.remove(
-            "section-opening"
-        );
-
+        return;
     }
 
-}
+    // Find the selected section
+    const section =
+        document.getElementById(
+            sectionId
+        );
 
-        }
+    if (!section) {
+        return;
+    }
+
+    // Smooth scroll to selected section
+    section.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+
+    // Keep existing section animation
+    section.classList.remove(
+        "section-opening"
     );
 
+    void section.offsetWidth;
+
+    section.classList.add(
+        "section-opening"
+    );
+
+    // Reload dynamic content
     if (
         sectionId ===
         "messages-section"
     ) {
-
         loadSecretMessages();
-
     }
 
     if (
         sectionId ===
         "gallery-section"
     ) {
-
         loadGallery();
-
     }
-    
+
     if (
-    sectionId ===
-    "memories-section"
-) {
-    loadTimeline();
-}
+        sectionId ===
+        "memories-section"
+    ) {
+        loadTimeline();
+    }
+
     if (
-    sectionId ===
-    "bucket-section"
-) {
-    loadBucketList();
-}
+        sectionId ===
+        "bucket-section"
+    ) {
+        loadBucketList();
+    }
+
     if (
-    sectionId ===
-    "song-section"
-) {
-    loadOurSongs();
-}
+        sectionId ===
+        "song-section"
+    ) {
+        loadOurSongs();
+    }
+
     if (
-    sectionId ===
-    "quiz-section"
-) {
-    showQuizHome();
-}
+        sectionId ===
+        "quiz-section"
+    ) {
+        showQuizHome();
+    }
 
 }
+
 
 // ======================================================
 // WELCOME BACK ANIMATION
