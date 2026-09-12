@@ -4072,11 +4072,9 @@ function showSection(sectionId) {
     const button =
         document.getElementById("mobileMenuBtn");
 
-    // Close mobile menu after choosing a section
+    // Tutup mobile menu
     if (menu) {
-        menu.classList.remove(
-            "mobile-menu-open"
-        );
+        menu.classList.remove("mobile-menu-open");
     }
 
     if (button) {
@@ -4087,11 +4085,39 @@ function showSection(sectionId) {
         );
     }
 
-    // HOME = scroll to the very top
-    if (
-        !sectionId ||
-        sectionId === "home-section"
-    ) {
+    // Semua section
+    const sections = [
+        "home-section",
+        "notes-section",
+        "gallery-section",
+        "memories-section",
+        "messages-section",
+        "bucket-section",
+        "song-section",
+        "quiz-section"
+    ];
+
+    // Sembunyikan semua section
+    sections.forEach(id => {
+
+        const section =
+            document.getElementById(id);
+
+        if (section) {
+            section.style.display = "none";
+        }
+
+    });
+
+    // HOME
+    if (!sectionId || sectionId === "home-section") {
+
+        const home =
+            document.getElementById("home-section");
+
+        if (home) {
+            home.style.display = "block";
+        }
 
         window.scrollTo({
             top: 0,
@@ -4101,78 +4127,58 @@ function showSection(sectionId) {
         return;
     }
 
-    // Find the selected section
-    const section =
-        document.getElementById(
-            sectionId
-        );
+    // Tunjukkan section yang dipilih
+    const selectedSection =
+        document.getElementById(sectionId);
 
-    if (!section) {
+    if (!selectedSection) {
         return;
     }
 
-    // Smooth scroll to selected section
-    section.scrollIntoView({
+    selectedSection.style.display = "block";
+
+    // Scroll ke section
+    selectedSection.scrollIntoView({
         behavior: "smooth",
         block: "start"
     });
 
-    // Keep existing section animation
-    section.classList.remove(
+    // Animation
+    selectedSection.classList.remove(
         "section-opening"
     );
 
-    void section.offsetWidth;
+    void selectedSection.offsetWidth;
 
-    section.classList.add(
+    selectedSection.classList.add(
         "section-opening"
     );
 
-    // Reload dynamic content
-    if (
-        sectionId ===
-        "messages-section"
-    ) {
+    // Reload content
+    if (sectionId === "messages-section") {
         loadSecretMessages();
     }
 
-    if (
-        sectionId ===
-        "gallery-section"
-    ) {
+    if (sectionId === "gallery-section") {
         loadGallery();
     }
 
-    if (
-        sectionId ===
-        "memories-section"
-    ) {
+    if (sectionId === "memories-section") {
         loadTimeline();
     }
 
-    if (
-        sectionId ===
-        "bucket-section"
-    ) {
+    if (sectionId === "bucket-section") {
         loadBucketList();
     }
 
-    if (
-        sectionId ===
-        "song-section"
-    ) {
+    if (sectionId === "song-section") {
         loadOurSongs();
     }
 
-    if (
-        sectionId ===
-        "quiz-section"
-    ) {
+    if (sectionId === "quiz-section") {
         showQuizHome();
     }
-
 }
-
 
 // ======================================================
 // WELCOME BACK ANIMATION
