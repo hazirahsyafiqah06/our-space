@@ -5032,6 +5032,15 @@ async function loadPet() {
 
     petData = data;
 
+    // Check dino hatch status
+if (petData && petData.is_hatched === true) {
+    const dinoEmoji = document.getElementById("petEmoji");
+
+    if (dinoEmoji) {
+        dinoEmoji.textContent = "🐣";
+    }
+}
+
 const { data: pointsData, error: pointsError } =
     await supabaseClient
         .from("dino_points")
