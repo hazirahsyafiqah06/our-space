@@ -5032,22 +5032,22 @@ async function loadPet() {
 
     petData = data;
 
-    updatePetUI();
+const { data: pointsData, error: pointsError } =
+    await supabaseClient
+        .from("dino_points")
+        .select("food_points")
+        .eq("id", 1)
+        .maybeSingle();
 
+if (pointsError) {
+    console.error("Dino points loading error:", pointsError);
+} else {
+    dinoFoodPoints = pointsData?.food_points || 0;
 }
 
-    const { data: pointsData, error: pointsError } =
-        await supabaseClient
-            .from("dino_points")
-            .select("food_points")
-            .eq("id", 1)
-            .maybeSingle();
+updatePetUI();
 
-    if (pointsError) {
-        console.error("Dino points loading error:", pointsError);
-    } else {
-        dinoFoodPoints = pointsData?.food_points || 0;
-    }
+}
 
 
 // ------------------------------------------------------
@@ -5161,6 +5161,7 @@ function updatePetUI() {
 
         xpBar.style.width =
             xpProgress + "%";
+    }
 
             const foodPointsText =
         document.getElementById("petFoodPointsText");
@@ -5180,8 +5181,6 @@ function updatePetUI() {
         foodPointsBar.style.width =
             percentage + "%";
     }
-    }
-
 
     updatePetMood();
 
