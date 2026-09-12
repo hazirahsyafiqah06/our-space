@@ -5333,6 +5333,14 @@ async function showQuizHome() {
                 🎮 Start Quiz
             </button>
 
+            <button
+                type="button"
+                id="quizHistoryBtn"
+                onclick="showQuizHistory()"
+            >
+                📖 Quiz History
+            </button>
+
             ${
                 hasAnswers
                     ? `
