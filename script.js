@@ -4976,6 +4976,8 @@ async function deleteCalendarEvent(
 
 let petData = null;
 
+let dinoFoodPoints = 0;
+
 
 // ------------------------------------------------------
 // LOAD PET
@@ -5033,6 +5035,19 @@ async function loadPet() {
     updatePetUI();
 
 }
+
+    const { data: pointsData, error: pointsError } =
+        await supabaseClient
+            .from("dino_points")
+            .select("food_points")
+            .eq("id", 1)
+            .maybeSingle();
+
+    if (pointsError) {
+        console.error("Dino points loading error:", pointsError);
+    } else {
+        dinoFoodPoints = pointsData?.food_points || 0;
+    }
 
 
 // ------------------------------------------------------
@@ -5146,6 +5161,25 @@ function updatePetUI() {
 
         xpBar.style.width =
             xpProgress + "%";
+
+            const foodPointsText =
+        document.getElementById("petFoodPointsText");
+
+    const foodPointsBar =
+        document.getElementById("petFoodPointsBar");
+
+    if (foodPointsText) {
+        foodPointsText.textContent =
+            dinoFoodPoints + " 🍎";
+    }
+
+    if (foodPointsBar) {
+        const percentage =
+            Math.min(dinoFoodPoints, 100);
+
+        foodPointsBar.style.width =
+            percentage + "%";
+    }
     }
 
 
