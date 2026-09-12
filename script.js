@@ -5320,6 +5320,12 @@ async function feedPet() {
         await loadPet();
     }
 
+        // Check Food Points
+    if (dinoFoodPoints < 10) {
+        alert("Not enough Food Points! 🍎🥺");
+        return;
+    }
+
 
     if (!petData) {
         return;
@@ -5335,6 +5341,24 @@ async function feedPet() {
 
     const xp =
         Number(petData.xp) + 5;
+
+        // Use 10 Food Points
+    dinoFoodPoints -= 10;
+
+    await supabaseClient
+        .from("dino_points")
+        .update({
+            food_points: dinoFoodPoints,
+            updated_at: new Date().toISOString()
+        })
+        .eq("id", 1);
+
+    await updatePet({
+        hunger: Math.min(100, petData.hunger + 10),
+        xp: petData.xp + 5
+    });
+
+    updateDinoFoodPointsUI();
 
 
     const success =
