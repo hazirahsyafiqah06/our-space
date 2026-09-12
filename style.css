@@ -7001,30 +7001,240 @@ html {
 }
 
 @media (max-width: 600px) {
+
+    /* ==========================================
+       CALENDAR MOBILE
+    ========================================== */
+
     .calendar-heading {
         align-items: flex-start;
+        gap: 10px;
     }
 
-    .calendar-day {
-        min-height: 62px;
-        padding: 5px;
-        border-radius: 10px;
+    .calendar-heading h2 {
+        font-size: 19px;
     }
 
-    .calendar-event-dot {
-        font-size: 8px;
-        padding: 3px;
+    .calendar-heading p {
+        font-size: 11px;
+        line-height: 1.4;
+    }
+
+    .calendar-heart {
+        width: 42px;
+        height: 42px;
+        font-size: 18px;
+    }
+
+
+    /* MONTH NAVIGATION */
+
+    .calendar-top {
+        gap: 6px;
+        padding: 10px;
+    }
+
+    .calendar-top h3 {
+        font-size: 16px;
+    }
+
+    .calendar-nav-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 20px;
+    }
+
+    .calendar-today-btn {
+        padding: 5px 9px;
+        font-size: 10px;
+    }
+
+
+    /* CALENDAR GRID */
+
+    .calendar-weekdays,
+    .calendar-grid {
+        gap: 4px;
     }
 
     .calendar-weekdays div {
         font-size: 9px;
+        padding: 6px 1px;
     }
+
+    .calendar-day {
+        min-height: 58px;
+        padding: 5px;
+        border-radius: 9px;
+    }
+
+    .calendar-day-number {
+        font-size: 11px;
+        margin-bottom: 3px;
+    }
+
+    .calendar-event-dot {
+        font-size: 7px;
+        padding: 3px;
+        border-radius: 6px;
+    }
+
+
+    /* LEGEND */
+
+    .calendar-legend {
+        gap: 7px;
+        font-size: 9px;
+        margin: 12px 0 18px;
+    }
+
+
+    /* ADD SPECIAL DATE CARD */
+
+    .calendar-form {
+        padding: 15px;
+        border-radius: 16px;
+        margin-bottom: 20px;
+    }
+
+    .calendar-form-title {
+        font-size: 15px;
+        text-align: center;
+    }
+
+    .calendar-form input,
+    .calendar-form textarea,
+    .calendar-form select {
+        font-size: 13px;
+        padding: 11px 12px;
+    }
+
+    .calendar-form textarea {
+        min-height: 85px;
+    }
+
+    .calendar-add-btn {
+        font-size: 13px;
+        padding: 11px;
+    }
+
+
+    /* ==========================================
+       EVENT CARD
+       ========================================== */
 
     .calendar-event-card {
-        flex-wrap: wrap;
+
+        width: 100%;
+
+        display: grid;
+
+        grid-template-columns:
+            40px
+            minmax(0, 1fr);
+
+        grid-template-areas:
+            "icon info"
+            "delete delete";
+
+        column-gap: 10px;
+        row-gap: 10px;
+
+        padding: 14px;
+
+        box-sizing: border-box;
+
+        border-radius: 16px;
+
+        overflow: hidden;
     }
 
-    .calendar-delete {
-        width: 100%;
+
+    /* ICON */
+
+    .calendar-event-icon {
+
+        grid-area: icon;
+
+        width: 40px;
+        height: 40px;
+
+        flex: none;
+
+        font-size: 16px;
     }
+
+
+    /* EVENT CONTENT */
+
+    .calendar-event-info {
+
+        grid-area: info;
+
+        width: 100%;
+
+        min-width: 0;
+
+        overflow: hidden;
+    }
+
+    .calendar-event-date {
+
+        font-size: 10px;
+
+        line-height: 1.4;
+
+        margin-bottom: 3px;
+    }
+
+    .calendar-event-info h3 {
+
+        font-size: 14px;
+
+        line-height: 1.3;
+
+        margin: 0 0 5px;
+
+        overflow-wrap: anywhere;
+    }
+
+    .calendar-event-info p {
+
+        font-size: 12px;
+
+        line-height: 1.5;
+
+        overflow-wrap: anywhere;
+
+        word-break: break-word;
+    }
+
+
+    /* DELETE BUTTON */
+
+    .calendar-delete {
+
+        grid-area: delete;
+
+        width: 100%;
+
+        margin: 0;
+
+        padding: 7px 10px;
+
+        font-size: 10px;
+
+        border-radius: 10px;
+    }
+
+
+    /* EVENT LIST */
+
+    .calendar-events {
+
+        width: 100%;
+
+        gap: 10px;
+    }
+
 }
