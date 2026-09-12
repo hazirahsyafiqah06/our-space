@@ -6555,3 +6555,178 @@ button:hover {
         transform: translateY(0);
     }
 }
+
+/* ======================================================
+   ONE-PAGE NAVIGATION + SMOOTH SCROLL
+   ====================================================== */
+
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 20px;
+}
+
+.top-navbar {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 5px;
+    padding: 10px 4px;
+    position: relative;
+    z-index: 1000;
+}
+
+.nav-logo {
+    flex-shrink: 0;
+    color: #e75480;
+    font-size: 20px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.navigation {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(90px, 1fr));
+    gap: 8px;
+    flex: 1;
+    max-width: 760px;
+}
+
+.navigation button {
+    width: 100%;
+    background: white;
+    color: #6faac8;
+    border: 1px solid #cfe9f5;
+    padding: 10px 7px;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.navigation button:hover {
+    background: #fff2f6;
+    color: #e75480;
+}
+
+.mobile-menu-btn {
+    display: none;
+    flex-shrink: 0;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    border: 1px solid #f0d7e0;
+    border-radius: 12px;
+    background: white;
+    color: #e75480;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+/* Every section remains visible.
+   The navbar only scrolls to the selected section. */
+section {
+    display: block !important;
+}
+
+/* Make each destination comfortable when it is scrolled into view. */
+#notes-section,
+#gallery-section,
+#memories-section,
+#messages-section,
+#bucket-section,
+#song-section,
+#quiz-section {
+    scroll-margin-top: 20px;
+}
+
+@media (max-width: 900px) and (min-width: 601px) {
+    .navigation {
+        grid-template-columns: repeat(3, minmax(90px, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+
+    .top-navbar {
+        width: 94%;
+        margin: 12px auto 0;
+        padding: 8px 2px 12px;
+    }
+
+    .nav-logo {
+        font-size: 19px;
+    }
+
+    .mobile-menu-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .navigation {
+        display: none !important;
+        position: absolute;
+        top: calc(100% - 2px);
+        left: 0;
+        right: 0;
+        z-index: 1001;
+
+        width: 100%;
+        max-width: none;
+        padding: 10px;
+        margin: 0;
+
+        grid-template-columns: 1fr;
+        gap: 8px;
+
+        background: rgba(255,255,255,0.98);
+        border: 1px solid #f0dfe5;
+        border-radius: 16px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.10);
+    }
+
+    .navigation.mobile-menu-open {
+        display: grid !important;
+        animation: mobileMenuOpen 0.2s ease;
+    }
+
+    .navigation button {
+        width: 100% !important;
+        min-height: 46px;
+        margin: 0 !important;
+        border-radius: 12px !important;
+        font-size: 14px !important;
+        box-sizing: border-box;
+    }
+
+    .hero {
+        padding-top: 25px;
+    }
+
+    /* Keep the scroll destination below the top of the screen. */
+    #notes-section,
+    #gallery-section,
+    #memories-section,
+    #messages-section,
+    #bucket-section,
+    #song-section,
+    #quiz-section {
+        scroll-margin-top: 12px;
+    }
+}
+
+@keyframes mobileMenuOpen {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
