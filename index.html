@@ -28,41 +28,6 @@
 <div class="container">
 
     <!-- =========================
-         TOP NAVBAR
-    ========================== -->
-    <header class="top-navbar">
-
-        <div class="nav-logo">
-            💕 Our Space
-        </div>
-
-        <button
-            type="button"
-            id="mobileMenuBtn"
-            class="mobile-menu-btn"
-            onclick="toggleMobileMenu()"
-            aria-label="Open menu"
-        >
-            ☰
-        </button>
-
-        <nav class="navigation">
-
-        <button onclick="showSection('notes-section')">📝 Notes</button>
-        <button onclick="showSection('gallery-section')">📸 Gallery</button>
-        <button onclick="showSection('calendar-section')">📅 Our Calendar</button>
-        <button onclick="showSection('messages-section')">💬 Secret</button>
-        <button onclick="showSection('bucket-section')">🌷 Bucket List</button>
-        <button onclick="showSection('song-section')">🎵 Our Song</button>
-        <button onclick="showSection('quiz-section')">🧠 Quiz</button>
-<button type="button" class="nav-logout-btn" onclick="logout()">🚪 Logout</button>
-
-        </nav>
-
-    </header>
-
-
-    <!-- =========================
          HERO
     ========================== -->
 
@@ -314,6 +279,15 @@
 
     </div>
 
+</div>
+
+<!-- =========================
+     LOGOUT
+========================== -->
+<div class="logout-area">
+    <button type="button" class="logout-btn" onclick="logout()">
+        🚪 Logout
+    </button>
 </div>
 
 <!-- =========================
