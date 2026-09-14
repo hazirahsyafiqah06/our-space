@@ -6268,10 +6268,15 @@ function renderQuizSetup() {
 
 
 // ======================================================
-// ADD QUESTION
+// ADD QUESTION + AUTO SAVE
 // ======================================================
 
 async function addQuizQuestion() {
+
+    if (!currentUser) {
+        alert("Please login first. 💗");
+        return;
+    }
 
     if (
         quizDraftQuestions.length >=
@@ -6283,28 +6288,39 @@ async function addQuizQuestion() {
         return;
     }
 
+
     // ==========================================
-    // AUTO-SAVE CURRENT QUESTION FIRST
+    // GET EVERYTHING CURRENTLY WRITTEN
     // ==========================================
 
-    const currentCards =
+    const currentQuestions =
         collectQuizEditorData();
 
-    if (currentCards.length > 0) {
+
+    // ==========================================
+    // CHECK LAST QUESTION
+    // ==========================================
+
+    if (currentQuestions.length > 0) {
 
         const lastQuestion =
-            currentCards[currentCards.length - 1];
+            currentQuestions[
+                currentQuestions.length - 1
+            ];
 
-        // Jangan tambah soalan baru kalau
-        // soalan sekarang masih kosong
+
+        // Question kosong
         if (!lastQuestion.question) {
+
             alert(
-                "Please write this question first. 💗"
+                "Please write the question first. 💗"
             );
+
             return;
         }
 
-        // Untuk MCQ / Checkbox
+
+        // MCQ / Checkbox
         if (
             lastQuestion.question_type !== "open" &&
             (
@@ -6315,13 +6331,21 @@ async function addQuizQuestion() {
                 !lastQuestion.correct_answer
             )
         ) {
+
             alert(
-                "Please complete all options and choose the correct answer first. 💗"
+                "Please complete all options and select the correct answer first. 💗"
             );
+
             return;
         }
 
-        const row = {
+
+        // ==========================================
+        // AUTO SAVE LAST QUESTION
+        // ==========================================
+
+        const saveData = {
+
             owner_id:
                 currentUser.id,
 
@@ -6348,17 +6372,85 @@ async function addQuizQuestion() {
         };
 
 
-        // Existing question → UPDATE
+        // ==========================================
+        // NEW QUESTION → INSERT
+        // ==========================================
+
         if (
-            lastQuestion.id &&
-            !String(lastQuestion.id)
+            String(lastQuestion.id)
                 .startsWith("new_")
         ) {
 
-            const { error } =
+            const {
+                data,
+                error
+            } =
                 await supabaseClient
                     .from("quiz_questions")
-                    .update(row)
+                    .insert([saveData])
+                    .select()
+                    .single();
+
+
+            if (error) {
+
+                console.error(
+                    "Auto save error:",
+                    error
+                );
+
+                alert(
+                    "Failed to save question. 💔"
+                );
+
+                return;
+            }
+
+
+            // ======================================
+            // UPDATE DRAFT WITH REAL DATABASE ID
+            // ======================================
+
+            const draftIndex =
+                quizDraftQuestions.findIndex(
+                    q =>
+                        String(q.id) ===
+                        String(lastQuestion.id)
+                );
+
+
+            if (draftIndex !== -1) {
+
+                quizDraftQuestions[
+                    draftIndex
+                ] = {
+
+                    ...quizDraftQuestions[
+                        draftIndex
+                    ],
+
+                    ...lastQuestion,
+
+                    id: data.id,
+
+                    __new: false
+                };
+            }
+        }
+
+
+        // ==========================================
+        // EXISTING QUESTION → UPDATE
+        // ==========================================
+
+        else {
+
+            const {
+                error
+            } =
+                await supabaseClient
+                    .from("quiz_questions")
+                    .update(saveData)
                     .eq(
                         "id",
                         Number(lastQuestion.id)
@@ -6368,73 +6460,69 @@ async function addQuizQuestion() {
                         currentUser.id
                     );
 
-            if (error) {
-                console.error(error);
-                alert(
-                    "Failed to auto-save question. 💔"
-                );
-                return;
-            }
-
-        }
-
-        // New question → INSERT
-        else {
-
-            const {
-                data,
-                error
-            } =
-                await supabaseClient
-                    .from("quiz_questions")
-                    .insert([row])
-                    .select()
-                    .single();
 
             if (error) {
-                console.error(error);
+
+                console.error(
+                    "Auto update error:",
+                    error
+                );
+
                 alert(
-                    "Failed to auto-save question. 💔"
+                    "Failed to update question. 💔"
                 );
+
                 return;
-            }
-
-            // Tukar ID sementara kepada ID database
-            lastQuestion.id =
-                data.id;
-
-            lastQuestion.__new =
-                false;
-
-            // Update draft
-            const draftIndex =
-                quizDraftQuestions.findIndex(
-                    q =>
-                        String(q.id)
-                        ===
-                        String(
-                            currentCards[
-                                currentCards.length - 1
-                            ].id
-                        )
-                );
-
-            if (draftIndex !== -1) {
-                quizDraftQuestions[
-                    draftIndex
-                ] = {
-                    ...quizDraftQuestions[
-                        draftIndex
-                    ],
-                    ...lastQuestion
-                };
             }
         }
     }
 
 
     // ==========================================
-    // ADD NEW QUESTION
+    // IMPORTANT:
+    // SAVE ALL CURRENT TEXT INTO DRAFT
+    // BEFORE RENDERING AGAIN
+    // ==========================================
+
+    currentQuestions.forEach(
+        (question, index) => {
+
+            if (
+                quizDraftQuestions[index]
+            ) {
+
+                quizDraftQuestions[index] = {
+
+                    ...quizDraftQuestions[index],
+
+                    question:
+                        question.question,
+
+                    question_type:
+                        question.question_type,
+
+                    option_a:
+                        question.option_a,
+
+                    option_b:
+                        question.option_b,
+
+                    option_c:
+                        question.option_c,
+
+                    option_d:
+                        question.option_d,
+
+                    correct_answer:
+                        question.correct_answer
+                };
+            }
+        }
+    );
+
+
+    // ==========================================
+    // ADD NEW EMPTY QUESTION
     // ==========================================
 
     quizDraftCounter++;
@@ -6463,9 +6551,12 @@ async function addQuizQuestion() {
     });
 
 
+    // ==========================================
+    // DISPLAY AGAIN
+    // ==========================================
+
     renderQuizSetup();
 }
-
 
 // ======================================================
 // DELETE QUESTION
