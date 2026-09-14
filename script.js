@@ -6919,78 +6919,47 @@ async function showQuizHome() {
 async function startQuiz() {
 
     if (!currentUser) {
+        alert("Please login first.");
         return;
     }
-
 
     const partnerId =
-        quizPartnerId();
+        currentUser.id === HAZIRAH_ID
+            ? ZULKARNAIN_ID
+            : HAZIRAH_ID;
 
-
-    const {
-        data,
-        error
-    } = await supabaseClient
-        .from("quiz_questions")
-        .select("*")
-        .eq(
-            "owner_id",
-            partnerId
-        );
-
+    // Get partner's questions
+    const { data: questions, error } =
+        await supabaseClient
+            .from("quiz_questions")
+            .select("*")
+            .eq("owner_id", partnerId);
 
     if (error) {
-
-        alert(error.message);
-
+        console.error("Quiz questions error:", error);
+        alert("Unable to load your partner's questions.");
         return;
-
     }
 
-
-    if (
-        !data ||
-        data.length < QUIZ_PLAY_COUNT
-    ) {
-
+    if (!questions || questions.length < 15) {
         alert(
-            "Your partner needs at least 15 questions before you can play. 💗"
+            `Your partner has only created ${questions?.length || 0} / 15 questions. 💗`
         );
-
         return;
-
     }
 
-
-    // New random set every time
-
+    // Random 15 questions
     currentQuizQuestions =
-        [...data]
-            .sort(
-                () =>
-                    Math.random() - 0.5
-            )
-            .slice(
-                0,
-                QUIZ_PLAY_COUNT
-            );
-
+        [...questions]
+            .sort(() => Math.random() - 0.5)
+            .slice(0, 15);
 
     currentQuizIndex = 0;
-
     currentQuizScore = 0;
-
-    currentQuizScoredTotal = 0;
-
     currentQuizAnswers = {};
 
-    currentQuizAttemptId = null;
-
-
     showQuizQuestion();
-
 }
-
 
 // ======================================================
 // SHOW QUESTION
