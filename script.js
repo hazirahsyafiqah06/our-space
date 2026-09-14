@@ -5991,7 +5991,7 @@ function qCard(question, index) {
 
                 <div class="quiz-editor-number">
 
-                    Question ${index}
+                    Question ${index + 1}
 
                 </div>
 
