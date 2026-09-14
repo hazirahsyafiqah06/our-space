@@ -5035,10 +5035,6 @@ async function startApp() {
     loadBucketList();
 
     loadSecretMessages();
-
-    showSection(
-        ""
-    );
     
     showWelcomeAnimation();
 
