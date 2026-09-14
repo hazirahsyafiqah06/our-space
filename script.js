@@ -6271,24 +6271,173 @@ function renderQuizSetup() {
 // ADD QUESTION
 // ======================================================
 
-function addQuizQuestion() {
+async function addQuizQuestion() {
 
     if (
         quizDraftQuestions.length >=
         QUIZ_MAX_QUESTIONS
     ) {
-
         alert(
             "You can create up to 30 questions only. 💗"
         );
-
         return;
+    }
 
+    // ==========================================
+    // AUTO-SAVE CURRENT QUESTION FIRST
+    // ==========================================
+
+    const currentCards =
+        collectQuizEditorData();
+
+    if (currentCards.length > 0) {
+
+        const lastQuestion =
+            currentCards[currentCards.length - 1];
+
+        // Jangan tambah soalan baru kalau
+        // soalan sekarang masih kosong
+        if (!lastQuestion.question) {
+            alert(
+                "Please write this question first. 💗"
+            );
+            return;
+        }
+
+        // Untuk MCQ / Checkbox
+        if (
+            lastQuestion.question_type !== "open" &&
+            (
+                !lastQuestion.option_a ||
+                !lastQuestion.option_b ||
+                !lastQuestion.option_c ||
+                !lastQuestion.option_d ||
+                !lastQuestion.correct_answer
+            )
+        ) {
+            alert(
+                "Please complete all options and choose the correct answer first. 💗"
+            );
+            return;
+        }
+
+        const row = {
+            owner_id:
+                currentUser.id,
+
+            question:
+                lastQuestion.question,
+
+            question_type:
+                lastQuestion.question_type,
+
+            option_a:
+                lastQuestion.option_a,
+
+            option_b:
+                lastQuestion.option_b,
+
+            option_c:
+                lastQuestion.option_c,
+
+            option_d:
+                lastQuestion.option_d,
+
+            correct_answer:
+                lastQuestion.correct_answer
+        };
+
+
+        // Existing question → UPDATE
+        if (
+            lastQuestion.id &&
+            !String(lastQuestion.id)
+                .startsWith("new_")
+        ) {
+
+            const { error } =
+                await supabaseClient
+                    .from("quiz_questions")
+                    .update(row)
+                    .eq(
+                        "id",
+                        Number(lastQuestion.id)
+                    )
+                    .eq(
+                        "owner_id",
+                        currentUser.id
+                    );
+
+            if (error) {
+                console.error(error);
+                alert(
+                    "Failed to auto-save question. 💔"
+                );
+                return;
+            }
+
+        }
+
+        // New question → INSERT
+        else {
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient
+                    .from("quiz_questions")
+                    .insert([row])
+                    .select()
+                    .single();
+
+            if (error) {
+                console.error(error);
+                alert(
+                    "Failed to auto-save question. 💔"
+                );
+                return;
+            }
+
+            // Tukar ID sementara kepada ID database
+            lastQuestion.id =
+                data.id;
+
+            lastQuestion.__new =
+                false;
+
+            // Update draft
+            const draftIndex =
+                quizDraftQuestions.findIndex(
+                    q =>
+                        String(q.id)
+                        ===
+                        String(
+                            currentCards[
+                                currentCards.length - 1
+                            ].id
+                        )
+                );
+
+            if (draftIndex !== -1) {
+                quizDraftQuestions[
+                    draftIndex
+                ] = {
+                    ...quizDraftQuestions[
+                        draftIndex
+                    ],
+                    ...lastQuestion
+                };
+            }
+        }
     }
 
 
-    quizDraftCounter++;
+    // ==========================================
+    // ADD NEW QUESTION
+    // ==========================================
 
+    quizDraftCounter++;
 
     quizDraftQuestions.push({
 
@@ -6300,8 +6449,11 @@ function addQuizQuestion() {
         question_type: "open",
 
         option_a: "",
+
         option_b: "",
+
         option_c: "",
+
         option_d: "",
 
         correct_answer: "",
@@ -6312,7 +6464,6 @@ function addQuizQuestion() {
 
 
     renderQuizSetup();
-
 }
 
 
