@@ -5726,38 +5726,560 @@ async function changeQuizAnswerType(questionId) {
 
 }
 
+// ======================================================
+// QUIZ - PERSONAL QUESTION SYSTEM
+// ======================================================
+
+const QUIZ_MAX_QUESTIONS = 30;
+const QUIZ_PLAY_COUNT = 15;
+
+let quizDraftQuestions = [];
+let quizDraftCounter = 0;
+
+let currentQuizQuestions = [];
+let currentQuizIndex = 0;
+let currentQuizScore = 0;
+let currentQuizScoredTotal = 0;
+let currentQuizAnswers = {};
+let currentQuizAttemptId = null;
+
 
 // ======================================================
-// QUIZ - SAVE MY ANSWERS
+// QUIZ USER / PARTNER
 // ======================================================
 
-async function saveMyQuizAnswers() {
+function quizPartnerId() {
 
-    if (!currentUser) {
+    if (!currentUser) return null;
 
-        alert("Please login first.");
+    return currentUser.id === HAZIRAH_ID
+        ? ZULKARNAIN_ID
+        : HAZIRAH_ID;
+}
 
-        return;
+
+function quizPartnerName() {
+
+    if (currentUser?.id === HAZIRAH_ID) {
+        return "Zul";
+    }
+
+    return "Zirah";
+}
+
+
+// ======================================================
+// QUIZ HELPERS
+// ======================================================
+
+function qEsc(value) {
+
+    return escapeHTML(value ?? "");
+
+}
+
+
+function qArr(value) {
+
+    if (Array.isArray(value)) {
+
+        return value
+            .map(String)
+            .sort();
+
+    }
+
+    try {
+
+        return JSON.parse(value || "[]")
+            .map(String)
+            .sort();
+
+    } catch (error) {
+
+        return String(value || "")
+            .split(",")
+            .filter(Boolean)
+            .map(String)
+            .sort();
+
+    }
+
+}
+
+
+function qAnswerText(question, raw) {
+
+    const letters = qArr(raw);
+
+    return letters
+        .map(letter => {
+
+            const text =
+                question[
+                    "option_" +
+                    String(letter).toLowerCase()
+                ] || letter;
+
+            return `${letter}. ${text}`;
+
+        })
+        .join(", ");
+
+}
+
+
+// ======================================================
+// QUESTION EDITOR OPTIONS
+// ======================================================
+
+function qOptions(question, type) {
+
+    if (type === "open") {
+
+        return `
+            <div class="quiz-editor-hint">
+                ✍️ Text answers are not marked right or wrong.
+            </div>
+        `;
 
     }
 
 
-    const { data: questions, error } =
-        await supabaseClient
-            .from("quiz_questions")
-            .select("*")
-            .order("id", { ascending: true });
+    const letters = ["A", "B", "C", "D"];
+
+
+    const inputs = letters
+        .map(letter => {
+
+            return `
+                <input
+                    type="text"
+                    class="quiz-option-input"
+                    data-option="${letter}"
+                    placeholder="Option ${letter}"
+                    maxlength="200"
+                    value="${
+                        qEsc(
+                            question[
+                                "option_" +
+                                letter.toLowerCase()
+                            ] || ""
+                        )
+                    }"
+                >
+            `;
+
+        })
+        .join("");
+
+
+    // MCQ
+
+    if (type === "mcq") {
+
+        return `
+            <div class="quiz-option-editor">
+
+                ${inputs}
+
+                <select class="quiz-correct-select">
+
+                    <option value="">
+                        Choose correct answer
+                    </option>
+
+                    ${letters.map(letter => `
+
+                        <option
+                            value="${letter}"
+                            ${
+                                question.correct_answer === letter
+                                    ? "selected"
+                                    : ""
+                            }
+                        >
+                            ${letter}
+                        </option>
+
+                    `).join("")}
+
+                </select>
+
+            </div>
+        `;
+
+    }
+
+
+    // CHECKBOX
+
+    return `
+        <div class="quiz-option-editor">
+
+            ${letters.map(letter => `
+
+                <input
+                    type="text"
+                    class="quiz-option-input"
+                    data-option="${letter}"
+                    placeholder="Option ${letter}"
+                    maxlength="200"
+                    value="${
+                        qEsc(
+                            question[
+                                "option_" +
+                                letter.toLowerCase()
+                            ] || ""
+                        )
+                    }"
+                >
+
+                <label class="quiz-correct-check">
+
+                    <input
+                        type="checkbox"
+                        class="quiz-correct-checkbox"
+                        value="${letter}"
+                        ${
+                            qArr(
+                                question.correct_answer
+                            ).includes(letter)
+                                ? "checked"
+                                : ""
+                        }
+                    >
+
+                    Correct ${letter}
+
+                </label>
+
+            `).join("")}
+
+            <div class="quiz-editor-hint">
+
+                ☑️ Tick every correct answer.
+
+            </div>
+
+        </div>
+    `;
+
+}
+
+
+// ======================================================
+// QUESTION CARD
+// ======================================================
+
+function qCard(question, index) {
+
+    const id = question.id;
+
+    const type =
+        question.question_type || "open";
+
+
+    return `
+
+        <div
+            class="quiz-question-editor"
+            data-question-id="${qEsc(id)}"
+        >
+
+            <div class="quiz-editor-top">
+
+                <div class="quiz-editor-number">
+
+                    Question ${index}
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="quiz-delete-question"
+                    onclick="removeQuizQuestion('${qEsc(id)}')"
+                >
+
+                    🗑️ Delete
+
+                </button>
+
+            </div>
+
+
+            <textarea
+                class="quiz-question-input"
+                maxlength="300"
+                placeholder="Write your question here..."
+            >${qEsc(question.question || "")}</textarea>
+
+
+            <label class="quiz-type-label">
+
+                Answer Type
+
+            </label>
+
+
+            <select
+                class="quiz-type-select"
+                onchange="changeQuestionEditorType('${qEsc(id)}')"
+            >
+
+                <option
+                    value="open"
+                    ${type === "open" ? "selected" : ""}
+                >
+                    ✍️ Text
+                </option>
+
+                <option
+                    value="mcq"
+                    ${type === "mcq" ? "selected" : ""}
+                >
+                    🔘 Option
+                </option>
+
+                <option
+                    value="checkbox"
+                    ${type === "checkbox" ? "selected" : ""}
+                >
+                    ☑️ Checkbox
+                </option>
+
+            </select>
+
+
+            <div
+                class="quiz-editor-answer-area"
+                id="editorAnswer_${qEsc(id)}"
+            >
+
+                ${qOptions(question, type)}
+
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+
+// ======================================================
+// SET MY QUESTIONS
+// ======================================================
+
+async function startQuizSetup() {
+
+    const quizContent =
+        document.getElementById("quizContent");
+
+
+    if (!quizContent || !currentUser) {
+        return;
+    }
+
+
+    quizContent.innerHTML = `
+
+        <div class="quiz-loading">
+
+            Loading your questions... 💕
+
+        </div>
+
+    `;
+
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("quiz_questions")
+        .select("*")
+        .eq("owner_id", currentUser.id)
+        .order("created_at", {
+            ascending: true
+        })
+        .order("id", {
+            ascending: true
+        });
 
 
     if (error) {
 
-        console.error(
-            "Load questions error:",
-            error
-        );
+        quizContent.innerHTML = `
+
+            <div class="quiz-error">
+
+                ❌ Unable to load your questions.
+
+                <br><br>
+
+                ${qEsc(error.message)}
+
+                <br><br>
+
+                <button
+                    type="button"
+                    class="quiz-back-btn"
+                    onclick="showQuizHome()"
+                >
+
+                    ← Quiz Home
+
+                </button>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    quizDraftQuestions =
+        (data || []).slice(0, QUIZ_MAX_QUESTIONS);
+
+    quizDraftCounter = 0;
+
+
+    renderQuizSetup();
+
+}
+
+
+// ======================================================
+// RENDER QUESTION SETUP
+// ======================================================
+
+function renderQuizSetup() {
+
+    const quizContent =
+        document.getElementById("quizContent");
+
+
+    if (!quizContent) {
+        return;
+    }
+
+
+    const count =
+        quizDraftQuestions.length;
+
+
+    quizContent.innerHTML = `
+
+        <div class="quiz-setup">
+
+            <div class="quiz-setup-header">
+
+                <button
+                    type="button"
+                    onclick="showQuizHome()"
+                    class="quiz-back-btn"
+                >
+
+                    ← Back
+
+                </button>
+
+
+                <div>
+
+                    <h3>
+
+                        📝 My Quiz Questions
+
+                    </h3>
+
+                    <p>
+
+                        ${count} / ${QUIZ_MAX_QUESTIONS} questions
+
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="quiz-setup-rules">
+
+                💡 Create up to
+
+                <strong>30</strong>
+
+                questions.
+
+                Your partner will get
+
+                <strong>15 random questions</strong>.
+
+            </div>
+
+
+            <div id="quizSetupQuestions">
+
+                ${
+                    quizDraftQuestions
+                        .map(qCard)
+                        .join("")
+                }
+
+            </div>
+
+
+            <div class="quiz-setup-actions">
+
+                <button
+                    type="button"
+                    class="quiz-add-question-btn"
+                    onclick="addQuizQuestion()"
+                    ${count >= 30 ? "disabled" : ""}
+                >
+
+                    ➕ Add Question
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="quiz-save-btn"
+                    onclick="saveMyQuizQuestions()"
+                >
+
+                    💾 Save My Questions
+
+                </button>
+
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+
+// ======================================================
+// ADD QUESTION
+// ======================================================
+
+function addQuizQuestion() {
+
+    if (
+        quizDraftQuestions.length >=
+        QUIZ_MAX_QUESTIONS
+    ) {
 
         alert(
-            "Unable to load quiz questions."
+            "You can create up to 30 questions only. 💗"
         );
 
         return;
@@ -5765,21 +6287,254 @@ async function saveMyQuizAnswers() {
     }
 
 
-    const answersToSave = [];
+    quizDraftCounter++;
 
 
-    for (const q of questions) {
+    quizDraftQuestions.push({
 
-        const selectedType =
-            document.getElementById(
-                `type_${q.id}`
-            )?.value;
+        id:
+            `new_${Date.now()}_${quizDraftCounter}`,
+
+        question: "",
+
+        question_type: "open",
+
+        option_a: "",
+        option_b: "",
+        option_c: "",
+        option_d: "",
+
+        correct_answer: "",
+
+        __new: true
+
+    });
 
 
-        if (!selectedType) {
+    renderQuizSetup();
+
+}
+
+
+// ======================================================
+// DELETE QUESTION
+// ======================================================
+
+function removeQuizQuestion(id) {
+
+    if (!confirm("Delete this question?")) {
+        return;
+    }
+
+
+    quizDraftQuestions =
+        quizDraftQuestions.filter(
+            question =>
+                String(question.id) !==
+                String(id)
+        );
+
+
+    renderQuizSetup();
+
+}
+
+
+// ======================================================
+// CHANGE QUESTION TYPE
+// ======================================================
+
+function changeQuestionEditorType(id) {
+
+    const card =
+        Array.from(
+            document.querySelectorAll(
+                ".quiz-question-editor"
+            )
+        ).find(
+            element =>
+                element.dataset.questionId ===
+                String(id)
+        );
+
+
+    if (!card) {
+        return;
+    }
+
+
+    const type =
+        card.querySelector(
+            ".quiz-type-select"
+        )?.value;
+
+
+    const area =
+        card.querySelector(
+            ".quiz-editor-answer-area"
+        );
+
+
+    if (area) {
+
+        area.innerHTML =
+            qOptions({}, type);
+
+    }
+
+}
+
+
+// ======================================================
+// COLLECT QUESTION DATA
+// ======================================================
+
+function collectQuizEditorData() {
+
+    return Array.from(
+        document.querySelectorAll(
+            ".quiz-question-editor"
+        )
+    ).map(card => {
+
+        const id =
+            card.dataset.questionId;
+
+
+        const type =
+            card.querySelector(
+                ".quiz-type-select"
+            )?.value || "open";
+
+
+        const question =
+            card.querySelector(
+                ".quiz-question-input"
+            )?.value.trim() || "";
+
+
+        const options = {};
+
+
+        card.querySelectorAll(
+            ".quiz-option-input"
+        ).forEach(input => {
+
+            options[input.dataset.option] =
+                input.value.trim();
+
+        });
+
+
+        let correct = "";
+
+
+        if (type === "mcq") {
+
+            correct =
+                card.querySelector(
+                    ".quiz-correct-select"
+                )?.value || "";
+
+        }
+
+
+        else if (type === "checkbox") {
+
+            correct =
+                Array.from(
+                    card.querySelectorAll(
+                        ".quiz-correct-checkbox:checked"
+                    )
+                )
+                .map(input => input.value)
+                .sort()
+                .join(",");
+
+        }
+
+
+        return {
+
+            id,
+
+            question,
+
+            question_type: type,
+
+            option_a:
+                type === "open"
+                    ? null
+                    : options.A || "",
+
+            option_b:
+                type === "open"
+                    ? null
+                    : options.B || "",
+
+            option_c:
+                type === "open"
+                    ? null
+                    : options.C || "",
+
+            option_d:
+                type === "open"
+                    ? null
+                    : options.D || "",
+
+            correct_answer:
+                type === "open"
+                    ? null
+                    : correct
+
+        };
+
+    });
+
+}
+
+
+// ======================================================
+// SAVE MY QUESTIONS
+// ======================================================
+
+async function saveMyQuizQuestions() {
+
+    if (!currentUser) {
+        return;
+    }
+
+
+    const rows =
+        collectQuizEditorData();
+
+
+    if (rows.length > 30) {
+
+        alert(
+            "Maximum 30 questions allowed."
+        );
+
+        return;
+
+    }
+
+
+    // Validate
+
+    for (
+        let i = 0;
+        i < rows.length;
+        i++
+    ) {
+
+        const row = rows[i];
+
+
+        if (!row.question) {
 
             alert(
-                `Please choose an answer type for:\n\n${q.question}`
+                `Please write Question ${i + 1}. 💗`
             );
 
             return;
@@ -5787,266 +6542,212 @@ async function saveMyQuizAnswers() {
         }
 
 
-        // ------------------------------------------------
-        // OPEN / TEXT
-        // ------------------------------------------------
-
-        if (selectedType === "open") {
-
-            const textAnswer =
-                document.getElementById(
-                    `answer_${q.id}`
-                )?.value.trim();
-
-
-            if (!textAnswer) {
-
-                alert(
-                    `Please answer this question:\n\n${q.question}`
-                );
-
-                return;
-
-            }
-
-
-            answersToSave.push({
-
-                question_id:
-                    q.id,
-
-                user_id:
-                    currentUser.id,
-
-                question_type:
-                    "open",
-
-                answer:
-                    textAnswer,
-
-                option_a:
-                    null,
-
-                option_b:
-                    null,
-
-                option_c:
-                    null,
-
-                option_d:
-                    null
-
-            });
-
-        }
-
-
-        // ------------------------------------------------
-        // MCQ / OPTION
-        // ------------------------------------------------
-
-        else if (selectedType === "mcq") {
-
-            const optionA =
-                document.getElementById(
-                    `optionA_${q.id}`
-                )?.value.trim();
-
-            const optionB =
-                document.getElementById(
-                    `optionB_${q.id}`
-                )?.value.trim();
-
-            const optionC =
-                document.getElementById(
-                    `optionC_${q.id}`
-                )?.value.trim();
-
-            const optionD =
-                document.getElementById(
-                    `optionD_${q.id}`
-                )?.value.trim();
-
-
-            const selectedAnswer =
-                document.getElementById(
-                    `answer_${q.id}`
-                )?.value;
-
-
-            if (
-                !optionA ||
-                !optionB ||
-                !optionC ||
-                !optionD ||
-                !selectedAnswer
-            ) {
-
-                alert(
-                    `Please complete all options and choose the correct answer for:\n\n${q.question}`
-                );
-
-                return;
-
-            }
-
-
-            answersToSave.push({
-
-                question_id:
-                    q.id,
-
-                user_id:
-                    currentUser.id,
-
-                question_type:
-                    "mcq",
-
-                answer:
-                    selectedAnswer,
-
-                option_a:
-                    optionA,
-
-                option_b:
-                    optionB,
-
-                option_c:
-                    optionC,
-
-                option_d:
-                    optionD
-
-            });
-
-        }
-
-
-        // ------------------------------------------------
-        // CHECKBOX
-        // ------------------------------------------------
-
-        else if (selectedType === "checkbox") {
-
-            const optionA =
-                document.getElementById(
-                    `optionA_${q.id}`
-                )?.value.trim();
-
-            const optionB =
-                document.getElementById(
-                    `optionB_${q.id}`
-                )?.value.trim();
-
-            const optionC =
-                document.getElementById(
-                    `optionC_${q.id}`
-                )?.value.trim();
-
-            const optionD =
-                document.getElementById(
-                    `optionD_${q.id}`
-                )?.value.trim();
-
-
-            const checkedAnswers =
-                Array.from(
-                    document.querySelectorAll(
-                        `input[name="correct_${q.id}"]:checked`
-                    )
-                ).map(
-                    checkbox =>
-                        checkbox.value
-                );
-
-
-            if (
-                !optionA ||
-                !optionB ||
-                !optionC ||
-                !optionD ||
-                checkedAnswers.length === 0
-            ) {
-
-                alert(
-                    `Please complete all options and select at least one correct answer for:\n\n${q.question}`
-                );
-
-                return;
-
-            }
-
-
-            answersToSave.push({
-
-                question_id:
-                    q.id,
-
-                user_id:
-                    currentUser.id,
-
-                question_type:
-                    "checkbox",
-
-                answer:
-                    JSON.stringify(
-                        checkedAnswers
-                    ),
-
-                option_a:
-                    optionA,
-
-                option_b:
-                    optionB,
-
-                option_c:
-                    optionC,
-
-                option_d:
-                    optionD
-
-            });
+        if (
+            row.question_type !== "open" &&
+            (
+                !row.option_a ||
+                !row.option_b ||
+                !row.option_c ||
+                !row.option_d ||
+                !row.correct_answer
+            )
+        ) {
+
+            alert(
+                `Please complete all options and choose the correct answer for Question ${i + 1}.`
+            );
+
+            return;
 
         }
 
     }
 
 
-    // --------------------------------------------------
-    // SAVE TO SUPABASE
-    // --------------------------------------------------
+    // Existing question IDs
 
-    const { error: saveError } =
-        await supabaseClient
-            .from("quiz_answers")
+    const existing =
+        quizDraftQuestions
+            .filter(
+                q =>
+                    !String(q.id)
+                        .startsWith("new_")
+            )
+            .map(q => Number(q.id))
+            .filter(Number.isFinite);
+
+
+    const current =
+        rows
+            .filter(
+                row =>
+                    !String(row.id)
+                        .startsWith("new_")
+            )
+            .map(row => Number(row.id))
+            .filter(Number.isFinite);
+
+
+    // Deleted questions
+
+    const deleted =
+        existing.filter(
+            id =>
+                !current.includes(id)
+        );
+
+
+    if (deleted.length) {
+
+        const {
+            error
+        } = await supabaseClient
+            .from("quiz_questions")
+            .delete()
+            .eq("owner_id", currentUser.id)
+            .in("id", deleted);
+
+
+        if (error) {
+
+            alert(error.message);
+
+            return;
+
+        }
+
+    }
+
+
+    // Existing rows
+
+    const oldRows =
+        rows
+            .filter(
+                row =>
+                    !String(row.id)
+                        .startsWith("new_")
+            )
+            .map(row => ({
+
+                id: Number(row.id),
+
+                owner_id:
+                    currentUser.id,
+
+                question:
+                    row.question,
+
+                question_type:
+                    row.question_type,
+
+                option_a:
+                    row.option_a,
+
+                option_b:
+                    row.option_b,
+
+                option_c:
+                    row.option_c,
+
+                option_d:
+                    row.option_d,
+
+                correct_answer:
+                    row.correct_answer
+
+            }));
+
+
+    // New rows
+
+    const newRows =
+        rows
+            .filter(
+                row =>
+                    String(row.id)
+                        .startsWith("new_")
+            )
+            .map(row => ({
+
+                owner_id:
+                    currentUser.id,
+
+                question:
+                    row.question,
+
+                question_type:
+                    row.question_type,
+
+                option_a:
+                    row.option_a,
+
+                option_b:
+                    row.option_b,
+
+                option_c:
+                    row.option_c,
+
+                option_d:
+                    row.option_d,
+
+                correct_answer:
+                    row.correct_answer
+
+            }));
+
+
+    // Update existing
+
+    if (oldRows.length) {
+
+        const {
+            error
+        } = await supabaseClient
+            .from("quiz_questions")
             .upsert(
-                answersToSave,
+                oldRows,
                 {
-                    onConflict:
-                        "question_id,user_id"
+                    onConflict: "id"
                 }
             );
 
 
-    if (saveError) {
+        if (error) {
 
-        console.error(
-            "Save quiz answers error:",
-            saveError
-        );
+            alert(error.message);
 
-        alert(
-            "Unable to save your answers.\n\n" +
-            saveError.message
-        );
+            return;
 
-        return;
+        }
+
+    }
+
+
+    // Insert new
+
+    if (newRows.length) {
+
+        const {
+            error
+        } = await supabaseClient
+            .from("quiz_questions")
+            .insert(newRows);
+
+
+        if (error) {
+
+            alert(error.message);
+
+            return;
+
+        }
 
     }
 
 
     alert(
-        "Your answers have been saved successfully! 💗"
+        "Your quiz questions have been saved! 💗"
     );
 
 
@@ -6054,508 +6755,337 @@ async function saveMyQuizAnswers() {
 
 }
 
-    // ======================================================
-// QUIZ - QUIZ HOME
+
+// ======================================================
+// QUIZ HOME
 // ======================================================
 
 async function showQuizHome() {
 
-    const quizContent = document.getElementById("quizContent");
+    const quizContent =
+        document.getElementById(
+            "quizContent"
+        );
 
-    if (!quizContent) return;
 
-    let hasAnswers = false;
+    if (!quizContent) {
+        return;
+    }
+
+
+    let count = 0;
+
 
     if (currentUser) {
 
-        const { data, error } = await supabaseClient
-            .from("quiz_answers")
-            .select("question_id")
-            .eq("user_id", currentUser.id)
-            .limit(1);
+        const {
+            count: questionCount
+        } = await supabaseClient
+            .from("quiz_questions")
+            .select(
+                "id",
+                {
+                    count: "exact",
+                    head: true
+                }
+            )
+            .eq(
+                "owner_id",
+                currentUser.id
+            );
 
-        if (!error && data && data.length > 0) {
-            hasAnswers = true;
-        }
+
+        count =
+            questionCount || 0;
+
     }
 
-    const partnerName =
-        currentUser?.id === HAZIRAH_ID
-            ? "Zul"
-            : "Zirah";
 
-    const partnerColor =
-        currentUser?.id === HAZIRAH_ID
-            ? "💙"
-            : "🩷";
+    const partner =
+        quizPartnerName();
+
+
+    const ready =
+        count >= QUIZ_PLAY_COUNT;
+
 
     quizContent.innerHTML = `
+
         <div class="quiz-intro">
 
             <div class="quiz-big-emoji">
+
                 🧠💗
+
             </div>
 
+
             <h3>
+
                 How Well Do You Know Your Partner?
+
             </h3>
 
-            <p id="quizPartnerText">
-                ${partnerColor}
-                Let’s see how well you know ${partnerName}. 🥹
+
+            <p>
+
+                ${
+                    currentUser?.id === HAZIRAH_ID
+                        ? "💙"
+                        : "🩷"
+                }
+
+                Let’s see how well you know
+
+                ${qEsc(partner)}. 🥹
+
             </p>
+
+
+            <div class="quiz-question-status">
+
+                📝 Your questions:
+
+                <strong>
+
+                    ${count} / 30
+
+                </strong>
+
+            </div>
+
 
             <button
                 type="button"
                 id="setAnswersBtn"
                 onclick="startQuizSetup()"
             >
-                📝 ${hasAnswers ? "Edit My Answers" : "Set My Answers"}
+
+                📝
+                ${
+                    count
+                        ? "Edit My Questions"
+                        : "Create My Questions"
+                }
+
             </button>
+
 
             <button
                 type="button"
                 id="startQuizBtn"
                 onclick="startQuiz()"
-                ${hasAnswers ? "" : "disabled"}
+                ${ready ? "" : "disabled"}
             >
-                🎮 Start Quiz
+
+                🎮 Start Quiz —
+                15 Random Questions
+
             </button>
+
 
             <button
                 type="button"
                 id="quizHistoryBtn"
                 onclick="showQuizHistory()"
             >
+
                 📖 Quiz History
+
             </button>
 
-            ${
-                hasAnswers
-                    ? `
-                        <p class="quiz-ready-text">
-                            ✅ Your answers are ready!
-                        </p>
-                    `
-                    : `
-                        <p class="quiz-ready-text">
-                            📝 Set your answers first before playing.
-                        </p>
-                    `
-            }
 
-        </div>
-    `;
-}
+            <p class="quiz-ready-text">
 
-// ======================================================
-// QUIZ HISTORY
-// ======================================================
-
-async function showQuizHistory() {
-
-    const quizContent =
-        document.getElementById("quizContent");
-
-    if (!quizContent || !currentUser)
-        return;
-
-    quizContent.innerHTML = `
-        <div class="quiz-loading">
-            Loading Quiz History... 💕
-        </div>
-    `;
-
-    const { data, error } =
-        await supabaseClient
-            .from("quiz_attempts")
-            .select("*")
-            .or(
-                `user_id.eq.${currentUser.id},partner_id.eq.${currentUser.id}`
-            )
-            .order(
-                "created_at",
-                {
-                    ascending: false
+                ${
+                    ready
+                        ? "✅ Your partner can play your questions."
+                        : "📝 Create at least 15 questions before your partner can play."
                 }
-            );
 
-    if (error) {
-
-        console.error(
-            "Quiz history error:",
-            error
-        );
-
-        quizContent.innerHTML = `
-            <div class="quiz-history-empty">
-                <p>Failed to load Quiz History 😭</p>
-
-                <button
-                    type="button"
-                    class="quiz-back-btn"
-                    onclick="showQuizHome()"
-                >
-                    ← Quiz Home
-                </button>
-            </div>
-        `;
-
-        return;
-    }
-
-    if (!data || data.length === 0) {
-
-        quizContent.innerHTML = `
-            <div class="quiz-history-empty">
-
-                <div style="font-size:50px;">
-                    📖💕
-                </div>
-
-                <h2>No Quiz History Yet</h2>
-
-                <p>
-                    Complete a quiz first to see
-                    your quiz history here ♡
-                </p>
-
-                <button
-                    type="button"
-                    class="quiz-back-btn"
-                    onclick="showQuizHome()"
-                >
-                    ← Quiz Home
-                </button>
-
-            </div>
-        `;
-
-        return;
-    }
-
-    const historyHTML =
-        data.map(attempt => {
-
-            const answeredBy =
-                USER_NAMES[attempt.user_id]
-                || "Unknown";
-
-            const answeredAbout =
-                USER_NAMES[attempt.partner_id]
-                || "Unknown";
-
-            const date =
-                formatNoteDate(
-                    attempt.created_at
-                );
-
-            return `
-                <div class="quiz-history-card">
-
-                    <div class="quiz-history-info">
-
-                        <h3>
-                            💕 ${escapeHTML(answeredBy)}
-                            answered about
-                            ${escapeHTML(answeredAbout)}
-                        </h3>
-
-                        <div class="quiz-history-score">
-                            ${attempt.score} / ${attempt.total}
-                        </div>
-
-                        <div class="quiz-history-date">
-                            📅 ${escapeHTML(date)}
-                        </div>
-
-                    </div>
-
-                    <button
-                        type="button"
-                        class="quiz-history-view-btn"
-                        onclick="viewQuizAttempt('${attempt.id}')"
-                    >
-                        👀 View Answers
-                    </button>
-
-                </div>
-            `;
-
-        }).join("");
-
-    quizContent.innerHTML = `
-
-        <div class="quiz-history-container">
-
-            <div class="quiz-history-header">
-
-                <h2>📖 Quiz History</h2>
-
-                <p>
-                    All your quiz attempts are saved here ♡
-                </p>
-
-            </div>
-
-            <div class="quiz-history-list">
-                ${historyHTML}
-            </div>
-
-            <button
-                type="button"
-                class="quiz-back-btn"
-                onclick="showQuizHome()"
-            >
-                ← Quiz Home
-            </button>
+            </p>
 
         </div>
 
     `;
+
 }
 
-    // ======================================================
-// QUIZ - START QUIZ
-// ======================================================
 
-let currentQuizQuestions = [];
-let currentQuizIndex = 0;
-let currentQuizScore = 0;
-let currentQuizAnswers = {};
+// ======================================================
+// START QUIZ
+// ======================================================
 
 async function startQuiz() {
 
     if (!currentUser) {
-        alert("Please login first.");
         return;
     }
+
 
     const partnerId =
-        currentUser.id === HAZIRAH_ID
-            ? ZULKARNAIN_ID
-            : HAZIRAH_ID;
+        quizPartnerId();
 
-    // Get partner's 50 answers
-    const { data: partnerAnswers, error: answerError } =
-        await supabaseClient
-            .from("quiz_answers")
-            .select("*")
-            .eq("user_id", partnerId);
 
-    if (answerError) {
-        console.error(
-            "Partner quiz answers error:",
-            answerError
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("quiz_questions")
+        .select("*")
+        .eq(
+            "owner_id",
+            partnerId
         );
 
+
+    if (error) {
+
+        alert(error.message);
+
+        return;
+
+    }
+
+
+    if (
+        !data ||
+        data.length < QUIZ_PLAY_COUNT
+    ) {
+
         alert(
-            "Unable to load your partner's answers."
+            "Your partner needs at least 15 questions before you can play. 💗"
         );
 
         return;
+
     }
 
-    console.log(
-        "Partner answers:",
-        partnerAnswers?.length
-    );
 
-    if (!partnerAnswers || partnerAnswers.length < 50) {
-
-        alert(
-            `Your partner has only completed ${
-                partnerAnswers?.length || 0
-            } / 50 answers. 💗`
-        );
-
-        return;
-    }
-
-    // Get question text
-    const { data: questions, error: questionError } =
-        await supabaseClient
-            .from("quiz_questions")
-            .select("*")
-            .order("id", { ascending: true });
-
-    if (questionError) {
-
-        console.error(
-            "Quiz questions error:",
-            questionError
-        );
-
-        alert(
-            "Unable to load quiz questions."
-        );
-
-        return;
-    }
-
-    // Random 15 from partner's 50 answers
-    const shuffled =
-        [...partnerAnswers]
-            .sort(() => Math.random() - 0.5);
-
-    const selected =
-        shuffled.slice(0, 15);
+    // New random set every time
 
     currentQuizQuestions =
-        selected.map(answer => {
+        [...data]
+            .sort(
+                () =>
+                    Math.random() - 0.5
+            )
+            .slice(
+                0,
+                QUIZ_PLAY_COUNT
+            );
 
-            const question =
-                questions.find(
-                    q =>
-                        Number(q.id) ===
-                        Number(answer.question_id)
-                );
-
-            return {
-                ...(question || {}),
-
-                id:
-                    answer.question_id,
-
-                question:
-                    question?.question ||
-                    "Question unavailable",
-
-                __partnerAnswer:
-                    answer
-            };
-        });
 
     currentQuizIndex = 0;
+
     currentQuizScore = 0;
+
+    currentQuizScoredTotal = 0;
+
     currentQuizAnswers = {};
 
-    showQuizQuestion(
-        partnerAnswers
-    );
+    currentQuizAttemptId = null;
+
+
+    showQuizQuestion();
+
 }
 
-function showQuizQuestion(partnerAnswers) {
+
+// ======================================================
+// SHOW QUESTION
+// ======================================================
+
+function showQuizQuestion() {
 
     const quizContent =
-        document.getElementById("quizContent");
+        document.getElementById(
+            "quizContent"
+        );
 
-    if (!quizContent) return;
 
     const question =
-        currentQuizQuestions[currentQuizIndex];
+        currentQuizQuestions[
+            currentQuizIndex
+        ];
+
+
+    if (!quizContent) {
+        return;
+    }
+
 
     if (!question) {
+
         showQuizResult();
-        return;
-    }
-
-    const partnerAnswer =
-        question.__partnerAnswer;
-
-    if (!partnerAnswer) {
-
-        quizContent.innerHTML = `
-            <div class="quiz-intro">
-                <h3>❌ Question Error</h3>
-
-                <p>
-                    Unable to find partner's answer.
-                </p>
-
-                <button
-                    type="button"
-                    onclick="showQuizHome()"
-                >
-                    ← Back
-                </button>
-            </div>
-        `;
 
         return;
+
     }
 
-    const answerType =
-        partnerAnswer.question_type ||
+
+    const type =
+        question.question_type ||
         "open";
 
-    let answerHTML = "";
 
-    // ==============================
+    let answerArea = "";
+
+
     // TEXT
-    // ==============================
 
-    if (answerType === "open") {
+    if (type === "open") {
 
-        answerHTML = `
+        answerArea = `
 
             <textarea
                 id="quizUserAnswer"
-                rows="4"
-                placeholder="Type your answer here... 💗"
+                class="quiz-text-answer"
+                placeholder="Write your answer..."
+                maxlength="500"
             ></textarea>
 
         `;
 
     }
 
-    // ==============================
+
     // MCQ
-    // ==============================
 
-    else if (answerType === "mcq") {
+    else if (type === "mcq") {
 
-        answerHTML = `
+        answerArea = `
 
             <div class="quiz-play-options">
 
-                <label>
-                    <input
-                        type="radio"
-                        name="quizUserAnswer"
-                        value="A"
-                    >
+                ${["A", "B", "C", "D"]
+                    .map(letter => `
 
-                    A. ${escapeHTML(
-                        partnerAnswer.option_a || ""
-                    )}
-                </label>
+                    <label>
 
-                <label>
-                    <input
-                        type="radio"
-                        name="quizUserAnswer"
-                        value="B"
-                    >
+                        <input
+                            type="radio"
+                            name="quizUserAnswer"
+                            value="${letter}"
+                        >
 
-                    B. ${escapeHTML(
-                        partnerAnswer.option_b || ""
-                    )}
-                </label>
+                        <span>
 
-                <label>
-                    <input
-                        type="radio"
-                        name="quizUserAnswer"
-                        value="C"
-                    >
+                            <strong>${letter}.</strong>
 
-                    C. ${escapeHTML(
-                        partnerAnswer.option_c || ""
-                    )}
-                </label>
+                            ${qEsc(
+                                question[
+                                    "option_" +
+                                    letter.toLowerCase()
+                                ]
+                            )}
 
-                <label>
-                    <input
-                        type="radio"
-                        name="quizUserAnswer"
-                        value="D"
-                    >
+                        </span>
 
-                    D. ${escapeHTML(
-                        partnerAnswer.option_d || ""
-                    )}
-                </label>
+                    </label>
+
+                `)
+                .join("")}
 
             </div>
 
@@ -6563,180 +7093,202 @@ function showQuizQuestion(partnerAnswers) {
 
     }
 
-    // ==============================
+
     // CHECKBOX
-    // ==============================
 
-    else if (answerType === "checkbox") {
+    else {
 
-        answerHTML = `
+        answerArea = `
 
             <div class="quiz-play-options">
 
-                <label>
-                    <input
-                        type="checkbox"
-                        name="quizUserCheckbox"
-                        value="A"
-                    >
+                ${["A", "B", "C", "D"]
+                    .map(letter => `
 
-                    A. ${escapeHTML(
-                        partnerAnswer.option_a || ""
-                    )}
-                </label>
+                    <label>
 
-                <label>
-                    <input
-                        type="checkbox"
-                        name="quizUserCheckbox"
-                        value="B"
-                    >
+                        <input
+                            type="checkbox"
+                            name="quizUserAnswer"
+                            value="${letter}"
+                        >
 
-                    B. ${escapeHTML(
-                        partnerAnswer.option_b || ""
-                    )}
-                </label>
+                        <span>
 
-                <label>
-                    <input
-                        type="checkbox"
-                        name="quizUserCheckbox"
-                        value="C"
-                    >
+                            <strong>${letter}.</strong>
 
-                    C. ${escapeHTML(
-                        partnerAnswer.option_c || ""
-                    )}
-                </label>
+                            ${qEsc(
+                                question[
+                                    "option_" +
+                                    letter.toLowerCase()
+                                ]
+                            )}
 
-                <label>
-                    <input
-                        type="checkbox"
-                        name="quizUserCheckbox"
-                        value="D"
-                    >
+                        </span>
 
-                    D. ${escapeHTML(
-                        partnerAnswer.option_d || ""
-                    )}
-                </label>
+                    </label>
+
+                `)
+                .join("")}
 
             </div>
 
         `;
+
     }
+
 
     quizContent.innerHTML = `
 
-        <div class="quiz-intro">
+        <div class="quiz-play-container">
 
-            <p>
-                Question
-                ${currentQuizIndex + 1}
-                /
-                ${currentQuizQuestions.length}
-            </p>
+            <div class="quiz-play-header">
 
-            <h3>
-                ${escapeHTML(
-                    question.question
-                )}
-            </h3>
+                <button
+                    type="button"
+                    class="quiz-back-btn"
+                    onclick="showQuizHome()"
+                >
 
-            <div id="quizAnswerArea">
+                    ← Exit Quiz
 
-                ${answerHTML}
+                </button>
+
+
+                <span>
+
+                    Question
+                    ${currentQuizIndex + 1}
+                    / ${currentQuizQuestions.length}
+
+                </span>
 
             </div>
 
-            <div
-                id="quizFeedback"
-                style="margin-top:15px;"
-            ></div>
 
-            <button
-                type="button"
-                id="quizCheckBtn"
-                onclick="submitQuizAnswer()"
-            >
-                💕 Check Answer
-            </button>
+            <div class="quiz-play-card">
 
-            <button
-                type="button"
-                id="quizNextBtn"
-                onclick="goToNextQuizQuestion()"
-                style="display:none;"
-            >
-                Next Question →
-            </button>
+                <div class="quiz-question-number">
+
+                    Question ${currentQuizIndex + 1}
+
+                </div>
+
+
+                <h2>
+
+                    ${qEsc(question.question)}
+
+                </h2>
+
+
+                <div id="quizAnswerArea">
+
+                    ${answerArea}
+
+                </div>
+
+
+                <div
+                    id="quizFeedback"
+                    class="quiz-feedback-area"
+                ></div>
+
+
+                <button
+                    type="button"
+                    id="quizCheckBtn"
+                    onclick="submitQuizAnswer()"
+                >
+
+                    💕 Check Answer
+
+                </button>
+
+
+                <button
+                    type="button"
+                    id="quizNextBtn"
+                    onclick="goToNextQuizQuestion()"
+                    style="display:none"
+                >
+
+                    Next Question →
+
+                </button>
+
+            </div>
 
         </div>
 
     `;
+
 }
+
+
+// ======================================================
+// SUBMIT ANSWER
+// ======================================================
 
 function submitQuizAnswer() {
 
     const question =
-        currentQuizQuestions[currentQuizIndex];
+        currentQuizQuestions[
+            currentQuizIndex
+        ];
 
-    const partnerAnswer =
-        question.__partnerAnswer;
 
-    const answerType =
-        partnerAnswer.question_type ||
+    if (!question) {
+        return;
+    }
+
+
+    const type =
+        question.question_type ||
         "open";
 
-    let correct = false;
-    let userAnswer = "";
+
+    let user = "";
+
     let correctAnswer = "";
 
-    // ==============================
+    let correct = null;
+
+    let scored = false;
+
+
     // TEXT
-    // ==============================
 
-    if (answerType === "open") {
+    if (type === "open") {
 
-        const input =
+        user =
             document.getElementById(
                 "quizUserAnswer"
-            );
+            )?.value.trim() || "";
 
-        userAnswer =
-            input?.value.trim() || "";
 
-        if (!userAnswer) {
+        if (!user) {
 
             alert(
                 "Please answer first 💗"
             );
 
             return;
+
         }
 
-        correctAnswer =
-            partnerAnswer.answer || "";
-
-        correct =
-            userAnswer
-                .trim()
-                .toLowerCase() ===
-            correctAnswer
-                .trim()
-                .toLowerCase();
     }
 
-    // ==============================
-    // MCQ
-    // ==============================
 
-    else if (answerType === "mcq") {
+    // MCQ
+
+    else if (type === "mcq") {
 
         const selected =
             document.querySelector(
                 'input[name="quizUserAnswer"]:checked'
             );
+
 
         if (!selected) {
 
@@ -6745,246 +7297,591 @@ function submitQuizAnswer() {
             );
 
             return;
+
         }
 
-        userAnswer =
+
+        user =
             selected.value;
 
+
         correctAnswer =
-            partnerAnswer.answer;
+            qAnswerText(
+                question,
+                question.correct_answer || ""
+            );
+
 
         correct =
-            userAnswer ===
-            correctAnswer;
+            user ===
+            question.correct_answer;
+
+
+        scored = true;
+
     }
 
-    // ==============================
-    // CHECKBOX
-    // ==============================
 
-    else if (answerType === "checkbox") {
+    // CHECKBOX
+
+    else {
 
         const selected =
             Array.from(
                 document.querySelectorAll(
-                    'input[name="quizUserCheckbox"]:checked'
+                    'input[name="quizUserAnswer"]:checked'
                 )
             )
-            .map(input => input.value)
+            .map(
+                input => input.value
+            )
             .sort();
 
-        if (selected.length === 0) {
+
+        if (!selected.length) {
 
             alert(
                 "Please select at least one answer 💗"
             );
 
             return;
-        }
-
-        let expected = [];
-
-        try {
-
-            expected =
-                JSON.parse(
-                    partnerAnswer.answer || "[]"
-                );
-
-        } catch (error) {
-
-            expected = [];
 
         }
 
-        expected =
-            expected
-                .map(String)
-                .sort();
+
+        user =
+            selected
+                .map(letter => {
+
+                    return (
+                        `${letter}. ` +
+                        (
+                            question[
+                                "option_" +
+                                letter.toLowerCase()
+                            ] || letter
+                        )
+                    );
+
+                })
+                .join(", ");
+
+
+        correctAnswer =
+            qAnswerText(
+                question,
+                question.correct_answer
+            );
+
+
+        const expected =
+            qArr(
+                question.correct_answer
+            );
+
 
         correct =
             JSON.stringify(selected) ===
             JSON.stringify(expected);
 
-        userAnswer =
-            selected.join(", ");
 
-        correctAnswer =
-            expected.join(", ");
+        scored = true;
+
     }
 
-    currentQuizAnswers[currentQuizIndex] = {
+
+    // Save current answer
+
+    currentQuizAnswers[
+        currentQuizIndex
+    ] = {
+
+        questionId:
+            question.id,
+
+        question:
+            question.question,
+
+        questionType:
+            type,
 
         userAnswer:
-            userAnswer,
+            user,
 
         correctAnswer:
             correctAnswer,
 
         correct:
-            correct
+            correct,
+
+        scored:
+            scored
 
     };
 
-    if (correct) {
 
-        currentQuizScore++;
+    // Score only objective questions
+
+    if (scored) {
+
+        currentQuizScoredTotal++;
+
+
+        if (correct) {
+
+            currentQuizScore++;
+
+        }
 
     }
+
 
     const feedback =
         document.getElementById(
             "quizFeedback"
         );
 
-   if (correct) {
 
-    feedback.innerHTML = `
-        <div class="quiz-feedback-correct">
+    if (feedback) {
 
-            <div style="font-size:32px;">
-                🎉💗✨
-            </div>
 
-            <div style="font-size:18px; margin-top:5px;">
-                Correct!
-            </div>
+        // TEXT
 
-            <div style="
-                font-size:13px;
-                font-weight:normal;
-                margin-top:5px;
-            ">
-                You really know your partner! 🥰
-            </div>
+        if (!scored) {
 
-        </div>
-    `;
+            feedback.innerHTML = `
 
-} else {
+                <div class="quiz-feedback-text">
 
-    feedback.innerHTML = `
-        <div class="quiz-feedback-wrong">
+                    💗 Answer saved.
+                    This question is not scored.
 
-            <div style="font-size:32px;">
-                🥺💔
-            </div>
+                </div>
 
-            <div style="font-size:18px; margin-top:5px;">
-                Not quite!
-            </div>
+            `;
 
-            <div style="
-                font-size:13px;
-                font-weight:normal;
-                margin-top:8px;
-            ">
-                <strong>Your answer:</strong><br>
-                ${escapeHTML(userAnswer)}
-            </div>
+        }
 
-            <div style="
-                font-size:13px;
-                font-weight:normal;
-                margin-top:8px;
-            ">
-                <strong>Correct answer:</strong><br>
-                ${escapeHTML(correctAnswer)}
-            </div>
 
-        </div>
-    `;
-}
+        // CORRECT
+
+        else if (correct) {
+
+            feedback.innerHTML = `
+
+                <div class="quiz-feedback-correct">
+
+                    <div class="quiz-feedback-icon">
+
+                        🎉💗✨
+
+                    </div>
+
+                    <strong>
+
+                        Correct!
+
+                    </strong>
+
+                    <p>
+
+                        You really know your partner! 🥰
+
+                    </p>
+
+                </div>
+
+            `;
+
+        }
+
+
+        // WRONG
+
+        else {
+
+            feedback.innerHTML = `
+
+                <div class="quiz-feedback-wrong">
+
+                    <div class="quiz-feedback-icon">
+
+                        🥺💔
+
+                    </div>
+
+                    <strong>
+
+                        Not quite!
+
+                    </strong>
+
+
+                    <p>
+
+                        <b>Your answer:</b>
+
+                        <br>
+
+                        ${qEsc(user)}
+
+                    </p>
+
+
+                    <p>
+
+                        <b>Correct answer:</b>
+
+                        <br>
+
+                        ${qEsc(correctAnswer)}
+
+                    </p>
+
+                </div>
+
+            `;
+
+        }
+
+    }
+
 
     const checkButton =
         document.getElementById(
             "quizCheckBtn"
         );
 
+
     const nextButton =
         document.getElementById(
             "quizNextBtn"
         );
 
-    if (checkButton)
+
+    if (checkButton) {
+
         checkButton.style.display =
             "none";
 
-    if (nextButton)
+    }
+
+
+    if (nextButton) {
+
         nextButton.style.display =
             "block";
+
+    }
+
 }
 
-// ===============================
-// NEXT QUIZ QUESTION
-// ===============================
+
+// ======================================================
+// NEXT QUESTION
+// ======================================================
+
 function goToNextQuizQuestion() {
 
     currentQuizIndex++;
+
 
     if (
         currentQuizIndex >=
         currentQuizQuestions.length
     ) {
+
         showQuizResult();
+
         return;
+
     }
 
+
     showQuizQuestion();
+
 }
 
 
-// ===============================
+// ======================================================
+// SAVE QUIZ ATTEMPT
+// ======================================================
+
+async function saveQuizAttempt() {
+
+    if (
+        !currentUser ||
+        !currentQuizQuestions.length
+    ) {
+
+        return null;
+
+    }
+
+
+    const {
+        data: attempt,
+        error
+    } = await supabaseClient
+        .from("quiz_attempts")
+        .insert({
+
+            user_id:
+                currentUser.id,
+
+            partner_id:
+                quizPartnerId(),
+
+            score:
+                currentQuizScore,
+
+            total:
+                currentQuizScoredTotal
+
+        })
+        .select()
+        .single();
+
+
+    if (error) {
+
+        console.error(
+            "Quiz attempt error:",
+            error
+        );
+
+        return null;
+
+    }
+
+
+    currentQuizAttemptId =
+        attempt.id;
+
+
+    const rows =
+        currentQuizQuestions.map(
+            (question, index) => {
+
+                const answer =
+                    currentQuizAnswers[
+                        index
+                    ] || {
+
+                        userAnswer: "",
+
+                        correctAnswer: "",
+
+                        correct: null,
+
+                        scored: false
+
+                    };
+
+
+                return {
+
+                    attempt_id:
+                        attempt.id,
+
+                    question_id:
+                        question.id,
+
+                    question_text:
+                        question.question,
+
+                    question_type:
+                        question.question_type ||
+                        "open",
+
+                    user_answer:
+                        answer.userAnswer ||
+                        "",
+
+                    correct_answer:
+                        answer.scored
+                            ? answer.correctAnswer || ""
+                            : null,
+
+                    is_scored:
+                        answer.scored === true,
+
+                    is_correct:
+                        answer.scored
+                            ? answer.correct === true
+                            : null
+
+                };
+
+            }
+        );
+
+
+    const {
+        error: answerError
+    } = await supabaseClient
+        .from("quiz_attempt_answers")
+        .insert(rows);
+
+
+    if (answerError) {
+
+        console.error(
+            "Quiz answers error:",
+            answerError
+        );
+
+    }
+
+
+    return attempt;
+
+}
+
+
+// ======================================================
 // QUIZ RESULT
-// ===============================
-function showQuizResult() {
+// ======================================================
+
+async function showQuizResult() {
 
     const quizContent =
-        document.getElementById("quizContent");
+        document.getElementById(
+            "quizContent"
+        );
 
-    if (!quizContent) return;
-    
-        // Save this quiz attempt
-    saveQuizAttempt();
 
-    const total =
-        currentQuizQuestions.length;
+    if (!quizContent) {
+        return;
+    }
 
-    const score =
-        currentQuizScore;
+
+    if (!currentQuizAttemptId) {
+
+        await saveQuizAttempt();
+
+    }
+
+
+    const textCount =
+        currentQuizQuestions.filter(
+            question =>
+                (
+                    question.question_type ||
+                    "open"
+                ) === "open"
+        ).length;
+
 
     let message = "";
 
-    if (score === total) {
-        message = "Perfect! You really know your partner! 💕😍";
-    }
-    else if (score >= 12) {
-        message = "Amazing! You know your partner very well! 🥰";
-    }
-    else if (score >= 8) {
-        message = "Not bad! You know your partner quite well! 💗";
-    }
-    else if (score >= 5) {
-        message = "Aww, maybe you need to know each other better! 🥺💕";
-    }
-    else {
-        message = "Oops! Time for more couple conversations! 😂💗";
+
+    if (
+        currentQuizScoredTotal === 0
+    ) {
+
+        message =
+            "Your text answers are saved, but there are no scored questions. 💗";
+
     }
 
+
+    else if (
+        currentQuizScore ===
+        currentQuizScoredTotal
+    ) {
+
+        message =
+            "Perfect! You really know your partner! 💕😍";
+
+    }
+
+
+    else if (
+        currentQuizScore /
+        currentQuizScoredTotal >=
+        0.8
+    ) {
+
+        message =
+            "Amazing! You know your partner very well! 🥰";
+
+    }
+
+
+    else if (
+        currentQuizScore /
+        currentQuizScoredTotal >=
+        0.6
+    ) {
+
+        message =
+            "Not bad! You know your partner quite well! 💗";
+
+    }
+
+
+    else {
+
+        message =
+            "Aww, maybe you need to know each other better! 🥺💕";
+
+    }
+
+
     quizContent.innerHTML = `
+
         <div class="quiz-intro">
 
             <div class="quiz-result-icon">
+
                 🎉
+
             </div>
 
-            <h2>Quiz Completed! 💕</h2>
+
+            <h2>
+
+                Quiz Completed! 💕
+
+            </h2>
+
 
             <div class="quiz-score">
-                ${score} / ${total}
+
+                ${currentQuizScore}
+                /
+                ${currentQuizScoredTotal}
+
             </div>
 
-            <p>${message}</p>
+
+            <p>
+
+                ${qEsc(message)}
+
+            </p>
+
+
+            ${
+                textCount
+                    ? `
+                        <div class="quiz-unscored-note">
+
+                            ✍️
+                            ${textCount}
+                            Text question${
+                                textCount > 1
+                                    ? "s were"
+                                    : " was"
+                            }
+                            not scored.
+
+                        </div>
+                    `
+                    : ""
+            }
+
 
             <div class="quiz-result-buttons">
 
@@ -6992,99 +7889,245 @@ function showQuizResult() {
                     type="button"
                     onclick="showQuizReview()"
                 >
+
                     📖 Review Answers
+
                 </button>
+
 
                 <button
                     type="button"
                     onclick="restartQuiz()"
                 >
-                    🔄 Try Again
+
+                    🔄 Try Again —
+                    New Random Questions
+
                 </button>
+
 
                 <button
                     type="button"
                     class="quiz-back-btn"
                     onclick="showQuizHome()"
                 >
+
                     ← Quiz Home
+
                 </button>
 
             </div>
 
         </div>
+
     `;
+
 }
 
 
-// ===============================
-// REVIEW ANSWERS
-// ===============================
+// ======================================================
+// REVIEW HISTORY HTML
+// ======================================================
+
+function reviewHTML(
+    answers,
+    personName
+) {
+
+    return (answers || [])
+        .map(
+            (answer, index) => {
+
+
+                // TEXT
+
+                if (!answer.is_scored) {
+
+                    return `
+
+                        <div
+                            class="quiz-review-card review-text"
+                        >
+
+                            <div
+                                class="quiz-review-number"
+                            >
+
+                                Question ${index + 1}
+
+                            </div>
+
+
+                            <h3>
+
+                                ${qEsc(
+                                    answer.question_text
+                                )}
+
+                            </h3>
+
+
+                            <p
+                                class="review-not-scored"
+                            >
+
+                                ✍️ Text —
+                                Not scored
+
+                            </p>
+
+
+                            <p>
+
+                                <strong>
+
+                                    ${qEsc(
+                                        personName ||
+                                        "Your"
+                                    )} answer:
+
+                                </strong>
+
+                                <br>
+
+                                ${qEsc(
+                                    answer.user_answer ||
+                                    "-"
+                                )}
+
+                            </p>
+
+                        </div>
+
+                    `;
+
+                }
+
+
+                // OBJECTIVE
+
+                return `
+
+                    <div
+                        class="
+                            quiz-review-card
+                            ${
+                                answer.is_correct
+                                    ? "review-correct"
+                                    : "review-wrong"
+                            }
+                        "
+                    >
+
+                        <div
+                            class="quiz-review-number"
+                        >
+
+                            Question ${index + 1}
+
+                        </div>
+
+
+                        <h3>
+
+                            ${qEsc(
+                                answer.question_text
+                            )}
+
+                        </h3>
+
+
+                        <p>
+
+                            <strong>
+
+                                Status:
+
+                            </strong>
+
+                            ${
+                                answer.is_correct
+                                    ? "✅ Correct"
+                                    : "❌ Incorrect"
+                            }
+
+                        </p>
+
+
+                        <p>
+
+                            <strong>
+
+                                ${qEsc(
+                                    personName ||
+                                    "Your"
+                                )} answer:
+
+                            </strong>
+
+                            <br>
+
+                            ${qEsc(
+                                answer.user_answer ||
+                                "-"
+                            )}
+
+                        </p>
+
+
+                        ${
+                            answer.is_correct
+                                ? ""
+                                : `
+                                    <p>
+
+                                        <strong>
+
+                                            Correct answer:
+
+                                        </strong>
+
+                                        <br>
+
+                                        ${qEsc(
+                                            answer.correct_answer ||
+                                            "-"
+                                        )}
+
+                                    </p>
+                                `
+                        }
+
+                    </div>
+
+                `;
+
+            }
+        )
+        .join("");
+
+}
+
+
+// ======================================================
+// REVIEW CURRENT QUIZ
+// ======================================================
+
 function showQuizReview() {
 
     const quizContent =
-        document.getElementById("quizContent");
+        document.getElementById(
+            "quizContent"
+        );
 
-    if (!quizContent) return;
 
-    let reviewHTML = "";
+    if (!quizContent) {
+        return;
+    }
 
-    currentQuizQuestions.forEach(
-        (question, index) => {
-
-            const result =
-                currentQuizAnswers[index];
-
-            if (!result) return;
-
-            const statusClass =
-                result.correct
-                    ? "review-correct"
-                    : "review-wrong";
-
-            const statusText =
-                result.correct
-                    ? "✅ Correct"
-                    : "❌ Incorrect";
-
-            reviewHTML += `
-                <div class="quiz-review-card ${statusClass}">
-
-                    <div class="quiz-review-number">
-                        Question ${index + 1}
-                    </div>
-
-                    <h3>
-                        ${escapeHTML(
-                            question.question || ""
-                        )}
-                    </h3>
-
-                    <p>
-                        <strong>Status:</strong>
-                        ${statusText}
-                    </p>
-
-                    <p>
-                        <strong>Your answer:</strong><br>
-                        ${escapeHTML(
-                            result.userAnswer || "-"
-                        )}
-                    </p>
-
-                    <p>
-                        <strong>Correct answer:</strong><br>
-                        ${escapeHTML(
-                            result.correctAnswer || "-"
-                        )}
-                    </p>
-
-                </div>
-            `;
-        }
-    );
 
     quizContent.innerHTML = `
+
         <div class="quiz-intro">
 
             <button
@@ -7092,34 +8135,689 @@ function showQuizReview() {
                 class="quiz-back-btn"
                 onclick="showQuizResult()"
             >
+
                 ← Back to Result
+
             </button>
 
-            <h2>📖 Review Answers</h2>
 
-            <p>Here's how you did! 💕</p>
+            <h2>
+
+                📖 Review Answers
+
+            </h2>
+
+
+            <p>
+
+                Here's how you did! 💕
+
+            </p>
+
 
             <div class="quiz-review-list">
-                ${reviewHTML}
+
+                ${
+                    currentQuizQuestions
+                        .map(
+                            (question, index) => {
+
+                                const answer =
+                                    currentQuizAnswers[
+                                        index
+                                    ];
+
+
+                                if (!answer) {
+                                    return "";
+                                }
+
+
+                                if (
+                                    answer.scored
+                                ) {
+
+                                    return `
+
+                                        <div
+                                            class="
+                                                quiz-review-card
+                                                ${
+                                                    answer.correct
+                                                        ? "review-correct"
+                                                        : "review-wrong"
+                                                }
+                                            "
+                                        >
+
+                                            <div
+                                                class="quiz-review-number"
+                                            >
+
+                                                Question
+                                                ${index + 1}
+
+                                            </div>
+
+
+                                            <h3>
+
+                                                ${qEsc(
+                                                    question.question
+                                                )}
+
+                                            </h3>
+
+
+                                            <p>
+
+                                                <strong>
+
+                                                    Status:
+
+                                                </strong>
+
+                                                ${
+                                                    answer.correct
+                                                        ? "✅ Correct"
+                                                        : "❌ Incorrect"
+                                                }
+
+                                            </p>
+
+
+                                            <p>
+
+                                                <strong>
+
+                                                    Your answer:
+
+                                                </strong>
+
+                                                <br>
+
+                                                ${qEsc(
+                                                    answer.userAnswer ||
+                                                    "-"
+                                                )}
+
+                                            </p>
+
+
+                                            ${
+                                                answer.correct
+                                                    ? ""
+                                                    : `
+                                                        <p>
+
+                                                            <strong>
+
+                                                                Correct answer:
+
+                                                            </strong>
+
+                                                            <br>
+
+                                                            ${qEsc(
+                                                                answer.correctAnswer ||
+                                                                "-"
+                                                            )}
+
+                                                        </p>
+                                                    `
+                                            }
+
+                                        </div>
+
+                                    `;
+
+                                }
+
+
+                                return `
+
+                                    <div
+                                        class="
+                                            quiz-review-card
+                                            review-text
+                                        "
+                                    >
+
+                                        <div
+                                            class="quiz-review-number"
+                                        >
+
+                                            Question
+                                            ${index + 1}
+
+                                        </div>
+
+
+                                        <h3>
+
+                                            ${qEsc(
+                                                question.question
+                                            )}
+
+                                        </h3>
+
+
+                                        <p
+                                            class="review-not-scored"
+                                        >
+
+                                            ✍️ Text —
+                                            Not scored
+
+                                        </p>
+
+
+                                        <p>
+
+                                            <strong>
+
+                                                Your answer:
+
+                                            </strong>
+
+                                            <br>
+
+                                            ${qEsc(
+                                                answer.userAnswer ||
+                                                "-"
+                                            )}
+
+                                        </p>
+
+                                    </div>
+
+                                `;
+
+                            }
+                        )
+                        .join("")
+
+                }
+
             </div>
 
         </div>
+
     `;
+
 }
 
 
-// ===============================
-// RESTART QUIZ
-// ===============================
+// ======================================================
+// QUIZ HISTORY
+// ======================================================
+
+async function showQuizHistory() {
+
+    const quizContent =
+        document.getElementById(
+            "quizContent"
+        );
+
+
+    if (
+        !quizContent ||
+        !currentUser
+    ) {
+
+        return;
+
+    }
+
+
+    quizContent.innerHTML = `
+
+        <div class="quiz-loading">
+
+            Loading Quiz History... 💕
+
+        </div>
+
+    `;
+
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("quiz_attempts")
+        .select("*")
+        .or(
+            `user_id.eq.${currentUser.id},partner_id.eq.${currentUser.id}`
+        )
+        .order(
+            "created_at",
+            {
+                ascending: false
+            }
+        );
+
+
+    if (error) {
+
+        quizContent.innerHTML = `
+
+            <div class="quiz-error">
+
+                ❌ ${qEsc(error.message)}
+
+                <br><br>
+
+                <button
+                    type="button"
+                    class="quiz-back-btn"
+                    onclick="showQuizHome()"
+                >
+
+                    ← Quiz Home
+
+                </button>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    if (!data?.length) {
+
+        quizContent.innerHTML = `
+
+            <div class="quiz-history-empty">
+
+                <div class="quiz-history-empty-icon">
+
+                    📖💕
+
+                </div>
+
+
+                <h2>
+
+                    No Quiz History Yet
+
+                </h2>
+
+
+                <p>
+
+                    Complete a quiz first
+                    to see your quiz history here ♡
+
+                </p>
+
+
+                <button
+                    type="button"
+                    class="quiz-back-btn"
+                    onclick="showQuizHome()"
+                >
+
+                    ← Quiz Home
+
+                </button>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    quizContent.innerHTML = `
+
+        <div class="quiz-history-container">
+
+            <div class="quiz-history-header">
+
+                <h2>
+
+                    📖 Quiz History
+
+                </h2>
+
+
+                <p>
+
+                    Both of you can view
+                    completed quizzes here ♡
+
+                </p>
+
+            </div>
+
+
+            <div class="quiz-history-list">
+
+                ${
+                    data
+                        .map(
+                            attempt => `
+
+                                <div
+                                    class="quiz-history-card"
+                                >
+
+                                    <div
+                                        class="quiz-history-info"
+                                    >
+
+                                        <h3>
+
+                                            💕
+                                            ${qEsc(
+                                                USER_NAMES[
+                                                    attempt.user_id
+                                                ] ||
+                                                "Unknown"
+                                            )}
+
+                                            answered about
+
+                                            ${qEsc(
+                                                USER_NAMES[
+                                                    attempt.partner_id
+                                                ] ||
+                                                "Unknown"
+                                            )}
+
+                                        </h3>
+
+
+                                        <div
+                                            class="quiz-history-score"
+                                        >
+
+                                            ${attempt.score}
+                                            /
+                                            ${attempt.total}
+
+                                        </div>
+
+
+                                        <div
+                                            class="quiz-history-date"
+                                        >
+
+                                            📅
+                                            ${qEsc(
+                                                formatNoteDate(
+                                                    attempt.created_at
+                                                )
+                                            )}
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <button
+                                        type="button"
+                                        class="quiz-history-view-btn"
+                                        onclick="viewQuizAttempt('${qEsc(
+                                            attempt.id
+                                        )}')"
+                                    >
+
+                                        👀 View Answers
+
+                                    </button>
+
+                                </div>
+
+                            `
+                        )
+                        .join("")
+
+                }
+
+            </div>
+
+
+            <button
+                type="button"
+                class="quiz-back-btn"
+                onclick="showQuizHome()"
+            >
+
+                ← Quiz Home
+
+            </button>
+
+        </div>
+
+    `;
+
+}
+
+
+// ======================================================
+// VIEW SAVED QUIZ ATTEMPT
+// ======================================================
+
+async function viewQuizAttempt(id) {
+
+    const quizContent =
+        document.getElementById(
+            "quizContent"
+        );
+
+
+    if (
+        !quizContent ||
+        !currentUser
+    ) {
+
+        return;
+
+    }
+
+
+    quizContent.innerHTML = `
+
+        <div class="quiz-loading">
+
+            Loading saved answers... 💕
+
+        </div>
+
+    `;
+
+
+    const {
+        data: attempt,
+        error: attemptError
+    } = await supabaseClient
+        .from("quiz_attempts")
+        .select("*")
+        .eq("id", id)
+        .single();
+
+
+    if (attemptError) {
+
+        quizContent.innerHTML = `
+
+            <div class="quiz-error">
+
+                ❌ ${qEsc(
+                    attemptError.message
+                )}
+
+                <br><br>
+
+                <button
+                    type="button"
+                    class="quiz-back-btn"
+                    onclick="showQuizHistory()"
+                >
+
+                    ← Quiz History
+
+                </button>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    const {
+        data: answers,
+        error: answerError
+    } = await supabaseClient
+        .from("quiz_attempt_answers")
+        .select("*")
+        .eq(
+            "attempt_id",
+            id
+        )
+        .order(
+            "id",
+            {
+                ascending: true
+            }
+        );
+
+
+    if (answerError) {
+
+        quizContent.innerHTML = `
+
+            <div class="quiz-error">
+
+                ❌ ${qEsc(
+                    answerError.message
+                )}
+
+                <br><br>
+
+                <button
+                    type="button"
+                    class="quiz-back-btn"
+                    onclick="showQuizHistory()"
+                >
+
+                    ← Quiz History
+
+                </button>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    const who =
+        USER_NAMES[
+            attempt.user_id
+        ] || "Unknown";
+
+
+    const about =
+        USER_NAMES[
+            attempt.partner_id
+        ] || "Unknown";
+
+
+    quizContent.innerHTML = `
+
+        <div class="quiz-intro">
+
+            <button
+                type="button"
+                class="quiz-back-btn"
+                onclick="showQuizHistory()"
+            >
+
+                ← Quiz History
+
+            </button>
+
+
+            <h2>
+
+                📖 Quiz Review
+
+            </h2>
+
+
+            <p>
+
+                ${qEsc(who)}
+                answered about
+                ${qEsc(about)} 💕
+
+            </p>
+
+
+            <div class="quiz-score">
+
+                ${attempt.score}
+                /
+                ${attempt.total}
+
+            </div>
+
+
+            <div class="quiz-review-list">
+
+                ${reviewHTML(
+                    answers,
+                    who
+                )}
+
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+
+// ======================================================
+// TRY AGAIN
+// ======================================================
+
 async function restartQuiz() {
 
     currentQuizIndex = 0;
+
     currentQuizScore = 0;
+
+    currentQuizScoredTotal = 0;
+
     currentQuizAnswers = {};
+
     currentQuizQuestions = [];
 
+    currentQuizAttemptId = null;
+
+
+    // This loads a NEW random set
+
     await startQuiz();
+
 }
+
+
 /* ======================================================
    MOBILE HAMBURGER MENU
 ====================================================== */
