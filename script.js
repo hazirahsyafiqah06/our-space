@@ -2646,95 +2646,55 @@ ${actions}
 async function sendSecretMessage() {
 
     if (!currentUser) {
-
         await getCurrentUser();
-
     }
 
     if (!currentUser) {
-
-        alert(
-            "Please login first ❤️"
-        );
-
+        alert("Please login first ❤️");
         return;
     }
 
     const messageInput =
-        document.getElementById(
-            "secretMessage"
-        );
+        document.getElementById("secretMessage");
 
     const sendButton =
-        document.getElementById(
-            "sendMessageBtn"
-        );
+        document.getElementById("sendMessageBtn");
 
     const message =
         messageInput.value.trim();
 
     if (!message) {
-
-        alert(
-            "Please write a message first ❤️"
-        );
-
+        alert("Please write a message first ❤️");
         return;
     }
 
     let receiverId;
 
-    if (
-        currentUser.id ===
-        HAZIRAH_ID
-    ) {
+    if (currentUser.id === HAZIRAH_ID) {
+        receiverId = ZULKARNAIN_ID;
 
-        receiverId =
-            ZULKARNAIN_ID;
-
-    } else if (
-        currentUser.id ===
-        ZULKARNAIN_ID
-    ) {
-
-        receiverId =
-            HAZIRAH_ID;
+    } else if (currentUser.id === ZULKARNAIN_ID) {
+        receiverId = HAZIRAH_ID;
 
     } else {
-
-        alert(
-            "This account is not part of Our Space ❤️"
-        );
-
+        alert("This account is not part of Our Space ❤️");
         return;
     }
 
-    sendButton.disabled =
-        true;
+    sendButton.disabled = true;
+    sendButton.textContent = "Sending... 💕";
 
-    sendButton.textContent =
-        "Sending... 💕";
-
-    const {
-        error
-    } =
+    const { error } =
         await supabaseClient
-           .from("secret_message")
-.insert([
-    {
-        sender_id:
-            currentUser.id,
-
-        receiver_id:
-            receiverId,
-
-        message:
-            message,
-
-        seen:
-            false
-    }
-]);
+            .from("secret_message")
+            .insert([
+                {
+                    sender_id: currentUser.id,
+                    receiver_id: receiverId,
+                    message: message,
+                    seen: false
+                }
+            ]);
 
     if (error) {
 
@@ -2748,35 +2708,34 @@ async function sendSecretMessage() {
             error.message
         );
 
-        sendButton.disabled =
-            false;
-
-        sendButton.textContent =
-            "💌 Send Message";
+        sendButton.disabled = false;
+        sendButton.textContent = "💌 Send Message";
 
         return;
     }
 
-    messageInput.value =
-        "";
+    messageInput.value = "";
 
-    sendButton.disabled =
-        false;
+    sendButton.disabled = false;
+    sendButton.textContent = "💌 Send Message";
 
-    sendButton.textContent =
-        "💌 Send Message";
 
-     await loadSecretMessages();
+    // ==================================================
+    // EMAIL NOTIFICATION
+    // ==================================================
 
-}
-
-        await sendEmailNotification(
+    await sendEmailNotification(
         "New Secret Message 💌",
         "💌 New Secret Message",
         "You have received a new secret message in Our Space.<br><br>" +
         "<strong>Message:</strong><br>" +
         escapeHTML(message)
     );
+
+
+    // ==================================================
+    // FIREBASE NOTIFICATION
+    // ==================================================
 
     await addNotification(
         receiverId,
@@ -2785,20 +2744,14 @@ async function sendSecretMessage() {
         "secret_message"
     );
 
+
+    // ==================================================
+    // REFRESH MESSAGES
+    // ==================================================
+
     await loadSecretMessages();
 
 }
-
-// ======================================================
-// FIREBASE NOTIFICATION
-// ======================================================
-
-await addNotification(
-    receiverId,
-    "💌 New Secret Message",
-    `${USER_NAMES[currentUser.id] || "Your love"} sent you a secret message ❤️`,
-    "secret_message"
-);
 
 // ======================================================
 // EDIT SECRET MESSAGE
