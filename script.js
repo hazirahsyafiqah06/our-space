@@ -5481,6 +5481,158 @@ async function startApp() {
 
     // FIREBASE NOTIFICATIONS
     await loadFirebaseNotifications();
+    function updateNotificationBadge(unreadCount) {
+
+    const badge = document.getElementById("notificationBadge");
+    const count = document.getElementById("notificationCount");
+
+    if (!badge) return;
+
+    if (unreadCount > 0) {
+        badge.textContent = unreadCount;
+        badge.style.display = "flex";
+
+        if (count) {
+            count.textContent =
+                unreadCount + " unread notification" +
+                (unreadCount > 1 ? "s" : "");
+        }
+    } else {
+        badge.style.display = "none";
+
+        if (count) {
+            count.textContent = "No unread notifications";
+        }
+    }
+}
+
+
+function renderFirebaseNotifications(notifications) {
+
+    const body =
+        document.getElementById("notificationBody");
+
+    if (!body) return;
+
+    if (!notifications.length) {
+        body.innerHTML = `
+            <div class="notification-empty">
+                No new notifications ❤️
+            </div>
+        `;
+        return;
+    }
+
+    body.innerHTML = notifications.map(notification => `
+        <div
+            class="notification-item ${notification.read === false ? "unread" : ""}"
+            onclick="markFirebaseNotificationRead('${notification.id}')"
+        >
+            <div class="notification-item-title">
+                ${notification.title || "Notification"}
+            </div>
+
+            <div class="notification-item-message">
+                ${notification.message || ""}
+            </div>
+        </div>
+    `).join("");
+}
+
+
+function setupFirebaseNotificationRealtime() {
+
+    if (!currentUser) return;
+    if (!firestoreDB || !firebaseFns) return;
+
+    const notificationRef =
+        firebaseFns.collection(
+            firestoreDB,
+            "notifications"
+        );
+
+    firebaseFns.onSnapshot(
+        notificationRef,
+        snapshot => {
+
+            const notifications = [];
+
+            snapshot.forEach(doc => {
+
+                const data = doc.data();
+
+                if (
+                    data.recipientId === currentUser.id
+                ) {
+                    notifications.push({
+                        id: doc.id,
+                        ...data
+                    });
+                }
+            });
+
+            const unread =
+                notifications.filter(
+                    n => n.read === false
+                );
+
+            updateNotificationBadge(
+                unread.length
+            );
+
+            renderFirebaseNotifications(
+                notifications
+            );
+        }
+    );
+}
+
+
+async function markFirebaseNotificationRead(notificationId) {
+
+    try {
+
+        const notificationDoc =
+            firebaseFns.doc(
+                firestoreDB,
+                "notifications",
+                notificationId
+            );
+
+        await firebaseFns.updateDoc(
+            notificationDoc,
+            {
+                read: true
+            }
+        );
+
+        await loadFirebaseNotifications();
+
+    } catch (error) {
+
+        console.error(
+            "Mark notification read error:",
+            error
+        );
+    }
+}
+
+
+function toggleNotification(event) {
+
+    if (event) {
+        event.stopPropagation();
+    }
+
+    const dropdown =
+        document.getElementById(
+            "notificationDropdown"
+        );
+
+    if (!dropdown) return;
+
+    dropdown.classList.toggle("show");
+}
     setupFirebaseNotificationRealtime();
 
     setupSecretMessageRealtime();
