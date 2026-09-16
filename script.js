@@ -505,10 +505,6 @@ function renderFirebaseNotifications(notifications) {
 
                 <strong>No new notifications</strong>
 
-                <span>
-                    You're all caught up ✨
-                </span>
-
             </div>
         `;
 
