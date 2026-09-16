@@ -7751,3 +7751,361 @@ html {
     .mark-all-btn { font-size: 9px !important; padding: 7px 9px !important; }
     .notification-item { padding: 15px; }
 }
+
+/* ======================================================
+   NOTIFICATION - FINAL PINK STYLE
+====================================================== */
+
+/* 🔔 MAIN BELL */
+.notification-button {
+    background: #ffffff !important;
+    border: none !important;
+    box-shadow: 0 8px 25px rgba(220, 50, 110, 0.12) !important;
+}
+
+.notification-bell {
+    filter: none;
+    font-size: 0 !important;
+}
+
+.notification-bell::before {
+    content: "🔔";
+    font-size: 27px;
+    filter: hue-rotate(315deg) saturate(1.8);
+}
+
+
+/* 🔴 BADGE */
+.notification-badge {
+    background: #ec2970 !important;
+    border: 3px solid #ffffff !important;
+    color: #ffffff !important;
+    font-size: 12px !important;
+    font-weight: 800 !important;
+    min-width: 25px !important;
+    height: 25px !important;
+}
+
+
+/* =========================
+   DROPDOWN
+========================= */
+
+.notification-dropdown {
+    background: #ffffff !important;
+
+    border: none !important;
+
+    border-radius: 25px !important;
+
+    box-shadow:
+        0 20px 60px rgba(40, 25, 60, 0.16),
+        0 5px 20px rgba(236, 41, 112, 0.08) !important;
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+.notification-header {
+    background: #ffffff !important;
+
+    border-bottom: 1px solid #eeeeee !important;
+
+    padding: 22px 25px !important;
+}
+
+.notification-header-icon {
+    width: 58px !important;
+    height: 58px !important;
+
+    border-radius: 20px !important;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ffe4ef,
+            #f9e8ff
+        ) !important;
+
+    font-size: 0 !important;
+}
+
+.notification-header-icon::before {
+    content: "🔔";
+
+    font-size: 27px;
+
+    filter:
+        hue-rotate(315deg)
+        saturate(1.8);
+}
+
+.notification-header h4 {
+    color: #18254d !important;
+
+    font-size: 21px !important;
+
+    font-weight: 800 !important;
+}
+
+.notification-header small {
+    color: #68708a !important;
+
+    font-size: 13px !important;
+}
+
+
+/* =========================
+   MARK ALL BUTTON
+========================= */
+
+.mark-all-btn {
+    background:
+        linear-gradient(
+            135deg,
+            #fff0f6,
+            #fff5fa
+        ) !important;
+
+    color: #e92c70 !important;
+
+    border: none !important;
+
+    border-radius: 30px !important;
+
+    padding: 12px 20px !important;
+
+    font-size: 13px !important;
+
+    font-weight: 700 !important;
+}
+
+
+/* =========================
+   NOTIFICATION ITEM
+========================= */
+
+.notification-item {
+    background: #ffffff !important;
+
+    border-bottom: 1px solid #eeeeee !important;
+
+    padding: 18px 22px !important;
+
+    gap: 16px !important;
+}
+
+.notification-item:hover {
+    background: #fff9fb !important;
+}
+
+
+/* =========================
+   UNREAD ITEM
+========================= */
+
+.notification-item.unread {
+    background:
+        linear-gradient(
+            90deg,
+            #fff3f7,
+            #fff8fb
+        ) !important;
+
+    border-radius: 15px !important;
+
+    margin: 8px 10px !important;
+
+    padding: 18px 12px !important;
+}
+
+
+/* =========================
+   ICON BOX
+========================= */
+
+.notification-item-icon {
+    width: 58px !important;
+    height: 58px !important;
+
+    border-radius: 18px !important;
+
+    font-size: 28px !important;
+
+    flex-shrink: 0;
+}
+
+
+/* 📸 GALLERY */
+.notification-item-icon.gallery {
+    background:
+        linear-gradient(
+            135deg,
+            #ffe7f0,
+            #ffdce9
+        ) !important;
+}
+
+
+/* 📝 NOTE */
+.notification-item-icon.note {
+    background:
+        linear-gradient(
+            135deg,
+            #dcfaec,
+            #e5fff4
+        ) !important;
+}
+
+
+/* 💌 SECRET */
+.notification-item-icon.secret {
+    background:
+        linear-gradient(
+            135deg,
+            #eee1ff,
+            #f5eaff
+        ) !important;
+}
+
+
+/* 🎉 TEST */
+.notification-item-icon.general {
+    background:
+        linear-gradient(
+            135deg,
+            #e2f0ff,
+            #eaf5ff
+        ) !important;
+}
+
+
+/* 🎂 BIRTHDAY */
+.notification-item-icon.birthday {
+    background:
+        linear-gradient(
+            135deg,
+            #fff0d8,
+            #ffe6ee
+        ) !important;
+}
+
+
+/* =========================
+   TEXT
+========================= */
+
+.notification-item-title {
+    color: #18254d !important;
+
+    font-size: 16px !important;
+
+    font-weight: 800 !important;
+
+    margin-bottom: 5px !important;
+}
+
+.notification-item-message {
+    color: #59647e !important;
+
+    font-size: 14px !important;
+
+    line-height: 1.5 !important;
+}
+
+.notification-item-time {
+    color: #7e879c !important;
+
+    font-size: 12px !important;
+
+    margin-top: 5px !important;
+}
+
+
+/* =========================
+   UNREAD DOT
+========================= */
+
+.notification-unread-dot {
+    width: 11px !important;
+    height: 11px !important;
+
+    right: 20px !important;
+    top: 28px !important;
+
+    background: #ec2970 !important;
+
+    box-shadow:
+        0 0 0 4px rgba(236,41,112,0.10) !important;
+}
+
+
+/* =========================
+   FOOTER
+========================= */
+
+.notification-footer {
+    background: #ffffff !important;
+
+    border-top: none !important;
+
+    padding: 12px 15px 18px !important;
+}
+
+.notification-footer button {
+    background:
+        linear-gradient(
+            135deg,
+            #fff0f6,
+            #fff6fa
+        ) !important;
+
+    color: #e92c70 !important;
+
+    border: none !important;
+
+    border-radius: 18px !important;
+
+    font-size: 14px !important;
+
+    font-weight: 700 !important;
+
+    padding: 15px !important;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 600px) {
+
+    .notification-dropdown {
+        border-radius: 22px !important;
+    }
+
+    .notification-header {
+        padding: 18px !important;
+    }
+
+    .notification-item {
+        padding: 15px !important;
+    }
+
+    .notification-item-icon {
+        width: 48px !important;
+        height: 48px !important;
+
+        font-size: 23px !important;
+    }
+
+    .notification-item-title {
+        font-size: 14px !important;
+    }
+
+    .notification-item-message {
+        font-size: 12px !important;
+    }
+}
