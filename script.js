@@ -407,7 +407,7 @@ function renderFirebaseNotifications(notifications) {
 
                 <div
                     class="notification-item ${unread ? "unread" : ""}"
-                    onclick="markFirebaseNotificationRead('${notification.id}')"
+                    onclick="openFirebaseNotification('${notification.id}', '${notification.type}')"
                 >
 
                     <div
@@ -449,6 +449,164 @@ function renderFirebaseNotifications(notifications) {
             `;
 
         }).join("");
+}
+
+// ======================================================
+// OPEN NOTIFICATION
+// MARK AS READ + GO TO SECTION
+// ======================================================
+
+async function openFirebaseNotification(
+    notificationId,
+    notificationType
+) {
+
+    try {
+
+        // ----------------------------------------------
+        // 1. MARK NOTIFICATION AS READ
+        // ----------------------------------------------
+
+        if (
+            currentUser &&
+            firestoreDB &&
+            firebaseFns
+        ) {
+
+            await firebaseFns.updateDoc(
+                firebaseFns.doc(
+                    firestoreDB,
+                    "notifications",
+                    notificationId
+                ),
+                {
+                    read: true
+                }
+            );
+
+        }
+
+
+        // ----------------------------------------------
+        // 2. CLOSE NOTIFICATION DROPDOWN
+        // ----------------------------------------------
+
+        const dropdown =
+            document.getElementById(
+                "notificationDropdown"
+            );
+
+        if (dropdown) {
+
+            dropdown.classList.remove(
+                "show"
+            );
+
+        }
+
+
+        // ----------------------------------------------
+        // 3. GO TO CORRECT SECTION
+        // ----------------------------------------------
+
+        let sectionId = "";
+
+
+        switch (notificationType) {
+
+            case "note":
+
+                sectionId =
+                    "notes-section";
+
+                break;
+
+
+            case "gallery":
+
+                sectionId =
+                    "gallery-section";
+
+                break;
+
+
+            case "calendar":
+
+                sectionId =
+                    "calendar-section";
+
+                break;
+
+
+            case "secret_message":
+
+                sectionId =
+                    "messages-section";
+
+                break;
+
+
+            case "bucket":
+
+                sectionId =
+                    "bucket-section";
+
+                break;
+
+
+            case "song":
+
+                sectionId =
+                    "song-section";
+
+                break;
+
+
+            case "quiz":
+
+                sectionId =
+                    "quiz-section";
+
+                break;
+
+
+            default:
+
+                sectionId = "";
+
+                break;
+        }
+
+
+        // ----------------------------------------------
+        // 4. OPEN SECTION
+        // ----------------------------------------------
+
+        if (sectionId) {
+
+            showSection(
+                sectionId
+            );
+
+        }
+
+
+        // ----------------------------------------------
+        // 5. REFRESH NOTIFICATION COUNT
+        // ----------------------------------------------
+
+        await loadFirebaseNotifications();
+
+
+    } catch (error) {
+
+        console.error(
+            "Open notification error:",
+            error
+        );
+
+    }
+
 }
 
 
