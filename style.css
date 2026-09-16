@@ -7752,3 +7752,137 @@ html {
     .notification-item { padding: 15px; }
 }
 
+/* ======================================================
+   MODERN BLUE NOTIFICATION BELL
+====================================================== */
+
+.notification-bell {
+    width: 30px;
+    height: 30px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.notification-bell svg {
+    width: 29px;
+    height: 29px;
+
+    fill: none;
+    stroke: #4b8ed8;
+
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+
+    transition:
+        transform 0.25s ease,
+        stroke 0.25s ease;
+}
+
+.notification-button:hover .notification-bell svg {
+    stroke: #3478c5;
+
+    transform:
+        rotate(-8deg)
+        scale(1.08);
+}
+
+
+/* ======================================================
+   HEADER BLUE BELL
+====================================================== */
+
+.notification-header-icon {
+    width: 58px !important;
+    height: 58px !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    border-radius: 18px !important;
+
+    background:
+        linear-gradient(
+            135deg,
+            #e5f1ff,
+            #eef7ff
+        ) !important;
+
+    color: #4b8ed8 !important;
+
+    box-shadow:
+        0 6px 18px rgba(75, 142, 216, 0.10) !important;
+}
+
+.notification-header-icon svg {
+    width: 30px;
+    height: 30px;
+
+    fill: none;
+
+    stroke: #4b8ed8;
+
+    stroke-width: 1.8;
+
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+
+/* ======================================================
+   BLUE NOTIFICATION COUNT
+====================================================== */
+
+.notification-header small {
+    color: #72809a !important;
+}
+
+
+/* ======================================================
+   BELL BUTTON
+====================================================== */
+
+.notification-button {
+    background: rgba(255,255,255,0.96) !important;
+
+    border: 1px solid rgba(75,142,216,0.08) !important;
+
+    box-shadow:
+        0 10px 30px rgba(55, 80, 120, 0.13) !important;
+}
+
+.notification-button:hover {
+    box-shadow:
+        0 14px 35px rgba(55, 80, 120, 0.18) !important;
+}
+
+
+/* ======================================================
+   BADGE - PINK
+====================================================== */
+
+.notification-badge {
+    background: #ec4b83 !important;
+
+    color: white !important;
+
+    border: 3px solid white !important;
+
+    box-shadow:
+        0 4px 12px rgba(236,75,131,0.30) !important;
+}
+
+
+/* ======================================================
+   MODERN BLUE UNREAD DOT
+====================================================== */
+
+.notification-unread-dot {
+    background: #4b8ed8 !important;
+
+    box-shadow:
+        0 0 0 4px rgba(75,142,216,0.10) !important;
+}
