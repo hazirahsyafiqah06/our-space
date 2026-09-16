@@ -210,47 +210,6 @@ async function loadFirebaseNotifications() {
 
 }
 
-// ======================================================
-// NOTIFICATION BADGE
-// ======================================================
-
-function updateNotificationBadge(unreadCount) {
-
-    const badge =
-        document.getElementById("notificationBadge");
-
-    const count =
-        document.getElementById("notificationCount");
-
-    if (!badge) return;
-
-    if (unreadCount > 0) {
-
-        badge.textContent =
-            unreadCount > 99 ? "99+" : unreadCount;
-
-        badge.style.display = "flex";
-
-        if (count) {
-            count.textContent =
-                unreadCount +
-                (unreadCount === 1
-                    ? " unread notification"
-                    : " unread notifications");
-        }
-
-    } else {
-
-        badge.textContent = "0";
-        badge.style.display = "none";
-
-        if (count) {
-            count.textContent =
-                "No unread notifications";
-        }
-    }
-}
-
 
 // ======================================================
 // RENDER NOTIFICATIONS
