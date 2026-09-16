@@ -7886,3 +7886,29 @@ html {
     box-shadow:
         0 0 0 4px rgba(75,142,216,0.10) !important;
 }
+
+/* ======================================================
+   MOBILE NOTIFICATION FIX
+====================================================== */
+
+@media (max-width: 600px) {
+
+    .notification-container {
+        z-index: 999999 !important;
+    }
+
+    .notification-dropdown {
+        z-index: 1000000 !important;
+        pointer-events: auto !important;
+        touch-action: auto !important;
+    }
+
+    .notification-item {
+        position: relative !important;
+        z-index: 1000001 !important;
+        cursor: pointer !important;
+        pointer-events: auto !important;
+        touch-action: manipulation !important;
+    }
+
+}
