@@ -1040,19 +1040,36 @@ async function logout() {
     const firestoreDB = getFirestore(firebaseApp);
 
     // Make Firebase available to script.js
-   window.firebaseApp = firebaseApp;
-window.firestoreDB = firestoreDB;
+   window.firebaseApp =
+    firebaseApp;
+
+window.firestoreDB =
+    firestoreDB;
 
 window.firebaseFns = {
+
     collection,
+
     addDoc,
+
     serverTimestamp
+
 };
 
-console.log("Firebase connected successfully ❤️");
+console.log(
+    "Firebase connected successfully ❤️"
+);
+
+
+// Load script.js AFTER Firebase is ready
+const script =
+    document.createElement("script");
+
+script.src = "./script.js";
+
+document.body.appendChild(script);
 </script>
 
-<script src="./script.js"></script>
 
 </body>
 </html>
