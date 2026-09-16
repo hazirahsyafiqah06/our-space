@@ -2713,12 +2713,12 @@ async function sendSecretMessage() {
 
         return;
     }
+    
 
     messageInput.value = "";
 
     sendButton.disabled = false;
     sendButton.textContent = "💌 Send Message";
-
 
     // ==================================================
     // EMAIL NOTIFICATION
