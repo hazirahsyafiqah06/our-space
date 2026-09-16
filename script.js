@@ -120,6 +120,46 @@ async function addNotification(
 }
 
 // ======================================================
+// UPDATE NOTIFICATION BADGE
+// ======================================================
+
+function updateNotificationBadge(count) {
+
+    const badge =
+        document.getElementById("notificationBadge");
+
+    const notificationCount =
+        document.getElementById("notificationCount");
+
+    if (!badge) return;
+
+    if (count > 0) {
+
+        badge.textContent =
+            count > 99 ? "99+" : count;
+
+        badge.style.display =
+            "flex";
+
+    } else {
+
+        badge.textContent =
+            "0";
+
+        badge.style.display =
+            "none";
+    }
+
+    if (notificationCount) {
+
+        notificationCount.textContent =
+            count > 0
+                ? `${count} unread notification${count > 1 ? "s" : ""}`
+                : "No unread notifications";
+    }
+}
+
+// ======================================================
 // LOAD FIREBASE NOTIFICATIONS
 // ======================================================
 
@@ -1931,6 +1971,7 @@ async function addNote() {
             .value
             .trim();
 
+
     if (!title || !content) {
 
         alert(
@@ -1939,6 +1980,21 @@ async function addNote() {
 
         return;
     }
+
+
+    if (!currentUser) {
+
+        alert(
+            "Please login first ❤️"
+        );
+
+        return;
+    }
+
+
+    // ==================================================
+    // SAVE NOTE TO SUPABASE
+    // ==================================================
 
     const {
         error
@@ -1952,6 +2008,7 @@ async function addNote() {
                     user_id: currentUser.id
                 }
             ]);
+
 
     if (error) {
 
@@ -1967,10 +2024,15 @@ async function addNote() {
         return;
     }
 
-    // Clear input
+
+    // ==================================================
+    // CLEAR INPUT
+    // ==================================================
+
     document.getElementById(
         "title"
     ).value = "";
+
 
     document.getElementById(
         "content"
@@ -1978,7 +2040,7 @@ async function addNote() {
 
 
     // ==================================================
-    // GET PARTNER ID
+    // FIREBASE NOTIFICATION
     // ==================================================
 
     const receiverId =
@@ -1986,10 +2048,6 @@ async function addNote() {
             ? ZULKARNAIN_ID
             : HAZIRAH_ID;
 
-
-    // ==================================================
-    // FIREBASE NOTIFICATION
-    // ==================================================
 
     await addNotification(
         receiverId,
@@ -2015,7 +2073,10 @@ async function addNote() {
     );
 
 
-    // Refresh notes
+    // ==================================================
+    // REFRESH NOTES
+    // ==================================================
+
     loadNotes();
 
 }
@@ -2319,9 +2380,8 @@ async function uploadImage() {
             "caption"
         );
 
-    if (!fileInput || !captionInput) {
-        return;
-    }
+
+    if (!fileInput) return;
 
 
     const file =
@@ -2338,11 +2398,7 @@ async function uploadImage() {
     }
 
 
-    if (
-        !file.type.startsWith(
-            "image/"
-        )
-    ) {
+    if (!file.type.startsWith("image/")) {
 
         alert(
             "Please select an image."
@@ -2365,9 +2421,25 @@ async function uploadImage() {
     }
 
 
-    const caption =
-        captionInput.value.trim();
+    if (!currentUser) {
 
+        alert(
+            "Please login first ❤️"
+        );
+
+        return;
+    }
+
+
+    const caption =
+        captionInput
+            ? captionInput.value.trim()
+            : "";
+
+
+    // ==================================================
+    // CREATE FILE NAME
+    // ==================================================
 
     const safeName =
         file.name.replace(
@@ -2383,7 +2455,7 @@ async function uploadImage() {
 
 
     // ==================================================
-    // UPLOAD IMAGE
+    // UPLOAD TO SUPABASE STORAGE
     // ==================================================
 
     const {
@@ -2434,7 +2506,7 @@ async function uploadImage() {
 
 
     // ==================================================
-    // SAVE TO DATABASE
+    // SAVE TO GALLERY DATABASE
     // ==================================================
 
     const {
@@ -2468,19 +2540,8 @@ async function uploadImage() {
     }
 
 
-    // Clear input
-    fileInput.value = "";
-
-    captionInput.value = "";
-
-
-    alert(
-        "Photo added to Our Gallery ❤️"
-    );
-
-
     // ==================================================
-    // GET PARTNER ID
+    // FIREBASE NOTIFICATION
     // ==================================================
 
     const receiverId =
@@ -2489,15 +2550,30 @@ async function uploadImage() {
             : HAZIRAH_ID;
 
 
-    // ==================================================
-    // FIREBASE NOTIFICATION
-    // ==================================================
-
     await addNotification(
         receiverId,
         "📸 New Photo Added",
         `${USER_NAMES[currentUser.id] || "Your love"} added a new photo to Our Gallery${caption ? `: ${escapeHTML(caption)}` : ""}`,
         "gallery"
+    );
+
+
+    // ==================================================
+    // CLEAR INPUT
+    // ==================================================
+
+    fileInput.value = "";
+
+
+    if (captionInput) {
+
+        captionInput.value = "";
+
+    }
+
+
+    alert(
+        "Photo added to Our Gallery ❤️"
     );
 
 
@@ -2518,7 +2594,10 @@ async function uploadImage() {
     );
 
 
-    // Refresh gallery
+    // ==================================================
+    // REFRESH GALLERY
+    // ==================================================
+
     loadGallery();
 
 }
