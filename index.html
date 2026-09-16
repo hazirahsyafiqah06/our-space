@@ -1219,8 +1219,8 @@ async function logout() {
             firebase.initializeApp(firebaseConfig);
         }
 
-        const firestoreDB =
-            firebase.firestore();
+        const db = firebase.firestore();
+window.firestoreDB = db;
 
         window.firebaseApp =
             firebase.app();
