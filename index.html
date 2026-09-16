@@ -1010,19 +1010,13 @@ async function logout() {
 
    <!-- =========================
      FIREBASE
-========================= -->
+========================== -->
 
-<script type="module">
-    import { initializeApp } 
-        from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+<!-- Firebase Compat SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
-    import {
-    getFirestore,
-    collection,
-    addDoc,
-    serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
+<script>
     const firebaseConfig = {
         apiKey: "AIzaSyCJjqBOQlNx5qu2PsauYIZgz2Hh5t4KiYQ",
         authDomain: "our-space-67a1a.firebaseapp.com",
@@ -1033,35 +1027,24 @@ async function logout() {
         measurementId: "G-KKLVZGNZQC"
     };
 
-    // Initialize Firebase
-    const firebaseApp = initializeApp(firebaseConfig);
+    try {
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
 
-    // Initialize Firestore
-    const firestoreDB = getFirestore(firebaseApp);
+        const firestoreDB = firebase.firestore();
 
-    // Make Firebase available to script.js
-   window.firebaseApp =
-    firebaseApp;
+        window.firebaseApp = firebase.app();
+        window.firestoreDB = firestoreDB;
 
-window.firestoreDB =
-    firestoreDB;
-
-window.firebaseFns = {
-
-    collection,
-
-    addDoc,
-
-    serverTimestamp
-
-};
-
-console.log(
-    "Firebase connected successfully ❤️"
-);
-
+        console.log("Firebase connected successfully ❤️");
+    } catch (error) {
+        console.error("Firebase initialization error:", error);
+    }
 </script>
 
+<!-- Main JavaScript -->
 <script src="./script.js"></script>
+
 </body>
 </html>
