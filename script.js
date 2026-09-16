@@ -1931,10 +1931,7 @@ async function addNote() {
             .value
             .trim();
 
-    if (
-        !title ||
-        !content
-    ) {
+    if (!title || !content) {
 
         alert(
             "Please fill in the title and note ❤️"
@@ -1947,23 +1944,21 @@ async function addNote() {
         error
     } =
         await supabaseClient
-           .from("notes")
-.insert([
-    {
-        title:
-            title,
-
-        content:
-            content,
-
-        user_id:
-            currentUser.id
-    }
-]);
+            .from("notes")
+            .insert([
+                {
+                    title: title,
+                    content: content,
+                    user_id: currentUser.id
+                }
+            ]);
 
     if (error) {
 
-        console.error(error);
+        console.error(
+            "Add note error:",
+            error
+        );
 
         alert(
             "Failed to save note."
@@ -1972,26 +1967,56 @@ async function addNote() {
         return;
     }
 
+    // Clear input
     document.getElementById(
         "title"
     ).value = "";
 
-   document.getElementById(
-    "content"
-).value = "";
+    document.getElementById(
+        "content"
+    ).value = "";
 
-await sendEmailNotification(
-    "New Note Added ❤️",
-    "📝 New Note Added",
-    "A new note has been added to Our Space.<br><br>" +
-    "<strong>Title:</strong> " +
-    escapeHTML(title) +
-    "<br>" +
-    "<strong>Note:</strong> " +
-    escapeHTML(content)
-);
 
-loadNotes();  
+    // ==================================================
+    // GET PARTNER ID
+    // ==================================================
+
+    const receiverId =
+        currentUser.id === HAZIRAH_ID
+            ? ZULKARNAIN_ID
+            : HAZIRAH_ID;
+
+
+    // ==================================================
+    // FIREBASE NOTIFICATION
+    // ==================================================
+
+    await addNotification(
+        receiverId,
+        "📝 New Note Added",
+        `${USER_NAMES[currentUser.id] || "Your love"} added a new note: ${escapeHTML(title)}`,
+        "note"
+    );
+
+
+    // ==================================================
+    // EMAIL NOTIFICATION
+    // ==================================================
+
+    await sendEmailNotification(
+        "New Note Added ❤️",
+        "📝 New Note Added",
+        "A new note has been added to Our Space.<br><br>" +
+        "<strong>Title:</strong> " +
+        escapeHTML(title) +
+        "<br>" +
+        "<strong>Note:</strong> " +
+        escapeHTML(content)
+    );
+
+
+    // Refresh notes
+    loadNotes();
 
 }
 
@@ -2294,11 +2319,14 @@ async function uploadImage() {
             "caption"
         );
 
-    if (!fileInput)
+    if (!fileInput || !captionInput) {
         return;
+    }
+
 
     const file =
         fileInput.files[0];
+
 
     if (!file) {
 
@@ -2308,6 +2336,7 @@ async function uploadImage() {
 
         return;
     }
+
 
     if (
         !file.type.startsWith(
@@ -2322,6 +2351,7 @@ async function uploadImage() {
         return;
     }
 
+
     if (
         file.size >
         5 * 1024 * 1024
@@ -2334,20 +2364,27 @@ async function uploadImage() {
         return;
     }
 
+
     const caption =
         captionInput.value.trim();
 
+
     const safeName =
-        file.name
-            .replace(
-                /[^a-zA-Z0-9._-]/g,
-                "_"
-            );
+        file.name.replace(
+            /[^a-zA-Z0-9._-]/g,
+            "_"
+        );
+
 
     const fileName =
         Date.now() +
         "_" +
         safeName;
+
+
+    // ==================================================
+    // UPLOAD IMAGE
+    // ==================================================
 
     const {
         error: uploadError
@@ -2359,6 +2396,7 @@ async function uploadImage() {
                 fileName,
                 file
             );
+
 
     if (uploadError) {
 
@@ -2375,6 +2413,11 @@ async function uploadImage() {
         return;
     }
 
+
+    // ==================================================
+    // GET PUBLIC URL
+    // ==================================================
+
     const {
         data: urlData
     } =
@@ -2385,8 +2428,14 @@ async function uploadImage() {
                 fileName
             );
 
+
     const imageUrl =
         urlData.publicUrl;
+
+
+    // ==================================================
+    // SAVE TO DATABASE
+    // ==================================================
 
     const {
         error: databaseError
@@ -2403,6 +2452,7 @@ async function uploadImage() {
                 }
             ]);
 
+
     if (databaseError) {
 
         console.error(
@@ -2417,28 +2467,58 @@ async function uploadImage() {
         return;
     }
 
-    fileInput.value =
-        "";
 
-    captionInput.value =
-        "";
+    // Clear input
+    fileInput.value = "";
+
+    captionInput.value = "";
+
 
     alert(
         "Photo added to Our Gallery ❤️"
     );
 
-    await sendEmailNotification(
-    "New Photo Added ❤️",
-    "📸 New Photo Added",
-    "A new photo has been added to Our Gallery.<br><br>" +
-    "<strong>Caption:</strong> " +
-    (escapeHTML(caption) || "No caption") +
-    "<br><br>" +
-    "<a href=\"" +
-    imageUrl +
-    "\" target=\"_blank\">View Photo ❤️</a>"
-);
 
+    // ==================================================
+    // GET PARTNER ID
+    // ==================================================
+
+    const receiverId =
+        currentUser.id === HAZIRAH_ID
+            ? ZULKARNAIN_ID
+            : HAZIRAH_ID;
+
+
+    // ==================================================
+    // FIREBASE NOTIFICATION
+    // ==================================================
+
+    await addNotification(
+        receiverId,
+        "📸 New Photo Added",
+        `${USER_NAMES[currentUser.id] || "Your love"} added a new photo to Our Gallery${caption ? `: ${escapeHTML(caption)}` : ""}`,
+        "gallery"
+    );
+
+
+    // ==================================================
+    // EMAIL NOTIFICATION
+    // ==================================================
+
+    await sendEmailNotification(
+        "New Photo Added ❤️",
+        "📸 New Photo Added",
+        "A new photo has been added to Our Gallery.<br><br>" +
+        "<strong>Caption:</strong> " +
+        (escapeHTML(caption) || "No caption") +
+        "<br><br>" +
+        "<a href=\"" +
+        escapeAttribute(imageUrl) +
+        "\" target=\"_blank\">View Photo ❤️</a>"
+    );
+
+
+    // Refresh gallery
     loadGallery();
 
 }
