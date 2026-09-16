@@ -2773,17 +2773,20 @@ async function sendSecretMessage() {
     "<strong>Message:</strong><br>" +
     escapeHTML(message)
 );
+    // ======================================================
+// FIREBASE NOTIFICATION
+// ======================================================
+
+await addNotification(
+    receiverId,
+    "💌 New Secret Message",
+    `${USER_NAMES[currentUser.id] || "Your love"} sent you a secret message ❤️`,
+    "secret_message"
+);
 
     await loadSecretMessages();
 
 }
-await sendEmailNotification(
-    "New Secret Message 💌",
-    "💌 New Secret Message",
-    "You have received a new secret message in Our Space.<br><br>" +
-    "<strong>Message:</strong><br>" +
-    escapeHTML(message)
-);
 
 
 // ======================================================
