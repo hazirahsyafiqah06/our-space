@@ -265,11 +265,22 @@ function renderFirebaseNotifications(notifications) {
 
     if (!body) return;
 
+
     if (!notifications || notifications.length === 0) {
 
         body.innerHTML = `
             <div class="notification-empty">
-                No new notifications ❤️
+
+                <div class="notification-empty-icon">
+                    💕
+                </div>
+
+                <strong>No new notifications</strong>
+
+                <span>
+                    You're all caught up ✨
+                </span>
+
             </div>
         `;
 
@@ -281,6 +292,7 @@ function renderFirebaseNotifications(notifications) {
         return;
     }
 
+
     body.innerHTML =
         notifications.map(notification => {
 
@@ -288,6 +300,7 @@ function renderFirebaseNotifications(notifications) {
                 notification.createdAt?.toDate
                     ? notification.createdAt.toDate()
                     : new Date();
+
 
             const time =
                 createdAt.toLocaleString(
@@ -303,25 +316,136 @@ function renderFirebaseNotifications(notifications) {
                     }
                 );
 
+
+            /* =========================
+               ICON
+            ========================= */
+
+            let icon = "🔔";
+            let iconClass = "general";
+
+
+            if (notification.type === "note") {
+
+                icon = "📝";
+                iconClass = "note";
+
+            } else if (notification.type === "gallery") {
+
+                icon = "📸";
+                iconClass = "gallery";
+
+            } else if (
+                notification.type === "secret_message"
+            ) {
+
+                icon = "💌";
+                iconClass = "secret";
+
+            } else if (
+                notification.type === "birthday"
+            ) {
+
+                icon = "🎂";
+                iconClass = "birthday";
+
+            } else if (
+                notification.type === "calendar"
+            ) {
+
+                icon = "📅";
+                iconClass = "general";
+
+            } else if (
+                notification.type === "song"
+            ) {
+
+                icon = "🎵";
+                iconClass = "general";
+
+            } else if (
+                notification.type === "bucket"
+            ) {
+
+                icon = "🌷";
+                iconClass = "general";
+
+            } else if (
+                notification.type === "quiz"
+            ) {
+
+                icon = "🧠";
+                iconClass = "general";
+
+            } else if (
+                notification.type === "test"
+            ) {
+
+                icon = "🎉";
+                iconClass = "general";
+            }
+
+
+            const title =
+                escapeHTML(
+                    notification.title ||
+                    "Notification"
+                );
+
+            const message =
+                escapeHTML(
+                    notification.message ||
+                    ""
+                );
+
+
+            const unread =
+                notification.read === false;
+
+
             return `
+
                 <div
-                    class="notification-item ${notification.read === false ? "unread" : ""}"
+                    class="notification-item ${unread ? "unread" : ""}"
                     onclick="markFirebaseNotificationRead('${notification.id}')"
                 >
 
-                    <div class="notification-item-title">
-                        ${notification.title || "Notification"}
+                    <div
+                        class="notification-item-icon ${iconClass}"
+                    >
+                        ${icon}
                     </div>
 
-                    <div class="notification-item-message">
-                        ${notification.message || ""}
+
+                    <div class="notification-item-content">
+
+                        <div class="notification-item-title">
+                            ${title}
+                        </div>
+
+                        <div class="notification-item-message">
+                            ${message}
+                        </div>
+
+                        <div class="notification-item-time">
+                            ${time}
+                        </div>
+
                     </div>
 
-                    <div class="notification-item-time">
-                        ${time}
-                    </div>
+
+                    ${
+                        unread
+                            ? `
+                                <span
+                                    class="notification-unread-dot"
+                                ></span>
+                              `
+                            : ""
+                    }
 
                 </div>
+
             `;
 
         }).join("");
@@ -422,41 +546,90 @@ function setupFirebaseNotificationRealtime() {
 // MARK NOTIFICATION AS READ
 // ======================================================
 
-async function markFirebaseNotificationRead(
-    notificationId
-) {
+async function markAllFirebaseNotificationsRead(event) {
+
+    if (event) {
+        event.stopPropagation();
+    }
 
     try {
 
-        if (!firestoreDB || !firebaseFns) {
+        if (!currentUser) {
             return;
         }
 
-        const notificationDoc =
-            firebaseFns.doc(
+        if (!firestoreDB || !firebaseFns) {
+            console.error(
+                "Firebase is not available."
+            );
+            return;
+        }
+
+
+        const notificationRef =
+            firebaseFns.collection(
                 firestoreDB,
-                "notifications",
-                notificationId
+                "notifications"
             );
 
-        await firebaseFns.updateDoc(
-            notificationDoc,
-            {
-                read: true
+
+        const snapshot =
+            await firebaseFns.getDocs(
+                notificationRef
+            );
+
+
+        const updates = [];
+
+
+        snapshot.forEach(doc => {
+
+            const data = doc.data();
+
+
+            if (
+                data.recipientId === currentUser.id &&
+                data.read === false
+            ) {
+
+                updates.push(
+                    firebaseFns.updateDoc(
+                        firebaseFns.doc(
+                            firestoreDB,
+                            "notifications",
+                            doc.id
+                        ),
+                        {
+                            read: true
+                        }
+                    )
+                );
+
             }
-        );
+
+        });
+
+
+        await Promise.all(updates);
+
 
         await loadFirebaseNotifications();
+
+
+        console.log(
+            "All notifications marked as read ❤️"
+        );
 
     } catch (error) {
 
         console.error(
-            "Mark notification read error:",
+            "Mark all notifications read error:",
             error
         );
-    }
-}
 
+    }
+
+}
 
 // ======================================================
 // TOGGLE NOTIFICATION DROPDOWN
