@@ -1,4 +1,14 @@
 // ======================================================
+// FIREBASE NOTIFICATION
+// ======================================================
+
+const firestoreDB =
+    window.firestoreDB;
+
+const firebaseFns =
+    window.firebaseFns;
+
+// ======================================================
 // SUPABASE CONFIG
 // ======================================================
 
@@ -35,6 +45,107 @@ const USER_NAMES = {
 };
 
 let currentUser = null;
+
+// ======================================================
+// FIREBASE - ADD NOTIFICATION
+// ======================================================
+
+async function addNotification(
+    recipientId,
+    title,
+    message,
+    type = "general"
+) {
+
+    try {
+
+        if (
+            !firestoreDB ||
+            !firebaseFns
+        ) {
+            console.error(
+                "Firebase is not available."
+            );
+
+            return;
+        }
+
+
+        await firebaseFns.addDoc(
+            firebaseFns.collection(
+                firestoreDB,
+                "notifications"
+            ),
+            {
+
+                recipientId:
+                    recipientId,
+
+                senderId:
+                    currentUser
+                        ? currentUser.id
+                        : null,
+
+                title:
+                    title,
+
+                message:
+                    message,
+
+                type:
+                    type,
+
+                read:
+                    false,
+
+                createdAt:
+                    firebaseFns.serverTimestamp()
+
+            }
+        );
+
+
+        console.log(
+            "Notification added successfully ❤️"
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Add notification error:",
+            error
+        );
+
+    }
+}
+
+window.testFirebaseNotification =
+    async function () {
+
+        if (!currentUser) {
+
+            console.error(
+                "No logged-in user."
+            );
+
+            return;
+        }
+
+
+        const recipientId =
+            currentUser.id === HAZIRAH_ID
+                ? ZULKARNAIN_ID
+                : HAZIRAH_ID;
+
+
+        await addNotification(
+            recipientId,
+            "Test Notification ❤️",
+            "Firebase notification is working!",
+            "test"
+        );
+
+    };
 
 // ======================================================
 // ONLINE / OFFLINE + LAST SEEN
