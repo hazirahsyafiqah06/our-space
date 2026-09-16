@@ -701,10 +701,10 @@ function setupFirebaseNotificationRealtime() {
 
 
 // ======================================================
-// MARK NOTIFICATION AS READ
+// CLEAR ALL FIREBASE NOTIFICATIONS
 // ======================================================
 
-async function markAllFirebaseNotificationsRead(event) {
+async function clearFirebaseNotifications(event) {
 
     if (event) {
         event.stopPropagation();
@@ -716,72 +716,49 @@ async function markAllFirebaseNotificationsRead(event) {
             return;
         }
 
-        if (!firestoreDB || !firebaseFns) {
-            console.error(
-                "Firebase is not available."
-            );
+        if (!firestoreDB) {
+            console.error("Firebase is not available.");
             return;
         }
 
-
         const notificationRef =
-            firebaseFns.collection(
-                firestoreDB,
-                "notifications"
-            );
-
+            firestoreDB.collection("notifications");
 
         const snapshot =
-            await firebaseFns.getDocs(
-                notificationRef
-            );
+            await notificationRef.get();
 
-
-        const updates = [];
-
+        const deletePromises = [];
 
         snapshot.forEach(doc => {
 
             const data = doc.data();
 
-
             if (
-                data.recipientId === currentUser.id &&
-                data.read === false
+                data.recipientId === currentUser.id
             ) {
 
-                updates.push(
-                    firebaseFns.updateDoc(
-                        firebaseFns.doc(
-                            firestoreDB,
-                            "notifications",
-                            doc.id
-                        ),
-                        {
-                            read: true
-                        }
-                    )
+                deletePromises.push(
+                    notificationRef
+                        .doc(doc.id)
+                        .delete()
                 );
 
             }
 
         });
 
-
-        await Promise.all(updates);
-
+        await Promise.all(deletePromises);
 
         await loadFirebaseNotifications();
 
-
         console.log(
-            "All notifications marked as read ❤️"
+            "All notifications cleared ❤️"
         );
 
     } catch (error) {
 
         console.error(
-            "Mark all notifications read error:",
+            "Clear notifications error:",
             error
         );
 
