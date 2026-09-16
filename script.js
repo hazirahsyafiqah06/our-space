@@ -943,14 +943,59 @@ function setupFirebaseNotificationRealtime() {
 
                 });
 
-                // Kalau user sedang berada dalam section yang sama,
-                // notification baru terus dianggap sudah dibaca.
-                if (
-                    activeSectionId &&
-                    activeSectionId !== "home-section"
-                ) {
-                    await autoReadCurrentSectionNotification();
-                }
+                // AUTO READ NOTIFICATION IF USER IS ALREADY
+// INSIDE THE SAME SECTION
+const sectionNotificationTypes = {
+    "notes-section": ["note"],
+    "gallery-section": ["gallery"],
+    "calendar-section": ["calendar"],
+    "messages-section": ["secret_message"],
+    "bucket-section": ["bucket"],
+    "song-section": ["song"],
+    "quiz-section": ["quiz"]
+};
+
+const activeTypes =
+    sectionNotificationTypes[activeSectionId] || [];
+
+if (activeTypes.length > 0) {
+
+    const updatePromises = [];
+
+    notifications.forEach(notification => {
+
+        if (
+            activeTypes.includes(notification.type) &&
+            notification.read === false
+        ) {
+
+            // Terus jadikan read dalam data yang sedang dipaparkan
+            notification.read = true;
+
+            updatePromises.push(
+                firestoreDB
+                    .collection("notifications")
+                    .doc(notification.id)
+                    .update({
+                        read: true
+                    })
+            );
+        }
+
+    });
+
+    // Messages → mesej terus dianggap seen
+    if (
+        activeSectionId === "messages-section"
+    ) {
+        await markSecretMessagesAsSeen();
+    }
+
+    if (updatePromises.length > 0) {
+        await Promise.all(updatePromises);
+    }
+
+}
 
                 notifications.sort((a, b) => {
 
