@@ -1008,10 +1008,41 @@ async function logout() {
 
 </script>
 
+   <!-- =========================
+     FIREBASE
+========================= -->
+
+<script type="module">
+    import { initializeApp } 
+        from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+    import { getFirestore } 
+        from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCJjqBOQlNx5qu2PsauYIZgz2Hh5t4KiYQ",
+        authDomain: "our-space-67a1a.firebaseapp.com",
+        projectId: "our-space-67a1a",
+        storageBucket: "our-space-67a1a.firebasestorage.app",
+        messagingSenderId: "383573186785",
+        appId: "1:383573186785:web:33909f360ba714f10d7fa0",
+        measurementId: "G-KKLVZGNZQC"
+    };
+
+    // Initialize Firebase
+    const firebaseApp = initializeApp(firebaseConfig);
+
+    // Initialize Firestore
+    const firestoreDB = getFirestore(firebaseApp);
+
+    // Make Firebase available to script.js
+    window.firebaseApp = firebaseApp;
+    window.firestoreDB = firestoreDB;
+
+    console.log("Firebase connected successfully ❤️");
+</script>
 
 <script src="./script.js"></script>
 
-
 </body>
-
 </html>
