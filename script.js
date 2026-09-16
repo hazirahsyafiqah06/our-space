@@ -119,6 +119,97 @@ async function addNotification(
     }
 }
 
+// ======================================================
+// LOAD FIREBASE NOTIFICATIONS
+// ======================================================
+
+async function loadFirebaseNotifications() {
+
+    try {
+
+        if (!currentUser) {
+            return;
+        }
+
+        if (!firestoreDB || !firebaseFns) {
+            console.error("Firebase is not available.");
+            return;
+        }
+
+        const notificationRef =
+            firebaseFns.collection(
+                firestoreDB,
+                "notifications"
+            );
+
+        const snapshot =
+            await firebaseFns.getDocs(
+                notificationRef
+            );
+
+        const notifications = [];
+
+        snapshot.forEach(doc => {
+
+            const data = doc.data();
+
+            if (
+                data.recipientId === currentUser.id
+            ) {
+
+                notifications.push({
+                    id: doc.id,
+                    ...data
+                });
+
+            }
+
+        });
+
+
+        notifications.sort((a, b) => {
+
+            const dateA =
+                a.createdAt?.toMillis
+                    ? a.createdAt.toMillis()
+                    : 0;
+
+            const dateB =
+                b.createdAt?.toMillis
+                    ? b.createdAt.toMillis()
+                    : 0;
+
+            return dateB - dateA;
+
+        });
+
+
+        const unreadNotifications =
+            notifications.filter(
+                notification =>
+                    notification.read === false
+            );
+
+
+        updateNotificationBadge(
+            unreadNotifications.length
+        );
+
+        renderFirebaseNotifications(
+            notifications
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Load Firebase notifications error:",
+            error
+        );
+
+    }
+
+}
+
 window.testFirebaseNotification =
     async function () {
 
