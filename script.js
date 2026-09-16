@@ -2766,6 +2766,10 @@ async function sendSecretMessage() {
     sendButton.textContent =
         "💌 Send Message";
 
+     await loadSecretMessages();
+
+}
+
     await sendEmailNotification(
     "New Secret Message 💌",
     "💌 New Secret Message",
@@ -2773,7 +2777,8 @@ async function sendSecretMessage() {
     "<strong>Message:</strong><br>" +
     escapeHTML(message)
 );
-    // ======================================================
+
+// ======================================================
 // FIREBASE NOTIFICATION
 // ======================================================
 
@@ -2784,10 +2789,9 @@ await addNotification(
     "secret_message"
 );
 
-    await loadSecretMessages();
+ await loadSecretMessages();
 
 }
-
 
 // ======================================================
 // FIREBASE NOTIFICATION
