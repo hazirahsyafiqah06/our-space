@@ -13,137 +13,7 @@
     <link rel="stylesheet" href="style.css">
 
 
-<style>
-/* ======================================================
-   FIREBASE NOTIFICATION
-====================================================== */
 
-.notification-container {
-    position: fixed;
-    top: 20px;
-    right: 25px;
-    z-index: 9999;
-}
-
-.notification-button {
-    position: relative;
-    width: 48px;
-    height: 48px;
-    border: none;
-    border-radius: 50%;
-    background: white;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-    font-size: 22px;
-    cursor: pointer;
-}
-
-.notification-badge {
-    position: absolute;
-    top: -4px;
-    right: -4px;
-    min-width: 20px;
-    height: 20px;
-    padding: 2px 5px;
-    border-radius: 20px;
-    background: #ff4f81;
-    color: white;
-    font-size: 11px;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.notification-dropdown {
-    position: absolute;
-    top: 58px;
-    right: 0;
-    width: 340px;
-    max-height: 450px;
-    background: white;
-    border-radius: 18px;
-    box-shadow: 0 10px 35px rgba(0,0,0,0.18);
-    overflow: hidden;
-    display: none;
-}
-
-.notification-dropdown.show {
-    display: block;
-}
-
-.notification-header {
-    padding: 16px 18px;
-    border-bottom: 1px solid #eee;
-}
-
-.notification-header h4 {
-    margin: 0 0 4px;
-}
-
-.notification-header small {
-    color: #888;
-}
-
-.notification-body {
-    max-height: 380px;
-    overflow-y: auto;
-}
-
-.notification-item {
-    padding: 14px 18px;
-    border-bottom: 1px solid #f1f1f1;
-    cursor: pointer;
-    transition: background 0.2s ease;
-}
-
-.notification-item:hover {
-    background: #fff5f8;
-}
-
-.notification-item.unread {
-    background: #fff5f8;
-}
-
-.notification-item-title {
-    font-weight: bold;
-    margin-bottom: 5px;
-}
-
-.notification-item-message {
-    font-size: 13px;
-    color: #666;
-}
-
-.notification-item-time {
-    margin-top: 6px;
-    font-size: 11px;
-    color: #aaa;
-}
-
-.notification-empty {
-    padding: 30px 20px;
-    text-align: center;
-    color: #999;
-}
-
-@media (max-width: 600px) {
-
-    .notification-container {
-        top: 12px;
-        right: 12px;
-    }
-
-    .notification-dropdown {
-        position: fixed;
-        top: 70px;
-        left: 12px;
-        right: 12px;
-        width: auto;
-        max-width: none;
-    }
-
-}
-</style>
 
 </head>
 
@@ -158,7 +28,7 @@
     </div>
 </div>
 
-   <!-- =========================
+    <!-- =========================
      NOTIFICATION
 ========================= -->
 
@@ -183,13 +53,11 @@
         </span>
     </button>
 
-
     <div
         id="notificationDropdown"
         class="notification-dropdown"
     >
 
-        <!-- HEADER -->
         <div class="notification-header">
 
             <div class="notification-header-left">
@@ -200,14 +68,12 @@
 
                 <div>
                     <h4>Notifications</h4>
-
                     <small id="notificationCount">
                         No unread notifications
                     </small>
                 </div>
 
             </div>
-
 
             <button
                 type="button"
@@ -219,33 +85,18 @@
 
         </div>
 
-
-        <!-- BODY -->
         <div
             id="notificationBody"
             class="notification-body"
         >
-
             <div class="notification-empty">
-
-                <div class="notification-empty-icon">
-                    💕
-                </div>
-
+                <div class="notification-empty-icon">💕</div>
                 <strong>No new notifications</strong>
-
-                <span>
-                    You're all caught up ✨
-                </span>
-
+                <span>You're all caught up ✨</span>
             </div>
-
         </div>
 
-
-        <!-- FOOTER -->
         <div class="notification-footer">
-
             <button
                 type="button"
                 onclick="toggleNotification(event)"
@@ -253,7 +104,6 @@
                 View all notifications
                 <span>→</span>
             </button>
-
         </div>
 
     </div>
