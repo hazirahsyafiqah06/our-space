@@ -5506,6 +5506,9 @@ async function startApp() {
     showWelcomeAnimation();
 
 }
+
+
+startApp();
     
     function updateNotificationBadge(unreadCount) {
 
@@ -5659,8 +5662,6 @@ function toggleNotification(event) {
 
     dropdown.classList.toggle("show");
 }
-
-startApp();
 
 birthdayCountdown();
 
