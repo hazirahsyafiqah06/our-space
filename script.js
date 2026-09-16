@@ -120,6 +120,116 @@ async function addNotification(
 }
 
 // ======================================================
+// GROUP SECRET MESSAGE NOTIFICATION
+// ======================================================
+
+async function addGroupedSecretMessageNotification(
+    recipientId
+) {
+
+    try {
+
+        if (!firestoreDB || !firebaseFns) {
+            console.error("Firebase is not available.");
+            return;
+        }
+
+        const notificationRef =
+            firebaseFns.collection(
+                firestoreDB,
+                "notifications"
+            );
+
+        const snapshot =
+            await firebaseFns.getDocs(
+                notificationRef
+            );
+
+        let existingNotification = null;
+        let messageCount = 0;
+
+        snapshot.forEach(doc => {
+
+            const data = doc.data();
+
+            if (
+                data.recipientId === recipientId &&
+                data.type === "secret_message" &&
+                data.read === false
+            ) {
+
+                existingNotification = {
+                    id: doc.id,
+                    ...data
+                };
+
+                messageCount =
+                    data.messageCount || 1;
+
+            }
+
+        });
+
+        if (existingNotification) {
+
+            messageCount++;
+
+            await firebaseFns.updateDoc(
+                firebaseFns.doc(
+                    firestoreDB,
+                    "notifications",
+                    existingNotification.id
+                ),
+                {
+                    title: "💌 New Secret Messages",
+                    message:
+                        `${USER_NAMES[currentUser.id] || "Your love"} sent you ${messageCount} new messages ❤️`,
+                    messageCount: messageCount,
+                    createdAt:
+                        firebaseFns.serverTimestamp()
+                }
+            );
+
+        } else {
+
+            await firebaseFns.addDoc(
+                notificationRef,
+                {
+                    recipientId: recipientId,
+                    senderId: currentUser
+                        ? currentUser.id
+                        : null,
+
+                    title: "💌 New Secret Message",
+
+                    message:
+                        `${USER_NAMES[currentUser.id] || "Your love"} sent you 1 new message ❤️`,
+
+                    type: "secret_message",
+
+                    messageCount: 1,
+
+                    read: false,
+
+                    createdAt:
+                        firebaseFns.serverTimestamp()
+                }
+            );
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Grouped secret message notification error:",
+            error
+        );
+
+    }
+
+}
+
+// ======================================================
 // UPDATE NOTIFICATION BADGE
 // ======================================================
 
@@ -224,16 +334,21 @@ async function loadFirebaseNotifications() {
         });
 
 
-        const unreadNotifications =
-            notifications.filter(
-                notification =>
-                    notification.read === false
-            );
+        const unreadCount = notifications.reduce((total, notification) => {
 
+    if (notification.read !== false) {
+        return total;
+    }
 
-        updateNotificationBadge(
-            unreadNotifications.length
-        );
+    if (notification.type === "secret_message") {
+        return total + (notification.messageCount || 1);
+    }
+
+    return total + 1;
+
+}, 0);
+
+updateNotificationBadge(unreadCount);
 
         renderFirebaseNotifications(
             notifications
@@ -250,12 +365,68 @@ async function loadFirebaseNotifications() {
 
 }
 
+// ======================================================
+// GROUP SECRET MESSAGE NOTIFICATIONS
+// ======================================================
+
+function groupSecretMessageNotifications(notifications) {
+
+    const grouped = [];
+    const secretMessages = [];
+    const otherNotifications = [];
+
+    notifications.forEach(notification => {
+
+        if (notification.type === "secret_message") {
+            secretMessages.push(notification);
+        } else {
+            otherNotifications.push(notification);
+        }
+
+    });
+
+    // Group all secret message notifications into ONE
+    if (secretMessages.length > 0) {
+
+        const totalMessages = secretMessages.reduce(
+            (total, notification) => {
+                return total + (notification.messageCount || 1);
+            },
+            0
+        );
+
+        const latest = secretMessages[0];
+
+        grouped.push({
+            ...latest,
+
+            title: "💌 New Secret Messages",
+
+            message:
+                `${USER_NAMES[latest.senderId] || "Your love"} sent you ${totalMessages} new messages ❤️`,
+
+            messageCount: totalMessages,
+
+            groupedIds: secretMessages.map(
+                notification => notification.id
+            )
+        });
+    }
+
+    // Keep other notifications separate
+    grouped.push(...otherNotifications);
+
+    return grouped;
+}
+
 
 // ======================================================
 // RENDER NOTIFICATIONS
 // ======================================================
 
 function renderFirebaseNotifications(notifications) {
+
+    notifications = groupSecretMessageNotifications(notifications);
 
     const body =
         document.getElementById("notificationBody");
@@ -3536,12 +3707,7 @@ async function sendSecretMessage() {
     // FIREBASE NOTIFICATION
     // ==================================================
 
-    await addNotification(
-        receiverId,
-        "💌 New Secret Message",
-        `${USER_NAMES[currentUser.id] || "Your love"} sent you a secret message ❤️`,
-        "secret_message"
-    );
+    await addGroupedSecretMessageNotification(receiverId);
 
 
     // ==================================================
