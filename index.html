@@ -12,6 +12,139 @@
 
     <link rel="stylesheet" href="style.css">
 
+
+<style>
+/* ======================================================
+   FIREBASE NOTIFICATION
+====================================================== */
+
+.notification-container {
+    position: fixed;
+    top: 20px;
+    right: 25px;
+    z-index: 9999;
+}
+
+.notification-button {
+    position: relative;
+    width: 48px;
+    height: 48px;
+    border: none;
+    border-radius: 50%;
+    background: white;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.notification-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    min-width: 20px;
+    height: 20px;
+    padding: 2px 5px;
+    border-radius: 20px;
+    background: #ff4f81;
+    color: white;
+    font-size: 11px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.notification-dropdown {
+    position: absolute;
+    top: 58px;
+    right: 0;
+    width: 340px;
+    max-height: 450px;
+    background: white;
+    border-radius: 18px;
+    box-shadow: 0 10px 35px rgba(0,0,0,0.18);
+    overflow: hidden;
+    display: none;
+}
+
+.notification-dropdown.show {
+    display: block;
+}
+
+.notification-header {
+    padding: 16px 18px;
+    border-bottom: 1px solid #eee;
+}
+
+.notification-header h4 {
+    margin: 0 0 4px;
+}
+
+.notification-header small {
+    color: #888;
+}
+
+.notification-body {
+    max-height: 380px;
+    overflow-y: auto;
+}
+
+.notification-item {
+    padding: 14px 18px;
+    border-bottom: 1px solid #f1f1f1;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.notification-item:hover {
+    background: #fff5f8;
+}
+
+.notification-item.unread {
+    background: #fff5f8;
+}
+
+.notification-item-title {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.notification-item-message {
+    font-size: 13px;
+    color: #666;
+}
+
+.notification-item-time {
+    margin-top: 6px;
+    font-size: 11px;
+    color: #aaa;
+}
+
+.notification-empty {
+    padding: 30px 20px;
+    text-align: center;
+    color: #999;
+}
+
+@media (max-width: 600px) {
+
+    .notification-container {
+        top: 12px;
+        right: 12px;
+    }
+
+    .notification-dropdown {
+        position: fixed;
+        top: 70px;
+        left: 12px;
+        right: 12px;
+        width: auto;
+        max-width: none;
+    }
+
+}
+</style>
+
 </head>
 
 <body>
@@ -1081,18 +1214,87 @@ async function logout() {
     };
 
     try {
+
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
 
-        const firestoreDB = firebase.firestore();
+        const firestoreDB =
+            firebase.firestore();
 
-        window.firebaseApp = firebase.app();
-        window.firestoreDB = firestoreDB;
+        window.firebaseApp =
+            firebase.app();
 
-        console.log("Firebase connected successfully ❤️");
+        window.firestoreDB =
+            firestoreDB;
+
+        /*
+         * Wrapper Firebase untuk script.js
+         * Supaya script.js boleh guna fungsi
+         * modular-style tanpa tukar code lain.
+         */
+        window.firebaseFns = {
+
+            collection:
+                function(db, collectionName) {
+                    return db.collection(
+                        collectionName
+                    );
+                },
+
+            addDoc:
+                function(collectionRef, data) {
+                    return collectionRef.add(
+                        data
+                    );
+                },
+
+            getDocs:
+                function(queryRef) {
+                    return queryRef.get();
+                },
+
+            doc:
+                function(db, collectionName, docId) {
+                    return db
+                        .collection(collectionName)
+                        .doc(docId);
+                },
+
+            updateDoc:
+                function(docRef, data) {
+                    return docRef.update(
+                        data
+                    );
+                },
+
+            onSnapshot:
+                function(queryRef, callback) {
+                    return queryRef.onSnapshot(
+                        callback
+                    );
+                },
+
+            serverTimestamp:
+                function() {
+                    return firebase.firestore
+                        .FieldValue
+                        .serverTimestamp();
+                }
+
+        };
+
+        console.log(
+            "Firebase connected successfully ❤️"
+        );
+
     } catch (error) {
-        console.error("Firebase initialization error:", error);
+
+        console.error(
+            "Firebase initialization error:",
+            error
+        );
+
     }
 </script>
 
