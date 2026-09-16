@@ -8,41 +8,6 @@ const firestoreDB =
 const firebaseFns =
     window.firebaseFns;
 
-
-// ======================================================
-// TEST FIREBASE NOTIFICATION
-// ======================================================
-
-window.testFirebaseNotification = async function() {
-
-    try {
-
-        if (!currentUser) {
-            alert("Please login first.");
-            return;
-        }
-
-        const receiverId =
-            currentUser.id;
-
-        await addNotification(
-            receiverId,
-            "Test Notification 🔔",
-            "Firebase notification is working!",
-            "info"
-        );
-
-        alert("Test notification added!");
-
-    } catch (error) {
-
-        console.error(error);
-        alert("Failed to add notification.");
-
-    }
-
-};
-
 // ======================================================
 // SUPABASE CONFIG
 // ======================================================
