@@ -5481,6 +5481,32 @@ async function startApp() {
 
     // FIREBASE NOTIFICATIONS
     await loadFirebaseNotifications();
+     setupFirebaseNotificationRealtime();
+
+    setupSecretMessageRealtime();
+
+    setupOnlineStatus();
+
+    updateTogetherTime();
+
+    countdown();
+
+    loadNotes();
+
+    loadGallery();
+
+    loadBucketList();
+
+    loadSecretMessages();
+
+    showSection(
+    ""
+    );
+    
+    showWelcomeAnimation();
+
+}
+    
     function updateNotificationBadge(unreadCount) {
 
     const badge = document.getElementById("notificationBadge");
@@ -5632,31 +5658,6 @@ function toggleNotification(event) {
     if (!dropdown) return;
 
     dropdown.classList.toggle("show");
-}
-    setupFirebaseNotificationRealtime();
-
-    setupSecretMessageRealtime();
-
-    setupOnlineStatus();
-
-    updateTogetherTime();
-
-    countdown();
-
-    loadNotes();
-
-    loadGallery();
-
-    loadBucketList();
-
-    loadSecretMessages();
-
-    showSection(
-    ""
-    );
-    
-    showWelcomeAnimation();
-
 }
 
 startApp();
