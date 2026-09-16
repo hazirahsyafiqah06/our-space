@@ -901,16 +901,30 @@ function setupFirebaseNotificationRealtime() {
                     return dateB - dateA;
                 });
 
-                const unread =
-                    notifications.filter(
-                        notification =>
-                            notification.read === false
-                    );
+               const unreadCount = notifications.reduce(
+    (total, notification) => {
 
-                updateNotificationBadge(
-                    unread.length
-                );
+        if (notification.read !== false) {
+            return total;
+        }
 
+        if (
+            notification.type ===
+            "secret_message"
+        ) {
+            return total +
+                (notification.messageCount || 1);
+        }
+
+        return total + 1;
+
+    },
+    0
+);
+
+updateNotificationBadge(
+    unreadCount
+);
                 renderFirebaseNotifications(
                     notifications
                 );
@@ -5117,10 +5131,160 @@ async function deleteOurSong(id) {
 }
 
 // ======================================================
+// MARK SECTION NOTIFICATIONS AS READ
+// ======================================================
+
+async function markSectionNotificationsAsRead(sectionId) {
+
+    if (!currentUser || !firestoreDB) {
+        return;
+    }
+
+    try {
+
+        const notificationRef =
+            firestoreDB.collection("notifications");
+
+        const snapshot =
+            await notificationRef.get();
+
+        const updatePromises = [];
+
+        let notificationTypes = [];
+
+        // Tentukan notification type ikut section
+        switch (sectionId) {
+
+            case "notes-section":
+                notificationTypes = ["note"];
+                break;
+
+            case "gallery-section":
+                notificationTypes = ["gallery"];
+                break;
+
+            case "calendar-section":
+                notificationTypes = ["calendar"];
+                break;
+
+            case "messages-section":
+                notificationTypes = ["secret_message"];
+                break;
+
+            case "bucket-section":
+                notificationTypes = ["bucket"];
+                break;
+
+            case "song-section":
+                notificationTypes = ["song"];
+                break;
+
+            case "quiz-section":
+                notificationTypes = ["quiz"];
+                break;
+
+            default:
+                return;
+        }
+
+
+        snapshot.forEach(doc => {
+
+            const data = doc.data();
+
+            if (
+                data.recipientId === currentUser.id &&
+                notificationTypes.includes(data.type) &&
+                data.read === false
+            ) {
+
+                updatePromises.push(
+                    notificationRef
+                        .doc(doc.id)
+                        .update({
+                            read: true
+                        })
+                );
+
+            }
+
+        });
+
+
+        if (updatePromises.length > 0) {
+
+            await Promise.all(
+                updatePromises
+            );
+
+            await loadFirebaseNotifications();
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Mark section notifications as read error:",
+            error
+        );
+
+    }
+}
+
+// ======================================================
+// MARK SECRET MESSAGES AS SEEN
+// ======================================================
+
+async function markSecretMessagesAsSeen() {
+
+    if (!currentUser) {
+        return;
+    }
+
+    try {
+
+        const { error } =
+            await supabaseClient
+                .from("secret_message")
+                .update({
+                    seen: true
+                })
+                .eq(
+                    "receiver_id",
+                    currentUser.id
+                )
+                .eq(
+                    "seen",
+                    false
+                );
+
+        if (error) {
+
+            console.error(
+                "Mark secret messages as seen error:",
+                error
+            );
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Mark secret messages as seen error:",
+            error
+        );
+
+    }
+
+}
+
+// ======================================================
 // NAVIGATION
 // ======================================================
 
-function showSection(sectionId) {
+async function showSection(sectionId) {
+
+        markSectionNotificationsAsRead(sectionId);
 
     const menu =
         document.querySelector(".navigation");
@@ -5285,13 +5449,15 @@ function showSection(sectionId) {
 
 
     if (
-        sectionId ===
-        "messages-section"
-    ) {
+    sectionId ===
+    "messages-section"
+) {
 
-        loadSecretMessages();
+    await markSecretMessagesAsSeen();
 
-    }
+    loadSecretMessages();
+
+}
 
 
     if (
