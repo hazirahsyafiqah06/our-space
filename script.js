@@ -657,6 +657,55 @@ async function openFirebaseNotification(
 
         }
 
+        // ----------------------------------------------
+// MARK SECRET MESSAGES AS SEEN
+// ----------------------------------------------
+
+if (
+    notificationType === "secret_message" &&
+    currentUser
+) {
+
+    const {
+        data: unreadMessages,
+        error: seenError
+    } = await supabaseClient
+        .from("secret_message")
+        .select("id")
+        .eq(
+            "receiver_id",
+            currentUser.id
+        )
+        .eq(
+            "seen",
+            false
+        );
+
+    if (
+        !seenError &&
+        unreadMessages &&
+        unreadMessages.length > 0
+    ) {
+
+        const unreadIds =
+            unreadMessages.map(
+                message => message.id
+            );
+
+        await supabaseClient
+            .from("secret_message")
+            .update({
+                seen: true
+            })
+            .in(
+                "id",
+                unreadIds
+            );
+
+    }
+
+}
+
 
         // ----------------------------------------------
         // 2. CLOSE NOTIFICATION DROPDOWN
@@ -3451,51 +3500,6 @@ async function loadSecretMessages() {
 
         return;
     }
-
-    // Mark received messages as seen
-const unreadMessages = data.filter(
-    message =>
-        message.receiver_id === currentUser.id &&
-        message.seen === false
-);
-
-if (unreadMessages.length > 0) {
-
-    const unreadIds =
-        unreadMessages.map(
-            message => message.id
-        );
-
-    const {
-        error: seenError
-    } = await supabaseClient
-        .from("secret_message")
-        .update({
-            seen: true
-        })
-        .in(
-            "id",
-            unreadIds
-        );
-
-    if (seenError) {
-
-        console.error(
-            "Mark messages as seen error:",
-            seenError
-        );
-
-    } else {
-
-        // Update data locally too
-        unreadMessages.forEach(
-            message => {
-                message.seen = true;
-            }
-        );
-
-    }
-}
 
     data.forEach(
         message => {
