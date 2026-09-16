@@ -121,6 +121,7 @@ async function addNotification(
 
 // ======================================================
 // GROUP SECRET MESSAGE NOTIFICATION
+// COUNT UNSEEN MESSAGES ONLY
 // ======================================================
 
 async function addGroupedSecretMessageNotification(
@@ -129,24 +130,64 @@ async function addGroupedSecretMessageNotification(
 
     try {
 
-        if (!firestoreDB || !firebaseFns) {
-            console.error("Firebase is not available.");
+        if (!currentUser || !firestoreDB) {
             return;
         }
 
+        // ==============================================
+        // COUNT ONLY SECRET MESSAGES THAT ARE NOT SEEN
+        // ==============================================
+
+        const {
+            data: unreadMessages,
+            error: messageError
+        } = await supabaseClient
+            .from("secret_message")
+            .select("id")
+            .eq(
+                "receiver_id",
+                recipientId
+            )
+            .eq(
+                "seen",
+                false
+            );
+
+        if (messageError) {
+
+            console.error(
+                "Count unread secret messages error:",
+                messageError
+            );
+
+            return;
+        }
+
+        const messageCount =
+            unreadMessages
+                ? unreadMessages.length
+                : 0;
+
+
+        // Kalau tiada mesej baru, tak perlu notification
+        if (messageCount === 0) {
+            return;
+        }
+
+
+        // ==============================================
+        // FIREBASE NOTIFICATION
+        // ==============================================
+
         const notificationRef =
-            firebaseFns.collection(
-                firestoreDB,
+            firestoreDB.collection(
                 "notifications"
             );
 
         const snapshot =
-            await firebaseFns.getDocs(
-                notificationRef
-            );
+            await notificationRef.get();
 
         let existingNotification = null;
-        let messageCount = 0;
 
         snapshot.forEach(doc => {
 
@@ -163,58 +204,73 @@ async function addGroupedSecretMessageNotification(
                     ...data
                 };
 
-                messageCount =
-                    data.messageCount || 1;
-
             }
 
         });
 
+
+        // ==============================================
+        // UPDATE EXISTING GROUP
+        // ==============================================
+
         if (existingNotification) {
 
-            messageCount++;
+            await notificationRef
+                .doc(existingNotification.id)
+                .update({
 
-            await firebaseFns.updateDoc(
-                firebaseFns.doc(
-                    firestoreDB,
-                    "notifications",
-                    existingNotification.id
-                ),
-                {
-                    title: "💌 New Secret Messages",
+                    title:
+                        "💌 New Secret Messages",
+
                     message:
                         `${USER_NAMES[currentUser.id] || "Your love"} sent you ${messageCount} new messages ❤️`,
-                    messageCount: messageCount,
-                    createdAt:
-                        firebaseFns.serverTimestamp()
-                }
-            );
 
-        } else {
-
-            await firebaseFns.addDoc(
-                notificationRef,
-                {
-                    recipientId: recipientId,
-                    senderId: currentUser
-                        ? currentUser.id
-                        : null,
-
-                    title: "💌 New Secret Message",
-
-                    message:
-                        `${USER_NAMES[currentUser.id] || "Your love"} sent you 1 new message ❤️`,
-
-                    type: "secret_message",
-
-                    messageCount: 1,
-
-                    read: false,
+                    messageCount:
+                        messageCount,
 
                     createdAt:
-                        firebaseFns.serverTimestamp()
-                }
-            );
+                        firebase.firestore.FieldValue
+                            .serverTimestamp()
+
+                });
+
+        }
+
+
+        // ==============================================
+        // CREATE NEW GROUP
+        // ==============================================
+
+        else {
+
+            await notificationRef.add({
+
+                recipientId:
+                    recipientId,
+
+                senderId:
+                    currentUser.id,
+
+                title:
+                    "💌 New Secret Messages",
+
+                message:
+                    `${USER_NAMES[currentUser.id] || "Your love"} sent you ${messageCount} new messages ❤️`,
+
+                type:
+                    "secret_message",
+
+                messageCount:
+                    messageCount,
+
+                read:
+                    false,
+
+                createdAt:
+                    firebase.firestore.FieldValue
+                        .serverTimestamp()
+
+            });
 
         }
 
@@ -228,7 +284,6 @@ async function addGroupedSecretMessageNotification(
     }
 
 }
-
 // ======================================================
 // UPDATE NOTIFICATION BADGE
 // ======================================================
