@@ -45,6 +45,8 @@ const USER_NAMES = {
 };
 
 let currentUser = null;
+// Current section yang sedang dibuka
+let activeSectionId = "home-section";
 
 // ======================================================
 // FIREBASE - ADD NOTIFICATION
@@ -919,7 +921,7 @@ function setupFirebaseNotificationRealtime() {
     firebaseNotificationUnsubscribe =
         firebaseFns.onSnapshot(
             notificationRef,
-            snapshot => {
+            async snapshot => {
 
                 const notifications = [];
 
@@ -940,6 +942,15 @@ function setupFirebaseNotificationRealtime() {
                     }
 
                 });
+
+                // Kalau user sedang berada dalam section yang sama,
+                // notification baru terus dianggap sudah dibaca.
+                if (
+                    activeSectionId &&
+                    activeSectionId !== "home-section"
+                ) {
+                    await autoReadCurrentSectionNotification();
+                }
 
                 notifications.sort((a, b) => {
 
@@ -5287,6 +5298,37 @@ async function markSectionNotificationsAsRead(sectionId) {
 }
 
 // ======================================================
+// AUTO READ CURRENT SECTION NOTIFICATION
+// ======================================================
+
+async function autoReadCurrentSectionNotification() {
+
+    if (!currentUser || !activeSectionId) {
+        return;
+    }
+
+    if (
+        activeSectionId === "home-section" ||
+        activeSectionId === ""
+    ) {
+        return;
+    }
+
+    // Mark Firebase notification as read
+    await markSectionNotificationsAsRead(
+        activeSectionId
+    );
+
+    // Secret Messages → mark messages as seen too
+    if (
+        activeSectionId === "messages-section"
+    ) {
+        await markSecretMessagesAsSeen();
+    }
+
+}
+
+// ======================================================
 // MARK SECRET MESSAGES AS SEEN
 // ======================================================
 
@@ -5339,7 +5381,10 @@ async function markSecretMessagesAsSeen() {
 
 async function showSection(sectionId) {
 
-        markSectionNotificationsAsRead(sectionId);
+    activeSectionId =
+        sectionId || "home-section";
+
+    markSectionNotificationsAsRead(sectionId);
 
     const menu =
         document.querySelector(".navigation");
