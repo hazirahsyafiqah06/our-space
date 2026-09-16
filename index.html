@@ -158,7 +158,7 @@
     </div>
 </div>
 
-    <!-- =========================
+   <!-- =========================
      NOTIFICATION
 ========================= -->
 
@@ -172,7 +172,7 @@
         title="Notifications"
         aria-label="Notifications"
     >
-        🔔
+        <span class="notification-bell">🔔</span>
 
         <span
             id="notificationBadge"
@@ -189,22 +189,71 @@
         class="notification-dropdown"
     >
 
+        <!-- HEADER -->
         <div class="notification-header">
-            <h4>🔔 Notifications</h4>
 
-            <small id="notificationCount">
-                No unread notifications
-            </small>
+            <div class="notification-header-left">
+
+                <div class="notification-header-icon">
+                    🔔
+                </div>
+
+                <div>
+                    <h4>Notifications</h4>
+
+                    <small id="notificationCount">
+                        No unread notifications
+                    </small>
+                </div>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="mark-all-btn"
+                onclick="markAllFirebaseNotificationsRead(event)"
+            >
+                Mark all as read
+            </button>
+
         </div>
 
 
+        <!-- BODY -->
         <div
             id="notificationBody"
             class="notification-body"
         >
+
             <div class="notification-empty">
-                No new notifications ❤️
+
+                <div class="notification-empty-icon">
+                    💕
+                </div>
+
+                <strong>No new notifications</strong>
+
+                <span>
+                    You're all caught up ✨
+                </span>
+
             </div>
+
+        </div>
+
+
+        <!-- FOOTER -->
+        <div class="notification-footer">
+
+            <button
+                type="button"
+                onclick="toggleNotification(event)"
+            >
+                View all notifications
+                <span>→</span>
+            </button>
+
         </div>
 
     </div>
