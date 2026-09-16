@@ -210,6 +210,308 @@ async function loadFirebaseNotifications() {
 
 }
 
+// ======================================================
+// NOTIFICATION BADGE
+// ======================================================
+
+function updateNotificationBadge(unreadCount) {
+
+    const badge =
+        document.getElementById("notificationBadge");
+
+    const count =
+        document.getElementById("notificationCount");
+
+    if (!badge) return;
+
+    if (unreadCount > 0) {
+
+        badge.textContent =
+            unreadCount > 99 ? "99+" : unreadCount;
+
+        badge.style.display = "flex";
+
+        if (count) {
+            count.textContent =
+                unreadCount +
+                (unreadCount === 1
+                    ? " unread notification"
+                    : " unread notifications");
+        }
+
+    } else {
+
+        badge.textContent = "0";
+        badge.style.display = "none";
+
+        if (count) {
+            count.textContent =
+                "No unread notifications";
+        }
+    }
+}
+
+
+// ======================================================
+// RENDER NOTIFICATIONS
+// ======================================================
+
+function renderFirebaseNotifications(notifications) {
+
+    const body =
+        document.getElementById("notificationBody");
+
+    const count =
+        document.getElementById("notificationCount");
+
+    if (!body) return;
+
+    if (!notifications || notifications.length === 0) {
+
+        body.innerHTML = `
+            <div class="notification-empty">
+                No new notifications ❤️
+            </div>
+        `;
+
+        if (count) {
+            count.textContent =
+                "No unread notifications";
+        }
+
+        return;
+    }
+
+    body.innerHTML =
+        notifications.map(notification => {
+
+            const createdAt =
+                notification.createdAt?.toDate
+                    ? notification.createdAt.toDate()
+                    : new Date();
+
+            const time =
+                createdAt.toLocaleString(
+                    "en-MY",
+                    {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: true,
+                        timeZone: "Asia/Kuala_Lumpur"
+                    }
+                );
+
+            return `
+                <div
+                    class="notification-item ${notification.read === false ? "unread" : ""}"
+                    onclick="markFirebaseNotificationRead('${notification.id}')"
+                >
+
+                    <div class="notification-item-title">
+                        ${notification.title || "Notification"}
+                    </div>
+
+                    <div class="notification-item-message">
+                        ${notification.message || ""}
+                    </div>
+
+                    <div class="notification-item-time">
+                        ${time}
+                    </div>
+
+                </div>
+            `;
+
+        }).join("");
+}
+
+
+// ======================================================
+// REALTIME FIREBASE NOTIFICATION
+// ======================================================
+
+let firebaseNotificationUnsubscribe = null;
+
+function setupFirebaseNotificationRealtime() {
+
+    if (!currentUser) return;
+
+    if (!firestoreDB || !firebaseFns) {
+
+        console.error(
+            "Firebase is not available."
+        );
+
+        return;
+    }
+
+    if (firebaseNotificationUnsubscribe) {
+
+        firebaseNotificationUnsubscribe();
+        firebaseNotificationUnsubscribe = null;
+    }
+
+    const notificationRef =
+        firebaseFns.collection(
+            firestoreDB,
+            "notifications"
+        );
+
+    firebaseNotificationUnsubscribe =
+        firebaseFns.onSnapshot(
+            notificationRef,
+            snapshot => {
+
+                const notifications = [];
+
+                snapshot.forEach(doc => {
+
+                    const data =
+                        doc.data();
+
+                    if (
+                        data.recipientId ===
+                        currentUser.id
+                    ) {
+
+                        notifications.push({
+                            id: doc.id,
+                            ...data
+                        });
+                    }
+
+                });
+
+                notifications.sort((a, b) => {
+
+                    const dateA =
+                        a.createdAt?.toMillis
+                            ? a.createdAt.toMillis()
+                            : 0;
+
+                    const dateB =
+                        b.createdAt?.toMillis
+                            ? b.createdAt.toMillis()
+                            : 0;
+
+                    return dateB - dateA;
+                });
+
+                const unread =
+                    notifications.filter(
+                        notification =>
+                            notification.read === false
+                    );
+
+                updateNotificationBadge(
+                    unread.length
+                );
+
+                renderFirebaseNotifications(
+                    notifications
+                );
+
+            }
+        );
+}
+
+
+// ======================================================
+// MARK NOTIFICATION AS READ
+// ======================================================
+
+async function markFirebaseNotificationRead(
+    notificationId
+) {
+
+    try {
+
+        if (!firestoreDB || !firebaseFns) {
+            return;
+        }
+
+        const notificationDoc =
+            firebaseFns.doc(
+                firestoreDB,
+                "notifications",
+                notificationId
+            );
+
+        await firebaseFns.updateDoc(
+            notificationDoc,
+            {
+                read: true
+            }
+        );
+
+        await loadFirebaseNotifications();
+
+    } catch (error) {
+
+        console.error(
+            "Mark notification read error:",
+            error
+        );
+    }
+}
+
+
+// ======================================================
+// TOGGLE NOTIFICATION DROPDOWN
+// ======================================================
+
+function toggleNotification(event) {
+
+    if (event) {
+        event.stopPropagation();
+    }
+
+    const dropdown =
+        document.getElementById(
+            "notificationDropdown"
+        );
+
+    if (!dropdown) return;
+
+    dropdown.classList.toggle("show");
+}
+
+
+// ======================================================
+// CLOSE NOTIFICATION WHEN CLICK OUTSIDE
+// ======================================================
+
+document.addEventListener(
+    "click",
+    function(event) {
+
+        const container =
+            document.querySelector(
+                ".notification-container"
+            );
+
+        const dropdown =
+            document.getElementById(
+                "notificationDropdown"
+            );
+
+        if (
+            container &&
+            dropdown &&
+            !container.contains(event.target)
+        ) {
+
+            dropdown.classList.remove(
+                "show"
+            );
+        }
+
+    }
+);
+
 window.testFirebaseNotification =
     async function () {
 
@@ -5176,6 +5478,10 @@ function showWelcomeAnimation() {
 async function startApp() {
 
     await getCurrentUser();
+
+    // FIREBASE NOTIFICATIONS
+    await loadFirebaseNotifications();
+    setupFirebaseNotificationRealtime();
 
     setupSecretMessageRealtime();
 
