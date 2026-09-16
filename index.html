@@ -1220,13 +1220,10 @@ async function logout() {
         }
 
         const db = firebase.firestore();
-window.firestoreDB = db;
+        window.firestoreDB = db;
 
         window.firebaseApp =
             firebase.app();
-
-        window.firestoreDB =
-            firestoreDB;
 
         /*
          * Wrapper Firebase untuk script.js
