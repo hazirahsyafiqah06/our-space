@@ -1638,26 +1638,6 @@ await sendEmailNotification(
     "<strong>Note:</strong> " +
     escapeHTML(content)
 );
-    document.getElementById(
-    "title"
-).value = "";
-
-document.getElementById(
-    "content"
-).value = "";
-
-await sendEmailNotification(
-    "New Note Added ❤️",
-    "📝 New Note Added",
-    "A new note has been added to Our Space.<br><br>" +
-    "<strong>Title:</strong> " +
-    escapeHTML(title) +
-    "<br>" +
-    "<strong>Note:</strong> " +
-    escapeHTML(content)
-);
-
-loadNotes();
 
 loadNotes();  
 
