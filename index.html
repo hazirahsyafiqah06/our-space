@@ -1016,8 +1016,12 @@ async function logout() {
     import { initializeApp } 
         from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
-    import { getFirestore } 
-        from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import {
+    getFirestore,
+    collection,
+    addDoc,
+    serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCJjqBOQlNx5qu2PsauYIZgz2Hh5t4KiYQ",
@@ -1036,10 +1040,16 @@ async function logout() {
     const firestoreDB = getFirestore(firebaseApp);
 
     // Make Firebase available to script.js
-    window.firebaseApp = firebaseApp;
-    window.firestoreDB = firestoreDB;
+   window.firebaseApp = firebaseApp;
+window.firestoreDB = firestoreDB;
 
-    console.log("Firebase connected successfully ❤️");
+window.firebaseFns = {
+    collection,
+    addDoc,
+    serverTimestamp
+};
+
+console.log("Firebase connected successfully ❤️");
 </script>
 
 <script src="./script.js"></script>
