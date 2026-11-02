@@ -2067,6 +2067,111 @@ window.syncPetSleep = function (sleeping) {
         basePlayPetAnimation("idle");
     }
 };
+
+    /* =========================================
+   💗 HATI TERAPUNG BILA HUG
+========================================= */
+
+const heartStyle = document.createElement("style");
+heartStyle.textContent = `
+.pet-heart-layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+    z-index: 6;
+}
+.pet-heart {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    opacity: 0;
+    animation: petHeartFloat 1.9s ease-out forwards;
+    filter: drop-shadow(0 2px 6px rgba(240, 80, 140, 0.45));
+}
+@keyframes petHeartFloat {
+    0%   { transform: translate(0, 0) scale(0.5); opacity: 0; }
+    15%  { opacity: 1; }
+    60%  { transform: translate(var(--sway), -55px) scale(1.1); opacity: 1; }
+    100% { transform: translate(calc(var(--sway) * -0.5), -105px) scale(1.25); opacity: 0; }
+}`;
+document.head.appendChild(heartStyle);
+
+const heartRoom = canvas.parentElement;
+if (heartRoom && getComputedStyle(heartRoom).position === "static") {
+    heartRoom.style.position = "relative";
+}
+
+const heartLayer = document.createElement("div");
+heartLayer.className = "pet-heart-layer";
+if (heartRoom) heartRoom.appendChild(heartLayer);
+
+const heartHead = new THREE.Vector3();
+const heartBox = new THREE.Box3();
+
+function placeHeartLayer() {
+    let x = canvas.clientWidth * 0.5;
+    let y = canvas.clientHeight * 0.45;
+
+    if (petModel) {
+        heartBox.setFromObject(petModel);
+        heartHead.set(
+            (heartBox.min.x + heartBox.max.x) / 2,
+            heartBox.max.y,
+            (heartBox.min.z + heartBox.max.z) / 2
+        );
+        heartHead.project(camera);
+
+        x = (heartHead.x * 0.5 + 0.5) * canvas.clientWidth;
+        y = (-heartHead.y * 0.5 + 0.5) * canvas.clientHeight;
+    }
+
+    heartLayer.style.transform =
+        `translate(${x + canvas.offsetLeft}px, ${y + canvas.offsetTop}px)`;
+}
+
+const HEART_EMOJIS = ["💗", "💖", "💕", "🩷"];
+
+window.spawnPetHearts = function (count = 7) {
+    placeHeartLayer();
+
+    for (let i = 0; i < count; i++) {
+        setTimeout(() => {
+            const heart = document.createElement("span");
+            heart.className = "pet-heart";
+            heart.textContent =
+                HEART_EMOJIS[Math.floor(Math.random() * HEART_EMOJIS.length)];
+            heart.style.fontSize = (18 + Math.random() * 14) + "px";
+            heart.style.marginLeft = (Math.random() * 60 - 30) + "px";
+            heart.style.setProperty("--sway", (Math.random() * 30 - 15) + "px");
+            heartLayer.appendChild(heart);
+            setTimeout(() => heart.remove(), 2000);
+        }, i * 130);
+    }
+};
+
+// Dipanggil dari renderOurPet(): hati keluar bila ada hug baru (kau atau pasangan)
+let lastHugSeen;
+
+window.syncPetHug = function (lastHugAt) {
+    const ts = lastHugAt ? new Date(lastHugAt).getTime() : 0;
+
+    // Kali pertama website dibuka: catat je, jangan keluarkan hati lama
+    if (lastHugSeen === undefined) {
+        lastHugSeen = ts;
+        return;
+    }
+
+    if (ts && ts !== lastHugSeen) {
+        lastHugSeen = ts;
+
+        if (Date.now() - ts < 15000) {
+            window.spawnPetHearts();
+        }
+    }
+};
     
 
 // ANIMATION LOOP
