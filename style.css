@@ -8478,6 +8478,60 @@ html {
     }
 }
 
+   
+/* REAL 3D PET ROOM */
+
+.pet-room-3d {
+    position: relative;
+    width: 100%;
+    height: 480px;
+    overflow: hidden;
+    border-radius: 25px;
+    background: linear-gradient(
+        180deg,
+        #ffc8e2,
+        #ffe6f3 65%,
+        #f5c7e0
+    );
+    box-shadow: 0 10px 25px rgba(220, 100, 160, 0.2);
+}
+
+#pet3DCanvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.pet-room-3d .pet-speech {
+    position: absolute;
+    top: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: max-content;
+    max-width: 85%;
+    background: #fff;
+    color: #9b5278;
+    border-radius: 25px;
+    padding: 12px 18px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(180, 80, 130, 0.15);
+    z-index: 5;
+}
+
+.pet-room-3d .pet-room-floor {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 55px;
+    background: linear-gradient(
+        180deg,
+        #f7d6e8,
+        #e9b3d2
+    );
+    pointer-events: none;
+}
+
+
 
 
 }
