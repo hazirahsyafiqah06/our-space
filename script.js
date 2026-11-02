@@ -5478,6 +5478,8 @@ async function showSection(sectionId) {
 
         "quiz-section"
 
+        "pet-section"
+
     ];
 
 
