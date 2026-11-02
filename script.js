@@ -10515,6 +10515,10 @@ function renderOurPet() {
 
     setText("petCoinsDisplay", ourPetData.coins ?? 100);
 
+    setText("petShopCoins", ourPetData.coins ?? 100);
+    renderPetInventory();
+
+
     setText(
         "petHungerText",
         `${ourPetData.hunger ?? 70}/100`
@@ -10603,6 +10607,134 @@ async function renameOurPet() {
 
     alert(`Our pet's new name is ${petName}! ❤️`);
 }
+
+
+// =====================================
+// PET SHOP SYSTEM
+// =====================================
+
+const PET_SHOP_ITEMS = {
+    snack: { name: "Strawberry Snack", emoji: "🍓", price: 20 },
+    milk: { name: "Fresh Milk", emoji: "🥛", price: 30 },
+    teddy: { name: "Teddy Bear", emoji: "🧸", price: 50 },
+    ball: { name: "Play Ball", emoji: "⚽", price: 30 },
+    bow: { name: "Pretty Bow", emoji: "🎀", price: 75 },
+    crown: { name: "Little Crown", emoji: "👑", price: 120 }
+};
+
+// FILTER SHOP CATEGORY
+function filterPetShop(category, button) {
+    const grid = document.getElementById("petShopGrid");
+    if (!grid) return;
+
+    grid.querySelectorAll(".pet-shop-item").forEach(card => {
+        card.hidden =
+            category !== "all" &&
+            card.dataset.category !== category;
+    });
+
+    document.querySelectorAll(".pet-shop-tab").forEach(tab => {
+        tab.classList.toggle("active", tab === button);
+    });
+}
+
+// DISPLAY INVENTORY
+function renderPetInventory() {
+    const list = document.getElementById("petInventoryList");
+    if (!list) return;
+
+    const inventory = ourPetData?.inventory || {};
+
+    const ownedItems = Object.entries(inventory)
+        .filter(([id, quantity]) =>
+            PET_SHOP_ITEMS[id] && Number(quantity) > 0
+        );
+
+    if (ownedItems.length === 0) {
+        list.innerHTML =
+            '<p class="pet-inventory-empty">Your bag is empty. Visit the Pet Shop! ♡</p>';
+        return;
+    }
+
+    list.innerHTML = ownedItems.map(([id, quantity]) => {
+        const item = PET_SHOP_ITEMS[id];
+
+        return `
+            <div class="pet-inventory-item">
+                <span class="pet-inventory-emoji">${item.emoji}</span>
+                <span class="pet-inventory-name">${item.name}</span>
+                <strong>× ${quantity}</strong>
+            </div>
+        `;
+    }).join("");
+}
+
+// BUY ITEM
+async function buyPetItem(itemId) {
+
+    if (!currentUser) {
+        alert("Please login first ❤️");
+        return;
+    }
+
+    const item = PET_SHOP_ITEMS[itemId];
+    if (!item) return;
+
+    if (!ourPetData) {
+        await loadOurPet();
+    }
+
+    if (!ourPetData) return;
+
+    const currentCoins = Number(ourPetData.coins) || 0;
+
+    if (currentCoins < item.price) {
+        alert("Not enough coins! 🪙");
+        return;
+    }
+
+    const inventory = {
+        ...(ourPetData.inventory || {})
+    };
+
+    inventory[itemId] =
+        (Number(inventory[itemId]) || 0) + 1;
+
+    const { data, error } = await supabaseClient
+        .from("our_little_pet")
+        .update({
+            coins: currentCoins - item.price,
+            inventory: inventory,
+            updated_at: new Date().toISOString(),
+            updated_by: currentUser.id
+        })
+        .eq("id", "our-space-pet")
+        .select("*")
+        .single();
+
+    if (error) {
+        console.error("Pet Shop Error:", error);
+        alert("Purchase failed. Please try again.");
+        return;
+    }
+
+    ourPetData = data;
+
+    renderOurPet();
+
+    const message = document.getElementById("petActionMessage");
+
+    if (message) {
+        message.textContent =
+            `${item.emoji} You bought ${item.name}! ♡`;
+    }
+}
+
+// MAKE FUNCTIONS AVAILABLE TO HTML BUTTONS
+window.filterPetShop = filterPetShop;
+window.buyPetItem = buyPetItem;
+window.renameOurPet = renameOurPet;
+
 
 
 // PET INTERACTION
