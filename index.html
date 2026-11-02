@@ -1092,6 +1092,89 @@
             Take care of our little baby together ♡
         </p>
 
+        <!-- PET SHOP + INVENTORY -->
+        <section class="pet-store" aria-labelledby="petStoreTitle">
+            <div class="pet-store-hero">
+                <div class="pet-store-kicker">A LITTLE TREAT FOR OUR LITTLE FRIEND</div>
+                <div class="pet-store-title-row">
+                    <div>
+                        <h3 id="petStoreTitle">🛍️ Pet Shop</h3>
+                        <p>Choose something cute for our baby ♡</p>
+                    </div>
+                    <div class="pet-store-wallet" aria-label="Available coins">
+                        <span>🪙</span>
+                        <strong id="petShopCoins">0</strong>
+                        <small>COINS</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pet-shop-tabs" role="group" aria-label="Filter pet shop items">
+                <button type="button" class="pet-shop-tab active" data-pet-filter="all" onclick="filterPetShop('all', this)">All items</button>
+                <button type="button" class="pet-shop-tab" data-pet-filter="food" onclick="filterPetShop('food', this)">🍓 Food</button>
+                <button type="button" class="pet-shop-tab" data-pet-filter="toys" onclick="filterPetShop('toys', this)">🧸 Toys</button>
+                <button type="button" class="pet-shop-tab" data-pet-filter="accessories" onclick="filterPetShop('accessories', this)">🎀 Extras</button>
+            </div>
+
+            <div class="pet-shop-grid" id="petShopGrid">
+                <article class="pet-shop-item" data-category="food">
+                    <span class="pet-shop-emoji">🍓</span>
+                    <strong>Strawberry Snack</strong>
+                    <small>A sweet little snack</small>
+                    <span class="pet-item-price">🪙 20</span>
+                    <button type="button" onclick="buyPetItem('snack')">Buy</button>
+                </article>
+                <article class="pet-shop-item" data-category="food">
+                    <span class="pet-shop-emoji">🥛</span>
+                    <strong>Fresh Milk</strong>
+                    <small>A refreshing little drink</small>
+                    <span class="pet-item-price">🪙 30</span>
+                    <button type="button" onclick="buyPetItem('milk')">Buy</button>
+                </article>
+                <article class="pet-shop-item" data-category="toys">
+                    <span class="pet-shop-emoji">🧸</span>
+                    <strong>Teddy Bear</strong>
+                    <small>A cuddly little friend</small>
+                    <span class="pet-item-price">🪙 50</span>
+                    <button type="button" onclick="buyPetItem('teddy')">Buy</button>
+                </article>
+                <article class="pet-shop-item" data-category="toys">
+                    <span class="pet-shop-emoji">⚽</span>
+                    <strong>Play Ball</strong>
+                    <small>Let's play together!</small>
+                    <span class="pet-item-price">🪙 30</span>
+                    <button type="button" onclick="buyPetItem('ball')">Buy</button>
+                </article>
+                <article class="pet-shop-item" data-category="accessories">
+                    <span class="pet-shop-emoji">🎀</span>
+                    <strong>Pretty Bow</strong>
+                    <small>A cute little accessory</small>
+                    <span class="pet-item-price">🪙 75</span>
+                    <button type="button" onclick="buyPetItem('bow')">Buy</button>
+                </article>
+                <article class="pet-shop-item" data-category="accessories">
+                    <span class="pet-shop-emoji">👑</span>
+                    <strong>Little Crown</strong>
+                    <small>Our tiny royal baby</small>
+                    <span class="pet-item-price">🪙 120</span>
+                    <button type="button" onclick="buyPetItem('crown')">Buy</button>
+                </article>
+            </div>
+
+            <div class="pet-inventory">
+                <div class="pet-inventory-heading">
+                    <div>
+                        <h3>🎒 Our Inventory</h3>
+                        <span>All the little things we own</span>
+                    </div>
+                    <span class="pet-inventory-bag">♡ Shared bag</span>
+                </div>
+                <div id="petInventoryList" class="pet-inventory-list">
+                    <p class="pet-inventory-empty">Your bag is empty. Visit the Pet Shop! ♡</p>
+                </div>
+            </div>
+        </section>
+
     </div>
 </section>
 
