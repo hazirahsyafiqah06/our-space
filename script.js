@@ -10636,6 +10636,8 @@ async function interactWithPet(action) {
 
         next.happiness = Math.min(100, next.happiness + 5);
 
+         window.playPetAnimation("eat");
+
     }
 
 
@@ -10654,6 +10656,8 @@ async function interactWithPet(action) {
 
         next.energy = Math.max(0, next.energy - 15);
 
+         window.playPetAnimation("walk");
+
     }
 
 
@@ -10661,6 +10665,8 @@ async function interactWithPet(action) {
     else if (action === "sleep") {
 
         next.energy = Math.min(100, next.energy + 40);
+
+          window.playPetAnimation("sleep");
 
     }
 
@@ -10670,6 +10676,8 @@ async function interactWithPet(action) {
 
         next.happiness = Math.min(100, next.happiness + 15);
 
+         window.playPetAnimation("idle");
+
     }
 
 
@@ -10677,6 +10685,8 @@ async function interactWithPet(action) {
     else if (action === "clean") {
 
         next.happiness = Math.min(100, next.happiness + 10);
+
+         window.playPetAnimation("idle");
 
     }
 
