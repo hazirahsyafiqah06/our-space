@@ -9364,3 +9364,14 @@ html {
     transform: translate(-50%, 0);
     opacity: 1;
 }
+
+.pet-use-btn {
+    padding: 4px 12px;
+    border: none;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    cursor: pointer;
+    background: linear-gradient(135deg, #f08bb4, #c79bf0);
+}
