@@ -1360,27 +1360,27 @@ scene.add(mainLight);
 
 // Materials
 const pinkWall = new THREE.MeshStandardMaterial({
-    color: "#ffd6e8",
+    color: "#e89abb",
     roughness: 0.9
 });
 
 const creamFloor = new THREE.MeshStandardMaterial({
-    color: "#fff0df",
+    color: "#f5dfc5",
     roughness: 0.9
 });
 
 const whiteMaterial = new THREE.MeshStandardMaterial({
-    color: "#fffafc",
+    color: "#fff4e6",
     roughness: 0.8
 });
 
 const pinkMaterial = new THREE.MeshStandardMaterial({
-    color: "#ffb8d4",
+    color: "#e879a9",
     roughness: 0.8
 });
 
 const woodMaterial = new THREE.MeshStandardMaterial({
-    color: "#d9a77b",
+    color: "#b98255",
     roughness: 0.8
 });
 
@@ -1487,12 +1487,17 @@ createRoomBox(
     pinkMaterial,
     1.35, 2.5, -2.1
 );
-
+    
+const bedMaterial = new THREE.MeshStandardMaterial({
+    color: "#c78ba9",
+    roughness: 0.8
+});
+    
 // BED
 createRoomBox(
     2.4, 0.35, 1.8,
-    whiteMaterial,
-    1.5, -0.1, -1
+    bedMaterial,
+    2.5, -0.1, -1
 );
 
 // BED LEGS
