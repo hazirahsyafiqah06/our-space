@@ -2640,6 +2640,10 @@ async function addNote() {
         return;
     }
 
+    window.renameOurPet = function() {
+    alert("Rename function is working");
+};
+
 
     // ==================================================
     // SAVE NOTE TO SUPABASE
