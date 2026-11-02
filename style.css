@@ -8194,5 +8194,48 @@ html {
     }
 }
 
+   
+/* FIX OUR LITTLE PET BUTTONS */
+
+#pet-section .pet-actions {
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: 9px !important;
+}
+
+#pet-section .pet-actions button {
+    width: 100% !important;
+    min-width: 0 !important;
+    padding: 12px 6px !important;
+
+    border: 1px solid #f0d6e3 !important;
+    border-radius: 15px !important;
+
+    background: linear-gradient(145deg, #fff, #fff4f9) !important;
+    color: #9b6480 !important;
+
+    font-size: 13px !important;
+    box-shadow: 0 3px 9px rgba(190,120,150,.08) !important;
+}
+
+#pet-section .pet-room {
+    display: flex !important;
+}
+
+#pet-section .pet-stat-track {
+    display: block !important;
+}
+
+#pet-section .pet-stat-fill {
+    display: block !important;
+}
+
+@media (max-width: 600px) {
+    #pet-section .pet-actions {
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    }
+}
+
+
 
 }
