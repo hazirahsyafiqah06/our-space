@@ -8573,4 +8573,26 @@ html {
     font-size: 16px;
     padding: 4px;
 }
+
+   .pet-coins {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.pet-coin-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.pet-coin-icon svg {
+    display: block;
+    width: 20px;
+    height: 20px;
+}
 }
