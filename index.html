@@ -1392,7 +1392,7 @@ loader.load(
         const maxDimension = Math.max(size.x, size.y, size.z);
 
         if (maxDimension > 0) {
-            const scale = 1.5 / maxDimension;
+            const scale = 0.9 / maxDimension;
             petModel.scale.setScalar(scale);
         }
 
@@ -1402,7 +1402,7 @@ loader.load(
         scene.add(petModel);
 
         // Adjust camera
-        camera.position.set(0, 1.5, 3.5);
+       camera.position.set(0, 1.5, 4.5);
         camera.lookAt(0, 0.5, 0);
 
         // Load animations
