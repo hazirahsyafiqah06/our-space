@@ -2015,27 +2015,20 @@ function updatePetNight(delta) {
 
 // ---- Sambung dengan butang Sleep + sync pasangan ----
 const basePlayPetAnimation = window.playPetAnimation;
-let sleepTimer = null;
 let isSleeping = false;
-let sleepUntilApplied = 0;
+let firstIdleHandled = false;
 
 function wakePet() {
-    clearTimeout(sleepTimer);
     isSleeping = false;
     setPetNight(false);
     stopZzz();
 }
 
-function startSleepMode(duration = PET_SLEEP_DURATION) {
+function startSleepMode() {
+    if (isSleeping) return;
     isSleeping = true;
     setPetNight(true);
     startZzz();
-    clearTimeout(sleepTimer);
-
-    sleepTimer = setTimeout(() => {
-        wakePet();
-        basePlayPetAnimation("idle");
-    }, duration);
 }
 
 window.playPetAnimation = function (animationName) {
@@ -2043,6 +2036,17 @@ window.playPetAnimation = function (animationName) {
 
     if (name === "sleep") {
         startSleepMode();
+
+    } else if (name === "idle" && !firstIdleHandled) {
+        // Panggilan "idle" pertama datang dari loader model masa website baru dibuka.
+        // Kalau pet memang tengah tidur, kekalkan animasi tidur.
+        firstIdleHandled = true;
+
+        if (isSleeping) {
+            basePlayPetAnimation("sleep");
+            return;
+        }
+
     } else {
         wakePet();
     }
@@ -2051,24 +2055,16 @@ window.playPetAnimation = function (animationName) {
 };
 
 // Dipanggil dari renderOurPet() setiap kali data pet berubah (termasuk realtime pasangan)
-window.syncPetSleep = function (sleepingUntil) {
-    const until = sleepingUntil ? new Date(sleepingUntil).getTime() : 0;
-    const remaining = Math.min(until - Date.now(), PET_SLEEP_DURATION);
-
-    if (until && remaining > 0) {
-        if (sleepUntilApplied === until) return; // dah tidur untuk sesi ni
-
-        sleepUntilApplied = until;
-        if (!isSleeping) basePlayPetAnimation("sleep");
-        startSleepMode(remaining);
-
-    } else {
-        sleepUntilApplied = 0;
-
-        if (isSleeping) {
-            wakePet();
-            basePlayPetAnimation("idle");
+window.syncPetSleep = function (sleeping) {
+    if (sleeping) {
+        if (!isSleeping) {
+            startSleepMode();
+            basePlayPetAnimation("sleep");
         }
+
+    } else if (isSleeping) {
+        wakePet();
+        basePlayPetAnimation("idle");
     }
 };
     
