@@ -1311,11 +1311,18 @@ async function logout() {
     
 <script type="module">
 
-import * as THREE from
-    "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.module.js";
+    import * as THREE from "three";
 
 import { GLTFLoader } from
     "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/loaders/GLTFLoader.js";
+
+<script type="importmap">
+{
+    "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+    }
+}
+</script>
 
 
 const canvas = document.getElementById("pet3DCanvas");
