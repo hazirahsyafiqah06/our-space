@@ -1380,11 +1380,32 @@ loader.load(
     function(gltf) {
         petModel = gltf.scene;
 
-        petModel.scale.set(1, 1, 1);
-        petModel.position.set(0, 0, 0);
+        // Calculate model size
+        const box = new THREE.Box3().setFromObject(petModel);
+        const size = box.getSize(new THREE.Vector3());
+        const center = box.getCenter(new THREE.Vector3());
+
+        // Center the model
+        petModel.position.sub(center);
+
+        // Automatically adjust model scale
+        const maxDimension = Math.max(size.x, size.y, size.z);
+
+        if (maxDimension > 0) {
+            const scale = 1.5 / maxDimension;
+            petModel.scale.setScalar(scale);
+        }
+
+        // Place model in scene
+        petModel.position.y = 0;
 
         scene.add(petModel);
 
+        // Adjust camera
+        camera.position.set(0, 1.5, 3.5);
+        camera.lookAt(0, 0.5, 0);
+
+        // Load animations
         if (gltf.animations.length > 0) {
             petMixer = new THREE.AnimationMixer(petModel);
 
@@ -1397,6 +1418,7 @@ loader.load(
         }
 
         console.log("3D Cat Loaded! 🐱");
+        console.log("Model size:", size);
     },
 
     undefined,
