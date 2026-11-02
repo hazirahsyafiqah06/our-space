@@ -10528,9 +10528,14 @@ function renderOurPet() {
 
     };
 
+       const wornEmojis = Object.entries(ourPetData.equipped || {})
+        .filter(([id, on]) => on && PET_SHOP_ITEMS[id])
+        .map(([id]) => PET_SHOP_ITEMS[id].emoji)
+        .join("");
+
     setText(
         "petNameDisplay",
-        ourPetData.pet_name || "Baby Love"
+        (ourPetData.pet_name || "Baby Love") + (wornEmojis ? " " + wornEmojis : "")
     );
 
     setText("petCoinsDisplay", ourPetData.coins ?? 100);
@@ -10713,12 +10718,21 @@ function renderPetInventory() {
 
     list.innerHTML = ownedItems.map(([id, quantity]) => {
         const item = PET_SHOP_ITEMS[id];
+        const effect = PET_ITEM_EFFECTS[id] || {};
+        const worn = effect.type === "accessory" && ourPetData?.equipped?.[id];
+
+        let label = "Use";
+        if (effect.type === "food") label = "Feed";
+        else if (effect.type === "toy") label = "Play";
+        else if (effect.type === "accessory") label = worn ? "Remove" : "Wear";
 
         return `
             <div class="pet-inventory-item">
                 <span class="pet-inventory-emoji">${item.emoji}</span>
                 <span class="pet-inventory-name">${item.name}</span>
                 <strong>× ${quantity}</strong>
+                <button type="button" class="pet-use-btn"
+                    onclick="window.usePetItem('${id}')">${label}</button>
             </div>
         `;
     }).join("");
@@ -10836,13 +10850,19 @@ async function interactWithPet(action) {
 
 
     // FEED
-    if (action === "feed") {
+        if (action === "feed") {
 
-        next.hunger = Math.min(100, next.hunger + 25);
+        const foodId = ["snack", "milk"].find(id =>
+            Number(ourPetData.inventory?.[id]) > 0
+        );
 
-        next.happiness = Math.min(100, next.happiness + 5);
+        if (!foodId) {
+            alert("No Food! 🍓 Buy at pet shop first ♡");
+            return;
+        }
 
-         window.playPetAnimation("eat");
+        await usePetItem(foodId);
+        return;
 
     }
 
