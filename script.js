@@ -10575,6 +10575,61 @@ function renderOurPet() {
 
 }
 
+    // RENAME OUR PET
+async function renameOurPet() {
+
+    if (!currentUser) {
+        alert("Please login first ❤️");
+        return;
+    }
+
+    if (!ourPetData) {
+        alert("Pet data is not loaded yet.");
+        return;
+    }
+
+    const newName = prompt(
+        "What should we name our little pet? 🐾",
+        ourPetData.pet_name || "Baby Love"
+    );
+
+    if (newName === null) return;
+
+    const petName = newName.trim();
+
+    if (!petName) {
+        alert("Please enter a pet name ❤️");
+        return;
+    }
+
+    if (petName.length > 20) {
+        alert("Pet name must be 20 characters or less.");
+        return;
+    }
+
+    const { data, error } = await supabaseClient
+        .from("our_little_pet")
+        .update({
+            pet_name: petName,
+            updated_at: new Date().toISOString(),
+            updated_by: currentUser.id
+        })
+        .eq("id", "our-space-pet")
+        .select()
+        .single();
+
+    if (error) {
+        console.error("Rename pet error:", error);
+        alert("Unable to change pet name. Please try again.");
+        return;
+    }
+
+    ourPetData = data;
+    renderOurPet();
+
+    alert(`Our pet's new name is ${petName}! ❤️`);
+}
+
 
 // PET INTERACTION
 async function interactWithPet(action) {
