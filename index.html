@@ -1347,9 +1347,10 @@ const canvas = document.getElementById("pet3DCanvas");
 const scene = new THREE.Scene();
 scene.background = new THREE.Color("#ffd9ec");
 
+// Start with a safe aspect ratio because this section is hidden on page load.
 const camera = new THREE.PerspectiveCamera(
     50,
-    canvas.clientWidth / canvas.clientHeight,
+    1,
     0.1,
     100
 );
@@ -1362,8 +1363,10 @@ const renderer = new THREE.WebGLRenderer({
     alpha: true
 });
 
-renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+// The pet section starts hidden, so use a safe initial drawing size.
+// resizePet3D() will set the real size as soon as the section is shown.
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(1, 1, false);
 
 scene.add(
     new THREE.HemisphereLight(0xffffff, 0xffb6d9, 3)
@@ -1744,23 +1747,35 @@ animate();
 
 // RESPONSIVE
 function resizePet3D() {
-    const width = canvas.clientWidth;
-    const height = canvas.clientHeight;
+    const room = canvas.parentElement;
+    if (!room) return;
 
-    if (width === 0 || height === 0) {
-        return;
-    }
+    const rect = room.getBoundingClientRect();
+    const width = Math.round(rect.width);
+    const height = Math.round(rect.height);
+
+    // Skip while the section is display:none. It will resize when opened.
+    if (width <= 0 || height <= 0) return;
 
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
 
-    renderer.setSize(width, height);
+    // false keeps the canvas CSS size controlled by the responsive stylesheet.
+    renderer.setSize(width, height, false);
 }
 
 window.addEventListener("resize", resizePet3D);
+window.addEventListener("orientationchange", resizePet3D);
 
-// Update size apabila pet section dibuka
+// Recalculate after the hidden pet section becomes visible.
 window.resizePet3D = resizePet3D;
+requestAnimationFrame(resizePet3D);
+
+// Also resize when the room width/height changes without a window resize.
+if (typeof ResizeObserver !== "undefined" && canvas.parentElement) {
+    const petRoomObserver = new ResizeObserver(resizePet3D);
+    petRoomObserver.observe(canvas.parentElement);
+}
 
 </script>    
 
