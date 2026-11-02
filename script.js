@@ -5476,7 +5476,7 @@ async function showSection(sectionId) {
 
         "song-section",
 
-        "quiz-section"
+        "quiz-section",
 
         "pet-section"
 
