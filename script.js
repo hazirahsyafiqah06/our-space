@@ -10539,17 +10539,6 @@ function renderOurPet() {
         ourPetData.pet_name || "Baby Love"
     );
 
-    setText(
-        "petLevelDisplay",
-        `Level ${ourPetData.level || 1} · ${
-            Number(ourPetData.level) >= 10
-                ? "Adult Pet"
-                : Number(ourPetData.level) >= 5
-                ? "Young Pet"
-                : "Baby Pet"
-        }`
-    );
-
     setText("petCoinsDisplay", ourPetData.coins ?? 100);
 
     setText(
@@ -10611,9 +10600,6 @@ async function interactWithPet(action) {
 
         coins: Number(ourPetData.coins) || 0,
 
-        xp: Number(ourPetData.xp) || 0,
-
-        level: Number(ourPetData.level) || 1
 
     };
 
@@ -10695,20 +10681,8 @@ async function interactWithPet(action) {
     }
 
 
-    // COINS & XP
-    next.coins += 5;
-
-    next.xp += 10;
-
-
-    // LEVEL UP
-    if (next.xp >= next.level * 100) {
-
-        next.xp = next.xp - next.level * 100;
-
-        next.level += 1;
-
-    }
+   // COINS
+next.coins += 5;
 
 
     // UPDATE SUPABASE
@@ -10761,7 +10735,7 @@ async function interactWithPet(action) {
     if (actionMessage) {
 
         actionMessage.textContent =
-            messages[action] + " (+5 coins, +10 XP)";
+            messages[action] + " (+5 coins)";
 
     }
 
