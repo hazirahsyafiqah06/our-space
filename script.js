@@ -10961,8 +10961,6 @@ window.renameOurPet = async function () {
     alert(`Our pet's new name is ${petName}! ❤️`);
 };
 
-    window.renameOurPet = async function () {
-    alert("Rename function is working! ❤️");
 
     if (!currentUser) {
         alert("Please login first ❤️");
