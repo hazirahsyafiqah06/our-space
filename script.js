@@ -10468,7 +10468,9 @@ async function loadOurPet() {
         return;
     }
 
-    ourPetData = data;
+      ourPetData = data;
+
+    await applyPetDecay();
 
     renderOurPet();
 
@@ -10828,8 +10830,6 @@ async function interactWithPet(action) {
 
         energy: Number(ourPetData.energy) || 0,
 
-        coins: Number(ourPetData.coins) || 0,
-
 
     };
 
@@ -10868,31 +10868,34 @@ async function interactWithPet(action) {
 
 
     // PLAY
-    else if (action === "play") {
+       else if (action === "play") {
 
         if (next.energy < 15) {
-
             alert("Our pet is too tired. Let it sleep first 🌙");
-
             return;
+        }
 
+        if (next.hunger < 15) {
+            alert("Baby lapar 🍓 Bagi makan dulu baru boleh main ♡");
+            return;
         }
 
         next.happiness = Math.min(100, next.happiness + 20);
-
         next.energy = Math.max(0, next.energy - 15);
+        next.hunger = Math.max(0, next.hunger - 10);
 
-         window.playPetAnimation("walk");
+        window.playPetAnimation("walk");
 
     }
 
 
     // SLEEP
-    else if (action === "sleep") {
+       else if (action === "sleep") {
 
         next.energy = Math.min(100, next.energy + 40);
+        next.hunger = Math.max(0, next.hunger - 5);
 
-          window.playPetAnimation("sleep");
+        window.playPetAnimation("sleep");
 
     }
 
@@ -11259,7 +11262,7 @@ const PET_ITEM_EFFECTS = {
     snack: { type: "food", hunger: 20, happiness: 5, msg: "Yum yum! Strawberry sedap 🍓" },
     milk:  { type: "food", hunger: 15, energy: 10, msg: "Glug glug... susu fresh 🥛" },
     teddy: { type: "toy", happiness: 25, msg: "Peluk teddy! So cuddly 🧸" },
-    ball:  { type: "toy", happiness: 20, energy: -10, msg: "Main bola best! ⚽" },
+    ball:  { type: "toy", happiness: 20, energy: -10, hunger: -10, msg: "Main bola best! ⚽" },
     bow:   { type: "accessory" },
     crown: { type: "accessory" }
 };
@@ -11311,12 +11314,17 @@ async function usePetItem(itemId) {
             return;
         }
 
+            if (effect.hunger < 0 && hunger < 15) {
+            alert("Baby lapar 🍓 Bagi makan dulu baru boleh main ♡");
+            return;
+        }
+
         if (effect.energy < 0 && energy < Math.abs(effect.energy)) {
             alert("Baby penat. Biar dia tidur dulu 🌙");
             return;
         }
 
-        update.hunger = Math.min(100, hunger + (effect.hunger || 0));
+        update.hunger = Math.max(0, Math.min(100, hunger + (effect.hunger || 0)));
         update.happiness = Math.min(100, happiness + (effect.happiness || 0));
         update.energy = Math.max(0, Math.min(100, energy + (effect.energy || 0)));
 
@@ -11354,6 +11362,71 @@ async function usePetItem(itemId) {
 
 window.usePetItem = usePetItem;
 
+/* =========================================
+   PET DECAY: STATS TURUN IKUT MASA ⏳
+========================================= */
+
+const PET_DECAY_TICK_MS = 30 * 60 * 1000; // setiap 30 minit
+const PET_DECAY_PER_TICK = { hunger: 3, happiness: 2, energy: 1 };
+
+async function applyPetDecay() {
+    if (!currentUser || !ourPetData) return;
+
+    const now = Date.now();
+    const last = ourPetData.last_decay_at
+        ? new Date(ourPetData.last_decay_at).getTime()
+        : null;
+
+    // Kali pertama: mula kira dari sekarang
+    if (!last) {
+        const startAt = new Date(now).toISOString();
+
+        await supabaseClient
+            .from("our_little_pet")
+            .update({ last_decay_at: startAt })
+            .eq("id", "our-space-pet");
+
+        ourPetData.last_decay_at = startAt;
+        return;
+    }
+
+    const ticks = Math.floor((now - last) / PET_DECAY_TICK_MS);
+    if (ticks < 1) return;
+
+    const newLast = new Date(last + ticks * PET_DECAY_TICK_MS).toISOString();
+
+    const update = {
+        hunger: Math.max(0,
+            (Number(ourPetData.hunger) || 0) - ticks * PET_DECAY_PER_TICK.hunger),
+        happiness: Math.max(0,
+            (Number(ourPetData.happiness) || 0) - ticks * PET_DECAY_PER_TICK.happiness),
+        energy: Math.max(0,
+            (Number(ourPetData.energy) || 0) - ticks * PET_DECAY_PER_TICK.energy),
+        last_decay_at: newLast
+    };
+
+    // Hanya update kalau last_decay_at masih sama (elak pasangan decay serentak)
+    const { data, error } = await supabaseClient
+        .from("our_little_pet")
+        .update(update)
+        .eq("id", "our-space-pet")
+        .eq("last_decay_at", ourPetData.last_decay_at)
+        .select("*")
+        .maybeSingle();
+
+    if (error) {
+        console.error("Pet decay error:", error);
+        return;
+    }
+
+    if (data) {
+        ourPetData = data;
+        renderOurPet();
+    }
+}
+
+// Semak setiap 5 minit masa website terbuka
+setInterval(applyPetDecay, 5 * 60 * 1000);
 
     
     
