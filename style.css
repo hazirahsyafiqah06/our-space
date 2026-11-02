@@ -8882,3 +8882,264 @@ html {
         padding-right: 14px;
     }
 }
+
+
+/* =====================================
+   OUR LITTLE PET - SHOP & INVENTORY
+===================================== */
+.pet-store {
+    margin-top: 28px;
+    padding: 20px;
+    border: 1px solid #f1dce7;
+    border-radius: 22px;
+    background: linear-gradient(145deg, #fffafd, #fff4f9);
+}
+.pet-store-heading, .pet-inventory-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+.pet-store-heading h3, .pet-inventory-heading h3 {
+    margin: 0 0 5px;
+    color: #925d79;
+    font-size: 18px;
+}
+.pet-store-heading p, .pet-inventory-heading span {
+    margin: 0;
+    color: #a98799;
+    font-size: 12px;
+}
+.pet-store-wallet {
+    flex-shrink: 0;
+    padding: 8px 12px;
+    border: 1px solid #f0dfbd;
+    border-radius: 20px;
+    background: #fff;
+    color: #a77938;
+}
+.pet-shop-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+.pet-shop-item {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+    padding: 14px 10px;
+    border: 1px solid #f1dce7;
+    border-radius: 17px;
+    background: #fff;
+    text-align: center;
+}
+.pet-shop-emoji { font-size: 32px; line-height: 1.2; }
+.pet-shop-item strong { color: #8f6079; font-size: 13px; }
+.pet-shop-item small { color: #ae91a0; font-size: 11px; min-height: 26px; }
+.pet-item-price { color: #b17d3e; font-size: 12px; font-weight: 700; }
+.pet-shop-item button {
+    width: 100%;
+    margin-top: 3px;
+    padding: 8px 10px;
+    border: 0;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #edb5d0, #dba9e5);
+    color: #70445f;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+.pet-shop-item button:hover { filter: brightness(.97); transform: translateY(-1px); }
+.pet-inventory {
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px dashed #e9cadb;
+}
+.pet-inventory-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+.pet-inventory-item {
+    display: flex; align-items: center; gap: 8px; min-width: 0;
+    padding: 10px; border: 1px solid #f1e1e9; border-radius: 13px; background: #fff;
+}
+.pet-inventory-emoji { font-size: 22px; }
+.pet-inventory-name { flex: 1; min-width: 0; color: #926d82; font-size: 12px; }
+.pet-inventory-item strong { color: #b17d3e; font-size: 12px; }
+.pet-inventory-empty { grid-column: 1 / -1; margin: 0; padding: 14px; border-radius: 12px; background: #fff; color: #ad8da0; text-align: center; font-size: 12px; }
+@media (max-width: 600px) {
+    .pet-store { padding: 14px; margin-top: 22px; }
+    .pet-shop-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+    .pet-shop-item { padding: 12px 8px; }
+    .pet-inventory-list { grid-template-columns: 1fr; }
+}
+
+
+/* =========================================
+   PET SHOP — POLISHED SHOP + INVENTORY UI
+   ========================================= */
+.pet-store {
+    margin-top: 26px;
+    padding: 20px;
+    border: 1px solid #f0dce8;
+    border-radius: 22px;
+    background: linear-gradient(155deg, #fffafd 0%, #fff5fa 55%, #f8f3ff 100%);
+    box-shadow: 0 10px 28px rgba(160, 112, 143, .08);
+    min-width: 0;
+}
+.pet-store-hero {
+    padding: 17px;
+    border-radius: 17px;
+    background: linear-gradient(125deg, #fce7f3, #eee8ff);
+    color: #76536b;
+}
+.pet-store-kicker {
+    margin-bottom: 10px;
+    color: #a47b98;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+}
+.pet-store-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+.pet-store-heading { margin: 0; }
+.pet-store-heading h3, .pet-store-title-row h3 {
+    margin: 0 0 5px;
+    color: #76506c;
+    font-size: 20px;
+}
+.pet-store-heading p, .pet-store-title-row p {
+    margin: 0;
+    color: #98778f;
+    font-size: 12px;
+}
+.pet-store-wallet {
+    display: grid;
+    grid-template-columns: auto auto;
+    align-items: center;
+    column-gap: 6px;
+    flex-shrink: 0;
+    padding: 8px 12px;
+    border: 1px solid rgba(255,255,255,.9);
+    border-radius: 15px;
+    background: rgba(255,255,255,.82);
+    color: #a77938;
+}
+.pet-store-wallet > span { font-size: 18px; }
+.pet-store-wallet strong { font-size: 17px; }
+.pet-store-wallet small { grid-column: 2; color: #b69a72; font-size: 8px; letter-spacing: 1px; }
+.pet-shop-tabs {
+    display: flex;
+    gap: 7px;
+    margin: 17px 0 13px;
+    overflow-x: auto;
+    padding: 1px 1px 5px;
+    scrollbar-width: thin;
+}
+.pet-shop-tab {
+    flex: 0 0 auto;
+    padding: 8px 13px;
+    border: 1px solid #efdce8;
+    border-radius: 999px;
+    background: #fff;
+    color: #98758c;
+    font: inherit;
+    font-size: 11px;
+    cursor: pointer;
+}
+.pet-shop-tab.active {
+    border-color: #d8b6e6;
+    background: #eadcf5;
+    color: #704b80;
+    font-weight: 800;
+}
+.pet-shop-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 11px;
+}
+.pet-shop-item[hidden] { display: none !important; }
+.pet-shop-item {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 7px;
+    padding: 12px;
+    border: 1px solid #f0e1e9;
+    border-radius: 16px;
+    background: rgba(255,255,255,.94);
+    text-align: center;
+    transition: transform .18s ease, box-shadow .18s ease;
+}
+.pet-shop-item:hover { transform: translateY(-2px); box-shadow: 0 7px 16px rgba(164,119,151,.1); }
+.pet-shop-emoji {
+    display: grid;
+    min-height: 76px;
+    place-items: center;
+    border-radius: 12px;
+    background: #fff5fa;
+    font-size: 34px;
+}
+.pet-shop-item strong { color: #805d75; font-size: 12px; line-height: 1.35; }
+.pet-shop-item small { min-height: 27px; color: #ad91a1; font-size: 10px; line-height: 1.35; }
+.pet-item-price { color: #b17d3e; font-size: 11px; font-weight: 800; }
+.pet-shop-item button {
+    width: 100%;
+    margin-top: auto;
+    padding: 9px 8px;
+    border: 0;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #e9b9d2, #d9b6e8);
+    color: #70445f;
+    font: inherit;
+    font-size: 11px;
+    font-weight: 800;
+    cursor: pointer;
+}
+.pet-shop-item button:hover { filter: brightness(.97); }
+.pet-inventory {
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px dashed #e9cadb;
+}
+.pet-inventory-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+.pet-inventory-heading h3 { margin: 0 0 4px; color: #805d75; font-size: 17px; }
+.pet-inventory-heading span { color: #ad91a1; font-size: 10px; }
+.pet-inventory-bag { padding: 6px 9px; border-radius: 999px; background: #fff; white-space: nowrap; }
+.pet-inventory-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+.pet-inventory-item {
+    display: flex; align-items: center; gap: 8px; min-width: 0;
+    padding: 10px; border: 1px solid #f0e1e9; border-radius: 13px; background: #fff;
+}
+.pet-inventory-emoji { font-size: 23px; }
+.pet-inventory-name { flex: 1; min-width: 0; color: #926d82; font-size: 11px; }
+.pet-inventory-item strong { color: #b17d3e; font-size: 11px; }
+.pet-inventory-empty { grid-column: 1 / -1; margin: 0; padding: 17px 12px; border-radius: 12px; background: #fff; color: #ad8da0; text-align: center; font-size: 11px; }
+@media (max-width: 600px) {
+    .pet-store { padding: 13px; margin-top: 19px; border-radius: 18px; }
+    .pet-store-hero { padding: 13px; }
+    .pet-store-title-row h3 { font-size: 18px; }
+    .pet-store-title-row p { max-width: 180px; font-size: 10px; }
+    .pet-store-wallet { padding: 7px 9px; }
+    .pet-shop-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+    .pet-shop-item { padding: 10px 8px; }
+    .pet-shop-emoji { min-height: 66px; font-size: 30px; }
+    .pet-inventory-list { grid-template-columns: 1fr; }
+}
+@media (max-width: 360px) {
+    .pet-store-title-row { align-items: flex-start; }
+    .pet-store-wallet { padding: 6px 8px; }
+    .pet-shop-tab { padding: 7px 10px; font-size: 10px; }
+}
