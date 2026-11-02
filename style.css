@@ -8526,6 +8526,25 @@ html {
     pointer-events: none;
 }
 
+   .pet-name-edit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.pet-name-edit button {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 15px;
+    padding: 4px;
+    border-radius: 50%;
+}
+
+.pet-name-edit button:hover {
+    background: #fce4ec;
+}
 
 
 
