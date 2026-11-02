@@ -10544,7 +10544,7 @@ function renderOurPet() {
 
     setText("petShopCoins", ourPetData.coins ?? 100);
     renderPetInventory();
-    if (window.syncPetSleep) window.syncPetSleep(ourPetData.sleeping_until);
+    if (window.syncPetSleep) window.syncPetSleep(ourPetData.is_sleeping);
 
 
     setText(
@@ -10831,7 +10831,7 @@ async function interactWithPet(action) {
 
         energy: Number(ourPetData.energy) || 0,
 
-        sleeping_until: null,
+        is_sleeping: false,
 
 
     };
@@ -10893,11 +10893,11 @@ async function interactWithPet(action) {
 
 
     // SLEEP
-          else if (action === "sleep") {
+              else if (action === "sleep") {
 
         next.energy = Math.min(100, next.energy + 40);
         next.hunger = Math.max(0, next.hunger - 5);
-        next.sleeping_until = new Date(Date.now() + 12000).toISOString();
+        next.is_sleeping = true;
 
         window.playPetAnimation("sleep");
 
@@ -11331,7 +11331,7 @@ async function usePetItem(itemId) {
         update.hunger = Math.max(0, Math.min(100, hunger + (effect.hunger || 0)));
         update.happiness = Math.min(100, happiness + (effect.happiness || 0));
         update.energy = Math.max(0, Math.min(100, energy + (effect.energy || 0)));
-        update.sleeping_until = null;
+        update.is_sleeping = false;
 
         inventory[itemId] = inventory[itemId] - 1;
         update.inventory = inventory;
