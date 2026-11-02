@@ -1328,7 +1328,7 @@ const scene = new THREE.Scene();
 scene.background = new THREE.Color("#ffd9ec");
 
 const camera = new THREE.PerspectiveCamera(
-    35,
+    50,
     canvas.clientWidth / canvas.clientHeight,
     0.1,
     100
@@ -1492,7 +1492,7 @@ createRoomBox(
 createRoomBox(
     2.4, 0.35, 1.8,
     whiteMaterial,
-    2.5, -0.1, -1
+    1.5, -0.1, -1
 );
 
 // BED LEGS
@@ -1604,8 +1604,8 @@ roomLight.position.set(0, 3.5, 1);
 scene.add(roomLight);
 
 // CAMERA
-camera.position.set(0, 2.5, 8);
-camera.lookAt(0, 1, 0);
+camera.position.set(0, 3.5, 11);
+camera.lookAt(0, 1.2, -0.5);
 
 
 // LOAD CAT MODEL
