@@ -8236,6 +8236,248 @@ html {
     }
 }
 
+/* OUR LITTLE PET 3D ROOM */
+
+.pet-room-3d {
+    position: relative;
+    min-height: 450px;
+    overflow: hidden;
+    border-radius: 25px;
+
+    background:
+        radial-gradient(circle at 50% 40%, #ffe5f3, transparent 50%),
+        linear-gradient(180deg, #f8b8d8, #ffd9ec 70%, #e8b3d0);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-shadow:
+        inset 0 0 35px rgba(255,255,255,.8),
+        0 12px 25px rgba(218,120,170,.2);
+}
+
+.pet-room-lights {
+    position: absolute;
+    top: 20px;
+    width: 100%;
+    text-align: center;
+    letter-spacing: 20px;
+    font-size: 20px;
+}
+
+.pet-window {
+    position: absolute;
+    top: 50px;
+    right: 30px;
+
+    width: 100px;
+    height: 130px;
+
+    border: 8px solid #f7c4df;
+    border-radius: 15px;
+
+    background: linear-gradient(
+        180deg,
+        #423d85,
+        #9294dc
+    );
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 45px;
+
+    box-shadow: 0 5px 10px rgba(100,50,100,.2);
+}
+
+.pet-heart {
+    position: absolute;
+    top: 35%;
+    font-size: 45px;
+    animation: petHeartFloat 2s infinite;
+}
+
+.pet-cats {
+    position: relative;
+    z-index: 2;
+
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+
+    margin-top: 100px;
+}
+
+.pet-cat {
+    position: relative;
+
+    width: 150px;
+    height: 165px;
+
+    border-radius: 48% 48% 42% 42%;
+
+    box-shadow:
+        inset -12px -15px 20px rgba(0,0,0,.08),
+        inset 10px 10px 20px rgba(255,255,255,.8),
+        0 15px 20px rgba(150,80,120,.2);
+
+    background: linear-gradient(
+        145deg,
+        #fffaf4,
+        #f4d9e4
+    );
+}
+
+.cat-white {
+    transform: rotate(-5deg);
+    z-index: 2;
+}
+
+.cat-gray {
+    background: linear-gradient(
+        145deg,
+        #c9c3ce,
+        #89818f
+    );
+
+    transform: rotate(5deg);
+    margin-left: -20px;
+}
+
+.cat-ear {
+    position: absolute;
+    top: -20px;
+
+    width: 55px;
+    height: 65px;
+
+    border-radius: 50% 50% 10% 10%;
+
+    background: inherit;
+    z-index: -1;
+}
+
+.ear-left {
+    left: 5px;
+    transform: rotate(-25deg);
+}
+
+.ear-right {
+    right: 5px;
+    transform: rotate(25deg);
+}
+
+.cat-face {
+    position: absolute;
+    top: 45px;
+    width: 100%;
+    text-align: center;
+}
+
+.cat-eyes {
+    display: flex;
+    justify-content: space-evenly;
+
+    font-size: 32px;
+    color: #5e4350;
+}
+
+.cat-nose {
+    font-size: 15px;
+    color: #ed8aab;
+    margin-top: -5px;
+}
+
+.cat-mouth {
+    font-size: 25px;
+    color: #674958;
+    margin-top: -8px;
+}
+
+.cat-cheeks {
+    display: flex;
+    justify-content: space-between;
+
+    padding: 0 20px;
+
+    color: #ff9cbd;
+    font-size: 17px;
+}
+
+.cat-bow {
+    position: absolute;
+    top: 20px;
+    left: 10px;
+    font-size: 35px;
+}
+
+.pet-speech-3d {
+    position: absolute;
+    top: 25px;
+    left: 10%;
+    right: 10%;
+
+    padding: 15px;
+
+    border-radius: 25px;
+    background: white;
+
+    text-align: center;
+    color: #9a5278;
+
+    box-shadow: 0 5px 15px rgba(150,80,120,.15);
+    z-index: 4;
+}
+
+.pet-room-floor {
+    position: absolute;
+    bottom: 0;
+
+    width: 100%;
+    height: 90px;
+
+    background: linear-gradient(
+        180deg,
+        #f8d5e8,
+        #e9b7d4
+    );
+
+    border-radius: 50% 50% 0 0;
+}
+
+@keyframes petHeartFloat {
+    0%, 100% {
+        transform: translateY(0) scale(1);
+    }
+
+    50% {
+        transform: translateY(-12px) scale(1.1);
+    }
+}
+
+@media (max-width: 600px) {
+    .pet-room-3d {
+        min-height: 350px;
+    }
+
+    .pet-cat {
+        width: 110px;
+        height: 125px;
+    }
+
+    .cat-face {
+        top: 30px;
+    }
+
+    .pet-window {
+        width: 70px;
+        height: 100px;
+        right: 10px;
+    }
+}
+
 
 
 }
