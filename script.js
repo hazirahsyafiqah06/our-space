@@ -10527,17 +10527,17 @@ function renderOurPet() {
 
     setText(
         "petHungerText",
-        `${ourPetData.hunger ?? 70}/100`
+        `${ourPetData.hunger ?? 0}/100`
     );
 
     setText(
         "petHappinessText",
-        `${ourPetData.happiness ?? 90}/100`
+        `${ourPetData.happiness ?? 0}/100`
     );
 
     setText(
         "petEnergyText",
-        `${ourPetData.energy ?? 60}/100`
+        `${ourPetData.energy ?? 0}/100`
     );
 
     setBar("petHungerBar", ourPetData.hunger);
@@ -10603,8 +10603,48 @@ async function renameOurPet() {
         return;
     }
 
+    // AUTO REDUCE FULLNESS WHEN PET IS NOT FED
+
+const now = new Date();
+
+const lastDecay = data.last_decay_at
+    ? new Date(data.last_decay_at)
+    : now;
+
+const elapsedHours = Math.floor(
+    (now.getTime() - lastDecay.getTime()) / 3600000
+);
+
+if (elapsedHours > 0) {
+
+    const newHunger = Math.max(
+        0,
+        (Number(data.hunger) || 0) - (elapsedHours * 5)
+    );
+
+    const { data: updatedData, error: decayError } =
+        await supabaseClient
+            .from("our_little_pet")
+            .update({
+                hunger: newHunger,
+                last_decay_at: now.toISOString()
+            })
+            .eq("id", "our-space-pet")
+            .select()
+            .single();
+
+    if (decayError) {
+        console.error("Pet decay error:", decayError);
+        ourPetData = data;
+    } else {
+        ourPetData = updatedData;
+    }
+
+} else {
     ourPetData = data;
-    renderOurPet();
+}
+
+renderOurPet();
 
     alert(`Our pet's new name is ${petName}! ❤️`);
 }
