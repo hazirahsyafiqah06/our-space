@@ -1353,18 +1353,260 @@ const mainLight = new THREE.DirectionalLight(0xffffff, 3);
 mainLight.position.set(3, 5, 5);
 scene.add(mainLight);
 
+
+/* =========================
+   🩷 OUR LITTLE PASTEL ROOM
+========================= */
+
+// Materials
+const pinkWall = new THREE.MeshStandardMaterial({
+    color: "#ffd6e8",
+    roughness: 0.9
+});
+
+const creamFloor = new THREE.MeshStandardMaterial({
+    color: "#fff0df",
+    roughness: 0.9
+});
+
+const whiteMaterial = new THREE.MeshStandardMaterial({
+    color: "#fffafc",
+    roughness: 0.8
+});
+
+const pinkMaterial = new THREE.MeshStandardMaterial({
+    color: "#ffb8d4",
+    roughness: 0.8
+});
+
+const woodMaterial = new THREE.MeshStandardMaterial({
+    color: "#d9a77b",
+    roughness: 0.8
+});
+
+// Helper function
+function createRoomBox(
+    width,
+    height,
+    depth,
+    material,
+    x,
+    y,
+    z
+) {
+    const geometry = new THREE.BoxGeometry(
+        width,
+        height,
+        depth
+    );
+
+    const object = new THREE.Mesh(
+        geometry,
+        material
+    );
+
+    object.position.set(x, y, z);
+    scene.add(object);
+
+    return object;
+}
+
 // FLOOR
-const floor = new THREE.Mesh(
-    new THREE.CircleGeometry(3, 64),
+const roomFloor = new THREE.Mesh(
+    new THREE.PlaneGeometry(10, 10),
+    creamFloor
+);
+
+roomFloor.rotation.x = -Math.PI / 2;
+roomFloor.position.y = -0.5;
+scene.add(roomFloor);
+
+// BACK WALL
+createRoomBox(
+    10, 5, 0.2,
+    pinkWall,
+    0, 2, -2.5
+);
+
+// LEFT WALL
+createRoomBox(
+    0.2, 5, 10,
+    pinkWall,
+    -5, 2, 2.5
+);
+
+// RIGHT WALL
+createRoomBox(
+    0.2, 5, 10,
+    pinkWall,
+    5, 2, 2.5
+);
+
+// WINDOW FRAME
+createRoomBox(
+    2.4, 1.8, 0.15,
+    whiteMaterial,
+    0, 2.6, -2.35
+);
+
+// WINDOW GLASS
+const windowGlass = new THREE.Mesh(
+    new THREE.PlaneGeometry(2.1, 1.5),
     new THREE.MeshStandardMaterial({
-        color: "#ffe8f4",
-        roughness: 0.8
+        color: "#bde8ff",
+        emissive: "#8dd8ff",
+        emissiveIntensity: 0.25
     })
 );
 
-floor.rotation.x = -Math.PI / 2;
-floor.position.y = -0.05;
-scene.add(floor);
+windowGlass.position.set(0, 2.6, -2.25);
+scene.add(windowGlass);
+
+// WINDOW CROSS
+createRoomBox(
+    0.08, 1.5, 0.05,
+    whiteMaterial,
+    0, 2.6, -2.2
+);
+
+createRoomBox(
+    2.1, 0.08, 0.05,
+    whiteMaterial,
+    0, 2.6, -2.2
+);
+
+// CURTAINS
+createRoomBox(
+    0.35, 2.2, 0.2,
+    pinkMaterial,
+    -1.35, 2.5, -2.1
+);
+
+createRoomBox(
+    0.35, 2.2, 0.2,
+    pinkMaterial,
+    1.35, 2.5, -2.1
+);
+
+// BED
+createRoomBox(
+    2.4, 0.35, 1.8,
+    whiteMaterial,
+    2.5, -0.1, -1
+);
+
+// BED LEGS
+createRoomBox(
+    0.2, 0.5, 0.2,
+    woodMaterial,
+    1.5, -0.35, -1.6
+);
+
+createRoomBox(
+    0.2, 0.5, 0.2,
+    woodMaterial,
+    3.5, -0.35, -1.6
+);
+
+createRoomBox(
+    0.2, 0.5, 0.2,
+    woodMaterial,
+    1.5, -0.35, -0.4
+);
+
+createRoomBox(
+    0.2, 0.5, 0.2,
+    woodMaterial,
+    3.5, -0.35, -0.4
+);
+
+// PILLOW
+createRoomBox(
+    0.8, 0.2, 0.5,
+    pinkMaterial,
+    2.5, 0.15, -1.6
+);
+
+// BLANKET
+createRoomBox(
+    1.5, 0.15, 1,
+    pinkMaterial,
+    2.5, 0.15, -0.8
+);
+
+// CARPET
+const carpet = new THREE.Mesh(
+    new THREE.CircleGeometry(1.5, 64),
+    new THREE.MeshStandardMaterial({
+        color: "#ffc9df",
+        roughness: 1
+    })
+);
+
+carpet.rotation.x = -Math.PI / 2;
+carpet.position.set(-0.5, -0.48, 0.5);
+scene.add(carpet);
+
+// SIDE TABLE
+createRoomBox(
+    0.8, 0.7, 0.8,
+    woodMaterial,
+    -2.5, -0.15, -1
+);
+
+// TABLE TOP
+createRoomBox(
+    1, 0.15, 1,
+    whiteMaterial,
+    -2.5, 0.25, -1
+);
+
+// LAMP BASE
+createRoomBox(
+    0.25, 0.3, 0.25,
+    pinkMaterial,
+    -2.5, 0.45, -1
+);
+
+// LAMP SHADE
+createRoomBox(
+    0.5, 0.35, 0.5,
+    pinkMaterial,
+    -2.5, 0.75, -1
+);
+
+// DECORATIVE PLANT POT
+createRoomBox(
+    0.5, 0.5, 0.5,
+    woodMaterial,
+    -3.5, -0.25, -1.5
+);
+
+// PLANT LEAVES
+const plantLeaves = new THREE.Mesh(
+    new THREE.SphereGeometry(0.45, 16, 16),
+    new THREE.MeshStandardMaterial({
+        color: "#a8d5a2"
+    })
+);
+
+plantLeaves.position.set(-3.5, 0.35, -1.5);
+scene.add(plantLeaves);
+
+// LIGHTING
+const roomLight = new THREE.PointLight(
+    "#ffd6e8",
+    15,
+    15
+);
+
+roomLight.position.set(0, 3.5, 1);
+scene.add(roomLight);
+
+// CAMERA
+camera.position.set(0, 2.5, 8);
+camera.lookAt(0, 1, 0);
+
 
 // LOAD CAT MODEL
 const loader = new GLTFLoader();
@@ -1402,8 +1644,8 @@ loader.load(
         scene.add(petModel);
 
         // Adjust camera
-       camera.position.set(0, 1.5, 4.5);
-        camera.lookAt(0, 0.5, 0);
+      camera.position.set(0, 2.5, 8);
+        camera.lookAt(0, 1, 0);
 
         // Load animations
         if (gltf.animations.length > 0) {
