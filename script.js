@@ -10420,4 +10420,337 @@ function toggleMobileMenu() {
         button.setAttribute("aria-label", "Open menu");
 
     }
+
+    
+/* =========================================
+   OUR LITTLE PET 🐾
+========================================= */
+
+let ourPetData = null;
+let petRealtimeChannel = null;
+
+
+// LOAD PET FROM SUPABASE
+async function loadOurPet() {
+
+    const message = document.getElementById("petActionMessage");
+
+    if (!currentUser) return;
+
+    const { data, error } = await supabaseClient
+        .from("our_little_pet")
+        .select("*")
+        .eq("id", "our-space-pet")
+        .maybeSingle();
+
+    if (error) {
+        console.error("Load pet error:", error);
+
+        if (message) {
+            message.textContent =
+                "Couldn't load our pet. Please check Supabase. ♡";
+        }
+
+        return;
+    }
+
+    if (!data) {
+        if (message) {
+            message.textContent =
+                "Our pet isn't created yet in Supabase. ♡";
+        }
+
+        return;
+    }
+
+    ourPetData = data;
+
+    renderOurPet();
+
+    // REALTIME
+    if (!petRealtimeChannel) {
+
+        petRealtimeChannel = supabaseClient
+            .channel("our-space-pet-live")
+
+            .on(
+                "postgres_changes",
+                {
+                    event: "*",
+                    schema: "public",
+                    table: "our_little_pet",
+                    filter: "id=eq.our-space-pet"
+                },
+
+                payload => {
+
+                    if (payload.new) {
+                        ourPetData = payload.new;
+                        renderOurPet();
+                    }
+
+                }
+            )
+
+            .subscribe();
+    }
+}
+
+
+// DISPLAY PET DATA
+function renderOurPet() {
+
+    if (!ourPetData) return;
+
+    const setText = (id, value) => {
+
+        const element = document.getElementById(id);
+
+        if (element) {
+            element.textContent = value;
+        }
+
+    };
+
+    const setBar = (id, value) => {
+
+        const element = document.getElementById(id);
+
+        if (element) {
+            element.style.width =
+                `${Math.max(0, Math.min(100, Number(value) || 0))}%`;
+        }
+
+    };
+
+    setText(
+        "petNameDisplay",
+        ourPetData.pet_name || "Baby Love"
+    );
+
+    setText(
+        "petLevelDisplay",
+        `Level ${ourPetData.level || 1} · ${
+            Number(ourPetData.level) >= 10
+                ? "Adult Pet"
+                : Number(ourPetData.level) >= 5
+                ? "Young Pet"
+                : "Baby Pet"
+        }`
+    );
+
+    setText("petCoinsDisplay", ourPetData.coins ?? 100);
+
+    setText(
+        "petHungerText",
+        `${ourPetData.hunger ?? 70}/100`
+    );
+
+    setText(
+        "petHappinessText",
+        `${ourPetData.happiness ?? 90}/100`
+    );
+
+    setText(
+        "petEnergyText",
+        `${ourPetData.energy ?? 60}/100`
+    );
+
+    setBar("petHungerBar", ourPetData.hunger);
+    setBar("petHappinessBar", ourPetData.happiness);
+    setBar("petEnergyBar", ourPetData.energy);
+
+    const character = document.getElementById("petCharacter");
+
+    if (character) {
+
+        character.textContent = ({
+            cat: "🐱",
+            bunny: "🐰",
+            bear: "🐻",
+            puppy: "🐶"
+        })[ourPetData.pet_type] || "🐱";
+
+    }
+
+}
+
+
+// PET INTERACTION
+async function interactWithPet(action) {
+
+    if (!currentUser) {
+        alert("Please login first ❤️");
+        return;
+    }
+
+    if (!ourPetData) {
+        await loadOurPet();
+    }
+
+    if (!ourPetData) return;
+
+    const next = {
+
+        happiness: Number(ourPetData.happiness) || 0,
+
+        hunger: Number(ourPetData.hunger) || 0,
+
+        energy: Number(ourPetData.energy) || 0,
+
+        coins: Number(ourPetData.coins) || 0,
+
+        xp: Number(ourPetData.xp) || 0,
+
+        level: Number(ourPetData.level) || 1
+
+    };
+
+
+    const messages = {
+
+        feed: "Yum yum! Thank you for feeding me 🍓",
+
+        play: "That was so fun! Let's play again 🧸",
+
+        sleep: "Zzz... I feel refreshed 🌙",
+
+        hug: "Big hugs for my favorite humans 🤗",
+
+        clean: "I'm all clean and fluffy now 🫧"
+
+    };
+
+
+    // FEED
+    if (action === "feed") {
+
+        next.hunger = Math.min(100, next.hunger + 25);
+
+        next.happiness = Math.min(100, next.happiness + 5);
+
+    }
+
+
+    // PLAY
+    else if (action === "play") {
+
+        if (next.energy < 15) {
+
+            alert("Our pet is too tired. Let it sleep first 🌙");
+
+            return;
+
+        }
+
+        next.happiness = Math.min(100, next.happiness + 20);
+
+        next.energy = Math.max(0, next.energy - 15);
+
+    }
+
+
+    // SLEEP
+    else if (action === "sleep") {
+
+        next.energy = Math.min(100, next.energy + 40);
+
+    }
+
+
+    // HUG
+    else if (action === "hug") {
+
+        next.happiness = Math.min(100, next.happiness + 15);
+
+    }
+
+
+    // CLEAN
+    else if (action === "clean") {
+
+        next.happiness = Math.min(100, next.happiness + 10);
+
+    }
+
+
+    // COINS & XP
+    next.coins += 5;
+
+    next.xp += 10;
+
+
+    // LEVEL UP
+    if (next.xp >= next.level * 100) {
+
+        next.xp = next.xp - next.level * 100;
+
+        next.level += 1;
+
+    }
+
+
+    // UPDATE SUPABASE
+    const { data, error } = await supabaseClient
+
+        .from("our_little_pet")
+
+        .update({
+
+            ...next,
+
+            updated_at: new Date().toISOString(),
+
+            updated_by: currentUser.id
+
+        })
+
+        .eq("id", "our-space-pet")
+
+        .select("*")
+
+        .single();
+
+
+    if (error) {
+
+        console.error("Pet interaction error:", error);
+
+        alert(
+            "Unable to update our pet. Check Supabase RLS and Realtime settings."
+        );
+
+        return;
+
+    }
+
+
+    ourPetData = data;
+
+    renderOurPet();
+
+
+    const actionMessage =
+        document.getElementById("petActionMessage");
+
+    const speech =
+        document.getElementById("petSpeech");
+
+
+    if (actionMessage) {
+
+        actionMessage.textContent =
+            messages[action] + " (+5 coins, +10 XP)";
+
+    }
+
+
+    if (speech) {
+
+        speech.textContent = messages[action];
+
+    }
+
+}
+
 }
