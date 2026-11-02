@@ -10545,6 +10545,7 @@ function renderOurPet() {
     setText("petShopCoins", ourPetData.coins ?? 100);
     renderPetInventory();
     if (window.syncPetSleep) window.syncPetSleep(ourPetData.is_sleeping);
+    if (window.syncPetHug) window.syncPetHug(ourPetData.last_hug_at);
 
 
     setText(
@@ -10904,12 +10905,38 @@ async function interactWithPet(action) {
     }
 
 
-    // HUG
+        // HUG
     else if (action === "hug") {
 
-        next.happiness = Math.min(100, next.happiness + 15);
+        const lastHug = ourPetData.last_hug_at
+            ? new Date(ourPetData.last_hug_at).getTime()
+            : 0;
 
-         window.playPetAnimation("idle");
+        const wait = HUG_COOLDOWN_MS - (Date.now() - lastHug);
+
+        // Cooldown: baru dipeluk tadi
+        if (wait > 0) {
+
+            const tooSoon =
+                `${ourPetData.pet_name || "Baby"} baru dipeluk tadi 🥺 ` +
+                `Boleh peluk lagi dalam ${Math.ceil(wait / 1000)} saat`;
+
+            const actionMessage = document.getElementById("petActionMessage");
+            const speech = document.getElementById("petSpeech");
+
+            if (actionMessage) actionMessage.textContent = tooSoon;
+            if (speech) speech.textContent = tooSoon;
+
+            return;
+        }
+
+        messages.hug =
+            HUG_REPLIES[Math.floor(Math.random() * HUG_REPLIES.length)];
+
+        next.happiness = Math.min(100, next.happiness + 15);
+        next.last_hug_at = new Date().toISOString();
+
+        window.playPetAnimation("idle");
 
     }
 
