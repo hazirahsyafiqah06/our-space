@@ -8240,23 +8240,18 @@ html {
 
 .pet-room-3d {
     position: relative;
-    min-height: 450px;
+    width: 100%;
+    height: 420px;
     overflow: hidden;
-    border-radius: 25px;
-
-    background:
-        radial-gradient(circle at 50% 40%, #ffe5f3, transparent 50%),
-        linear-gradient(180deg, #f8b8d8, #ffd9ec 70%, #e8b3d0);
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    box-shadow:
-        inset 0 0 35px rgba(255,255,255,.8),
-        0 12px 25px rgba(218,120,170,.2);
+    border-radius: 20px;
+    background: #ffd9ec;
 }
 
+#pet3DCanvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
 .pet-room-lights {
     position: absolute;
     top: 20px;
