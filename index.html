@@ -2013,17 +2013,21 @@ function updatePetNight(delta) {
     updateZzzPosition();
 }
 
-// ---- Sambung dengan butang Sleep (tak perlu ubah script.js) ----
+// ---- Sambung dengan butang Sleep + sync pasangan ----
 const basePlayPetAnimation = window.playPetAnimation;
 let sleepTimer = null;
+let isSleeping = false;
+let sleepUntilApplied = 0;
 
 function wakePet() {
     clearTimeout(sleepTimer);
+    isSleeping = false;
     setPetNight(false);
     stopZzz();
 }
 
-function startSleepMode() {
+function startSleepMode(duration = PET_SLEEP_DURATION) {
+    isSleeping = true;
     setPetNight(true);
     startZzz();
     clearTimeout(sleepTimer);
@@ -2031,7 +2035,7 @@ function startSleepMode() {
     sleepTimer = setTimeout(() => {
         wakePet();
         basePlayPetAnimation("idle");
-    }, PET_SLEEP_DURATION);
+    }, duration);
 }
 
 window.playPetAnimation = function (animationName) {
@@ -2044,6 +2048,28 @@ window.playPetAnimation = function (animationName) {
     }
 
     basePlayPetAnimation(animationName);
+};
+
+// Dipanggil dari renderOurPet() setiap kali data pet berubah (termasuk realtime pasangan)
+window.syncPetSleep = function (sleepingUntil) {
+    const until = sleepingUntil ? new Date(sleepingUntil).getTime() : 0;
+    const remaining = Math.min(until - Date.now(), PET_SLEEP_DURATION);
+
+    if (until && remaining > 0) {
+        if (sleepUntilApplied === until) return; // dah tidur untuk sesi ni
+
+        sleepUntilApplied = until;
+        if (!isSleeping) basePlayPetAnimation("sleep");
+        startSleepMode(remaining);
+
+    } else {
+        sleepUntilApplied = 0;
+
+        if (isSleeping) {
+            wakePet();
+            basePlayPetAnimation("idle");
+        }
+    }
 };
     
 
