@@ -8559,4 +8559,18 @@ html {
     display: block;
 }
 
+   .pet-name-edit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.pet-name-edit button {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 4px;
+}
 }
