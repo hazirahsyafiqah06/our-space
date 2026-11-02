@@ -11395,13 +11395,31 @@ async function applyPetDecay() {
 
     const newLast = new Date(last + ticks * PET_DECAY_TICK_MS).toISOString();
 
+    let hunger = Number(ourPetData.hunger) || 0;
+    let happiness = Number(ourPetData.happiness) || 0;
+    let energy = Number(ourPetData.energy) || 0;
+
+    // Kira tick demi tick supaya happiness turun lagi laju bila lapar/penat
+    for (let i = 0; i < Math.min(ticks, 200); i++) {
+
+        hunger = Math.max(0, hunger - 3);
+        energy = Math.max(0, energy - 1);
+
+        let sadness = 1; // turun sikit-sikit biasa
+
+        if (hunger < 50) sadness += 2;   // lapar
+        if (hunger < 20) sadness += 2;   // sangat lapar
+
+        if (energy < 50) sadness += 1;   // penat
+        if (energy < 20) sadness += 2;   // sangat penat
+
+        happiness = Math.max(0, happiness - sadness);
+    }
+
     const update = {
-        hunger: Math.max(0,
-            (Number(ourPetData.hunger) || 0) - ticks * PET_DECAY_PER_TICK.hunger),
-        happiness: Math.max(0,
-            (Number(ourPetData.happiness) || 0) - ticks * PET_DECAY_PER_TICK.happiness),
-        energy: Math.max(0,
-            (Number(ourPetData.energy) || 0) - ticks * PET_DECAY_PER_TICK.energy),
+        hunger: hunger,
+        happiness: happiness,
+        energy: energy,
         last_decay_at: newLast
     };
 
