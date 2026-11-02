@@ -5634,11 +5634,17 @@ async function showSection(sectionId) {
     }
 
     if (sectionId === "pet-section") {
-     setTimeout(() => {
+
+    // Load semula data pet daripada Supabase
+    await loadOurPet();
+
+    // Resize pet display
+    setTimeout(() => {
         if (window.resizePet3D) {
             window.resizePet3D();
         }
     }, 100);
+
 }
 
 
