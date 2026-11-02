@@ -11231,6 +11231,109 @@ async function claimDailyCoins(day) {
 // Panggil lepas user login
 setTimeout(checkDailyClaim, 3500);
 
+/* =========================================
+   PET ITEMS: GUNA ITEM DARI INVENTORY 🎒
+========================================= */
+
+const PET_ITEM_EFFECTS = {
+    snack: { type: "food", hunger: 20, happiness: 5, msg: "Yum yum! Strawberry sedap 🍓" },
+    milk:  { type: "food", hunger: 15, energy: 10, msg: "Glug glug... susu fresh 🥛" },
+    teddy: { type: "toy", happiness: 25, msg: "Peluk teddy! So cuddly 🧸" },
+    ball:  { type: "toy", happiness: 20, energy: -10, msg: "Main bola best! ⚽" },
+    bow:   { type: "accessory" },
+    crown: { type: "accessory" }
+};
+
+async function usePetItem(itemId) {
+    if (!currentUser) {
+        alert("Please login first ❤️");
+        return;
+    }
+
+    if (!ourPetData) await loadOurPet();
+    if (!ourPetData) return;
+
+    const item = PET_SHOP_ITEMS[itemId];
+    const effect = PET_ITEM_EFFECTS[itemId];
+    if (!item || !effect) return;
+
+    const inventory = { ...(ourPetData.inventory || {}) };
+
+    if ((Number(inventory[itemId]) || 0) < 1) {
+        alert("Item ni dah habis. Beli kat Pet Shop dulu 🛍️");
+        return;
+    }
+
+    const update = {
+        updated_at: new Date().toISOString(),
+        updated_by: currentUser.id
+    };
+
+    let message = "";
+
+    if (effect.type === "accessory") {
+        // PAKAI / BUKA aksesori (item tak habis)
+        const equipped = { ...(ourPetData.equipped || {}) };
+        equipped[itemId] = !equipped[itemId];
+        update.equipped = equipped;
+
+        message = equipped[itemId]
+            ? `${item.emoji} ${item.name} dipakai! Comelnya ♡`
+            : `${item.emoji} ${item.name} dibuka`;
+
+    } else {
+        const hunger = Number(ourPetData.hunger) || 0;
+        const happiness = Number(ourPetData.happiness) || 0;
+        const energy = Number(ourPetData.energy) || 0;
+
+        if (effect.type === "food" && hunger >= 100) {
+            alert("Baby dah kenyang 🍓");
+            return;
+        }
+
+        if (effect.energy < 0 && energy < Math.abs(effect.energy)) {
+            alert("Baby penat. Biar dia tidur dulu 🌙");
+            return;
+        }
+
+        update.hunger = Math.min(100, hunger + (effect.hunger || 0));
+        update.happiness = Math.min(100, happiness + (effect.happiness || 0));
+        update.energy = Math.max(0, Math.min(100, energy + (effect.energy || 0)));
+
+        inventory[itemId] = inventory[itemId] - 1;
+        update.inventory = inventory;
+
+        message = effect.msg;
+
+        if (window.playPetAnimation) {
+            window.playPetAnimation(effect.type === "food" ? "eat" : "walk");
+        }
+    }
+
+    const { data, error } = await supabaseClient
+        .from("our_little_pet")
+        .update(update)
+        .eq("id", "our-space-pet")
+        .select("*")
+        .single();
+
+    if (error) {
+        console.error("Use item error:", error);
+        alert("Tak dapat guna item ni. Cuba lagi ya.");
+        return;
+    }
+
+    ourPetData = data;
+    renderOurPet();
+
+    const actionMessage = document.getElementById("petActionMessage");
+    const speech = document.getElementById("petSpeech");
+    if (actionMessage) actionMessage.textContent = message;
+    if (speech) speech.textContent = message;
+}
+
+window.usePetItem = usePetItem;
+
 
     
     
