@@ -10565,11 +10565,6 @@ async function renameOurPet() {
         return;
     }
 
-    if (!ourPetData) {
-        alert("Pet data is not loaded yet.");
-        return;
-    }
-
     const newName = prompt(
         "What should we name our little pet? 🐾",
         ourPetData.pet_name || "Baby Love"
