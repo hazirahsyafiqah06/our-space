@@ -5249,6 +5249,7 @@ async function markSectionNotificationsAsRead(sectionId) {
 
     try {
 
+        
         const notificationRef =
             firestoreDB.collection("notifications");
 
@@ -5629,6 +5630,10 @@ async function showSection(sectionId) {
         showQuizHome();
 
     }
+
+    if (sectionId === "pet-section") {
+    loadOurPet();
+}
 
 
     // ==================================================
