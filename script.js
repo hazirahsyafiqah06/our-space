@@ -10853,6 +10853,56 @@ window.renameOurPet = async function () {
 
     alert(`Our pet's new name is ${petName}! ❤️`);
 };
+
+    window.renameOurPet = async function () {
+    alert("Rename function is working! ❤️");
+
+    if (!currentUser) {
+        alert("Please login first ❤️");
+        return;
+    }
+
+    if (!ourPetData) {
+        alert("Pet data is not loaded yet.");
+        return;
+    }
+
+    const newName = prompt(
+        "Choose our pet's name 🐾",
+        ourPetData.pet_name || "Baby Love"
+    );
+
+    if (newName === null) return;
+
+    const petName = newName.trim();
+
+    if (!petName || petName.length > 20) {
+        alert("Please enter a name (maximum 20 characters).");
+        return;
+    }
+
+    const { data, error } = await supabaseClient
+        .from("our_little_pet")
+        .update({
+            pet_name: petName,
+            updated_at: new Date().toISOString(),
+            updated_by: currentUser.id
+        })
+        .eq("id", "our-space-pet")
+        .select()
+        .single();
+
+    if (error) {
+        console.error(error);
+        alert(error.message);
+        return;
+    }
+
+    ourPetData = data;
+    renderOurPet();
+
+    alert("Pet name updated! ❤️");
+};
     
 
 
