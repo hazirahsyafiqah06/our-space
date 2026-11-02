@@ -5634,7 +5634,11 @@ async function showSection(sectionId) {
     }
 
     if (sectionId === "pet-section") {
-    loadOurPet();
+     setTimeout(() => {
+        if (window.resizePet3D) {
+            window.resizePet3D();
+        }
+    }, 100);
 }
 
 
