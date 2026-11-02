@@ -2673,6 +2673,8 @@ async function addNote() {
         return;
     }
 
+        rewardAction("notes", "📝 Note saved");
+
 
     // ==================================================
     // CLEAR INPUT
@@ -3205,6 +3207,9 @@ async function uploadImage() {
         `${USER_NAMES[currentUser.id] || "Your love"} added a new photo to Our Gallery${caption ? `: ${escapeHTML(caption)}` : ""}`,
         "gallery"
     );
+
+        rewardAction("gallery", "📸 Photo added");
+    
 
 
     // ==================================================
@@ -3808,7 +3813,8 @@ async function sendSecretMessage() {
 
         return;
     }
-    
+
+        rewardAction("secret", "💌 Secret sent");
 
     messageInput.value = "";
 
@@ -4706,6 +4712,8 @@ async function addBucketItem() {
         return;
     }
 
+        rewardAction("bucket", "🌷 Dream added");
+
     await sendEmailNotification(
     "New Bucket List Item 🌷",
     "🌷 New Bucket List Item",
@@ -5167,6 +5175,8 @@ async function addOurSong() {
 
         return;
     }
+
+        rewardAction("song", "🎵 Song added");
 
     await sendEmailNotification(
     "New Song Added 🎵",
@@ -6250,6 +6260,8 @@ async function addCalendarEvent() {
         return;
 
     }
+
+        rewardAction("calendar", "📅 Event added");
 
 
     // Clear form
@@ -9328,6 +9340,8 @@ async function saveQuizAttempt() {
 
     }
 
+        rewardAction("quiz", "🧠 Quiz done");
+
 
     return attempt;
 
@@ -10883,10 +10897,6 @@ async function interactWithPet(action) {
     }
 
 
-   // COINS
-next.coins += 5;
-
-
     // UPDATE SUPABASE
     const { data, error } = await supabaseClient
 
@@ -10937,7 +10947,7 @@ next.coins += 5;
     if (actionMessage) {
 
         actionMessage.textContent =
-            messages[action] + " (+5 coins)";
+            messages[action]
 
     }
 
@@ -11001,6 +11011,225 @@ window.renameOurPet = async function () {
 
     alert(`Our pet's new name is ${petName}! ❤️`);
 };
+
+/* =========================================
+   COINS SYSTEM 🪙
+========================================= */
+
+const DAILY_CLAIM_AMOUNTS = [50, 60, 70, 80, 90, 100, 110]; // Hari 1 - 7
+const ACTION_REWARD = 100;          // coins setiap tindakan
+const REWARD_ONCE_PER_DAY = true;   // true = setiap jenis tindakan dapat 1x sehari
+
+let myCoinRow = null;
+
+function localDateString(date = new Date()) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+}
+
+function yesterdayString() {
+    const d = new Date();
+    d.setDate(d.getDate() - 1);
+    return localDateString(d);
+}
+
+// Tambah coins (baca coins terkini dulu supaya tak overwrite coins pasangan)
+async function addPetCoins(amount) {
+    if (!currentUser) return null;
+
+    const { data: fresh, error: readError } = await supabaseClient
+        .from("our_little_pet")
+        .select("coins")
+        .eq("id", "our-space-pet")
+        .single();
+
+    if (readError) {
+        console.error("Read coins error:", readError);
+        return null;
+    }
+
+    const { data, error } = await supabaseClient
+        .from("our_little_pet")
+        .update({
+            coins: (Number(fresh.coins) || 0) + amount,
+            updated_at: new Date().toISOString(),
+            updated_by: currentUser.id
+        })
+        .eq("id", "our-space-pet")
+        .select("*")
+        .single();
+
+    if (error) {
+        console.error("Add coins error:", error);
+        return null;
+    }
+
+    ourPetData = data;
+    if (typeof renderOurPet === "function") renderOurPet();
+
+    return data;
+}
+
+async function loadMyCoinRow() {
+    if (!currentUser) return null;
+
+    const { data, error } = await supabaseClient
+        .from("coin_claims")
+        .select("*")
+        .eq("user_id", currentUser.id)
+        .maybeSingle();
+
+    if (error) {
+        console.error("Load coin row error:", error);
+        return null;
+    }
+
+    myCoinRow = data || {
+        user_id: currentUser.id,
+        last_claim_date: null,
+        streak: 0,
+        reward_date: null,
+        rewarded: {}
+    };
+
+    return myCoinRow;
+}
+
+async function saveMyCoinRow() {
+    const { error } = await supabaseClient
+        .from("coin_claims")
+        .upsert(myCoinRow, { onConflict: "user_id" });
+
+    if (error) console.error("Save coin row error:", error);
+}
+
+// ---------- TOAST ----------
+function showCoinToast(text) {
+    const toast = document.createElement("div");
+    toast.className = "coin-toast";
+    toast.innerHTML = `<span class="coin-toast-icon">🪙</span><span>${text}</span>`;
+    document.body.appendChild(toast);
+
+    requestAnimationFrame(() => toast.classList.add("show"));
+
+    setTimeout(() => {
+        toast.classList.remove("show");
+        setTimeout(() => toast.remove(), 400);
+    }, 2600);
+}
+
+// ---------- REWARD BILA BUAT TINDAKAN ----------
+async function rewardAction(actionKey, label) {
+    if (!currentUser) return;
+
+    if (!myCoinRow) await loadMyCoinRow();
+    if (!myCoinRow) return;
+
+    const today = localDateString();
+
+    if (myCoinRow.reward_date !== today) {
+        myCoinRow.reward_date = today;
+        myCoinRow.rewarded = {};
+    }
+
+    if (REWARD_ONCE_PER_DAY && myCoinRow.rewarded[actionKey]) {
+        return;
+    }
+
+    const result = await addPetCoins(ACTION_REWARD);
+    if (!result) return;
+
+    myCoinRow.rewarded[actionKey] = true;
+    await saveMyCoinRow();
+
+    showCoinToast(`You get ${ACTION_REWARD} coins! ${label || ""}`);
+}
+
+// ---------- DAILY CLAIM ----------
+function getNextClaimDay() {
+    const today = localDateString();
+    const last = myCoinRow.last_claim_date;
+
+    if (last === today) return null;
+
+    if (last === yesterdayString()) {
+        return (myCoinRow.streak % 7) + 1;
+    }
+
+    return 1;
+}
+
+async function checkDailyClaim() {
+    if (!currentUser) return;
+
+    await loadMyCoinRow();
+    if (!myCoinRow) return;
+
+    const day = getNextClaimDay();
+    if (!day) return;
+
+    showDailyClaimModal(day);
+}
+
+function showDailyClaimModal(day) {
+    if (document.getElementById("dailyClaimOverlay")) return;
+
+    const days = DAILY_CLAIM_AMOUNTS.map((amount, i) => {
+        const n = i + 1;
+        const state = n < day ? "done" : n === day ? "today" : "";
+        return `
+            <div class="claim-day ${state}">
+                <small>Day ${n}</small>
+                <span>${n < day ? "✅" : "🪙"}</span>
+                <strong>${amount}</strong>
+            </div>`;
+    }).join("");
+
+    const overlay = document.createElement("div");
+    overlay.id = "dailyClaimOverlay";
+    overlay.className = "daily-claim-overlay";
+    overlay.innerHTML = `
+        <div class="daily-claim-card">
+            <small>DAILY REWARD</small>
+            <h3>Claim your coins 🪙</h3>
+            <p>Login setiap hari untuk dapat coins lebih banyak ♡</p>
+            <div class="claim-days">${days}</div>
+            <button type="button" id="claimCoinsBtn">
+                Claim +${DAILY_CLAIM_AMOUNTS[day - 1]} coins
+            </button>
+        </div>`;
+    document.body.appendChild(overlay);
+
+    document.getElementById("claimCoinsBtn").onclick = () => claimDailyCoins(day);
+}
+
+async function claimDailyCoins(day) {
+    const btn = document.getElementById("claimCoinsBtn");
+    if (btn) { btn.disabled = true; btn.textContent = "Claiming..."; }
+
+    const amount = DAILY_CLAIM_AMOUNTS[day - 1];
+    const result = await addPetCoins(amount);
+
+    if (!result) {
+        if (btn) { btn.disabled = false; btn.textContent = `Claim +${amount} coins`; }
+        alert("Gagal claim coins. Cuba lagi ya ❤️");
+        return;
+    }
+
+    myCoinRow.last_claim_date = localDateString();
+    myCoinRow.streak = day;
+    await saveMyCoinRow();
+
+    const overlay = document.getElementById("dailyClaimOverlay");
+    if (overlay) overlay.remove();
+
+    showCoinToast(`Day ${day}: You get ${amount} coins!`);
+}
+
+// Panggil lepas user login
+setTimeout(checkDailyClaim, 3500);
 
 
     
