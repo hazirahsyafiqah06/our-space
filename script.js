@@ -11451,6 +11451,20 @@ async function applyPetDecay() {
 // Semak setiap 5 minit masa website terbuka
 setInterval(applyPetDecay, 5 * 60 * 1000);
 
+/* =========================================
+   🤗 HUG: COOLDOWN + AYAT RANDOM
+========================================= */
+
+const HUG_COOLDOWN_MS = 60 * 1000; // 1 minit
+
+const HUG_REPLIES = [
+    "Big hugs for my favorite humans 🤗",
+    "Sayang korang berdua 🥰",
+    "Peluk lagi, peluk lagi! 🫶",
+    "Rasa hangat sangat... 💗",
+    "Mochi happy dapat peluk 🥹",
+    "Best nye dipeluk! 💕"
+];
     
     
 
