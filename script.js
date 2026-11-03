@@ -11524,6 +11524,113 @@ const HUG_REPLIES = [
     "Mochi happy dapat peluk 🥹",
     "Best nye dipeluk! 💕"
 ];
+
+/* =========================================
+   👗 WARDROBE: BAJU + AKSESORI (3 SLOT)
+   Slot: head (kepala), face (muka), body (badan)
+========================================= */
+
+const WEAR_SLOTS = ["head", "face", "body"];
+
+// ➜ Nak tambah item baru? Tambah satu baris kat sini. Itu je.
+//   build: bentuk 3D siap (crown, bow, partyhat, glasses, shades, bowtie, scarf)
+//   glb:   path fail model .glb (kalau guna model sendiri)
+//   pos / rot / scale: kedudukan (guna ?tune=1 untuk laraskan, lepas tu copy sini)
+const PET_WEAR_CATALOG = {
+
+    // ---- KEPALA ----
+    crown:    { name: "Little Crown", emoji: "👑", price: 120, slot: "head", build: "crown", shop: false },
+    bow:      { name: "Pretty Bow",   emoji: "🎀", price: 75,  slot: "head", build: "bow",   shop: false },
+    partyhat: { name: "Party Hat",    emoji: "🥳", price: 90,  slot: "head", build: "partyhat" },
+
+    // ---- MUKA ----
+    glasses:  { name: "Round Glasses", emoji: "👓", price: 80,  slot: "face", build: "glasses" },
+    shades:   { name: "Cool Shades",   emoji: "🕶️", price: 100, slot: "face", build: "shades" },
+
+    // ---- BADAN ----
+    bowtie:        { name: "Bow Tie",       emoji: "👔", price: 60,  slot: "body", build: "bowtie", color: "#e25b8a", attach: "head" },
+    scarf_pink:    { name: "Pink Scarf",    emoji: "🧣", price: 110, slot: "body", build: "scarf",  color: "#f58fb6", attach: "head" },
+    scarf_blue:    { name: "Blue Scarf",    emoji: "🧣", price: 110, slot: "body", build: "scarf",  color: "#8bb8f0", attach: "head" },
+    scarf_yellow:  { name: "Yellow Scarf",  emoji: "🧣", price: 110, slot: "body", build: "scarf",  color: "#f6d56b", attach: "head" }
+
+    // ---- CONTOH MODEL .glb SENDIRI ----
+    // Letak fail dalam folder models/clothes/ , lepas tu buang // dan tambah koma kat baris atas.
+    // pos/rot/scale kau laraskan guna ?tune=1 (rujuk arahan).
+    //
+    // , sweater_pink: { name: "Cozy Sweater", emoji: "🧶", price: 200, slot: "body",
+    //     glb: "./models/clothes/sweater_pink.glb", attach: "root",
+    //     pos: [0, -0.7, 0], rot: [0, 0, 0], scale: 0.9 }
+    // , cape_red: { name: "Hero Cape", emoji: "🦸", price: 180, slot: "body",
+    //     glb: "./models/clothes/cape_red.glb", attach: "root",
+    //     pos: [0, -0.7, -0.15], rot: [0, 0, 0], scale: 0.9 }
+};
+
+// Daftarkan ke kedai + tetapkan kesan "wear"
+Object.entries(PET_WEAR_CATALOG).forEach(([id, item]) => {
+    if (!PET_SHOP_ITEMS[id]) {
+        PET_SHOP_ITEMS[id] = { name: item.name, emoji: item.emoji, price: item.price };
+    }
+    PET_ITEM_EFFECTS[id] = { type: "wear", slot: item.slot };
+});
+
+// Tukar data "equipped" jadi { head, face, body } (sokong format lama { bow: true })
+function normalizeEquipped(raw) {
+    const out = { head: null, face: null, body: null };
+    if (!raw || typeof raw !== "object") return out;
+
+    WEAR_SLOTS.forEach(slot => {
+        if (typeof raw[slot] === "string" && PET_WEAR_CATALOG[raw[slot]]) {
+            out[slot] = raw[slot];
+        }
+    });
+
+    Object.entries(raw).forEach(([id, on]) => {
+        const item = PET_WEAR_CATALOG[id];
+        if (on === true && item && !out[item.slot]) out[item.slot] = id;
+    });
+
+    return out;
+}
+
+// Tambah item wardrobe ke dalam Pet Shop (tab "👗 Wardrobe")
+function injectWearShop() {
+    const grid = document.getElementById("petShopGrid");
+    const tabs = document.querySelector(".pet-shop-tabs");
+    if (!grid || !tabs || grid.dataset.wearReady) return;
+
+    grid.dataset.wearReady = "1";
+
+    const slotLabel = { head: "Head", face: "Face", body: "Body" };
+
+    Object.entries(PET_WEAR_CATALOG).forEach(([id, item]) => {
+        if (item.shop === false) return; // dah ada kad statik (crown, bow)
+
+        const card = document.createElement("article");
+        card.className = "pet-shop-item";
+        card.dataset.category = "wear";
+        card.innerHTML = `
+            <span class="pet-shop-emoji">${item.emoji}</span>
+            <strong>${item.name}</strong>
+            <small>${slotLabel[item.slot]} item ✨</small>
+            <span class="pet-item-price">🪙 ${item.price}</span>
+            <button type="button" onclick="buyPetItem('${id}')">Buy</button>
+        `;
+        grid.appendChild(card);
+    });
+
+    const tab = document.createElement("button");
+    tab.type = "button";
+    tab.className = "pet-shop-tab";
+    tab.dataset.petFilter = "wear";
+    tab.textContent = "👗 Wardrobe";
+    tab.onclick = function () { filterPetShop("wear", this); };
+    tabs.appendChild(tab);
+}
+
+// Untuk modul 3D (index.html)
+window.PET_WEAR_CATALOG = PET_WEAR_CATALOG;
+window.normalizeEquipped = normalizeEquipped;
+window.getPetData = () => ourPetData;
     
     
 
