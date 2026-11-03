@@ -2965,12 +2965,15 @@ window.syncPetOutfit = function (equipped) {
     }
 };
 
-// ---------- Kamera zoom (mod Dress-up) ----------
+// ---------- Kamera zoom + putar (mod Dress-up) ----------
 const camRest = { pos: new THREE.Vector3(0, 2.5, 8), look: new THREE.Vector3(0, 1, 0) };
-const camZoom = { pos: new THREE.Vector3(), look: new THREE.Vector3() };
+const camZoom = { look: new THREE.Vector3(), dist: 2, height: 0.2 };
+const camTmp = new THREE.Vector3();
 const camLook = new THREE.Vector3();
 let camBlend = 0;
 let camTarget = 0;
+let dressYaw = 0;        // sudut sasaran (user seret)
+let dressYawCur = 0;     // sudut semasa (lembut)
 
 const DRESS_ZOOM = 1.9; // makin kecil = makin dekat
 
@@ -2981,22 +2984,38 @@ function computeZoomTarget() {
     const H = size.y;
 
     camZoom.look.set(center.x, box.max.y - H * 0.5 - H * 0.12, center.z);
-    camZoom.pos.set(camZoom.look.x, camZoom.look.y + H * 0.2, camZoom.look.z + H * DRESS_ZOOM);
+    camZoom.dist = H * DRESS_ZOOM;
+    camZoom.height = H * 0.2;
 }
 
 function updateWearCamera(delta) {
-    if (camBlend === camTarget) return;
+    const yawGoal = dressOpen ? dressYaw : 0;
+    const yawBusy = Math.abs(yawGoal - dressYawCur) > 0.0005;
 
-    const step = Math.min(Math.abs(camTarget - camBlend), delta * 2.2);
-    camBlend += Math.sign(camTarget - camBlend) * step;
+    if (camBlend === camTarget && !yawBusy) return;
+
+    if (camBlend !== camTarget) {
+        const step = Math.min(Math.abs(camTarget - camBlend), delta * 2.2);
+        camBlend += Math.sign(camTarget - camBlend) * step;
+    }
+
+    if (yawBusy) dressYawCur += (yawGoal - dressYawCur) * Math.min(1, delta * 10);
+    else dressYawCur = yawGoal;
+
+    // Kamera mengorbit kucing ikut sudut yaw
+    camTmp.set(
+        Math.sin(dressYawCur) * camZoom.dist,
+        camZoom.height,
+        Math.cos(dressYawCur) * camZoom.dist
+    ).add(camZoom.look);
 
     const t = camBlend * camBlend * (3 - 2 * camBlend);
 
-    camera.position.lerpVectors(camRest.pos, camZoom.pos, t);
+    camera.position.lerpVectors(camRest.pos, camTmp, t);
     camLook.lerpVectors(camRest.look, camZoom.look, t);
     camera.lookAt(camLook);
 }
-
+    
 // ---------- UI Dress-up ----------
 let dressOpen = false;
 let dressSlot = "head";
@@ -3154,6 +3173,8 @@ dressPanel.addEventListener("click", async event => {
 function setDressMode(open) {
     if (open && !wearReady) return; // model belum siap
 
+    dressYaw = 0;
+
     dressOpen = open;
 
     if (open) {
@@ -3169,6 +3190,51 @@ function setDressMode(open) {
 
 dressBtn.addEventListener("click", () => setDressMode(!dressOpen));
 window.closeDressMode = () => setDressMode(false);
+
+    
+// ---------- Seret untuk putar kucing (mod Dress-up) ----------
+const dragStyle = document.createElement("style");
+dragStyle.textContent = `
+.dress-active canvas { touch-action: pan-y; cursor: grab; }
+.dress-hint {
+    position: absolute; top: 14px; right: 12px; z-index: 7;
+    padding: 5px 10px; border-radius: 999px;
+    font-size: 11px; font-weight: 700; color: #7a4766;
+    background: rgba(255, 245, 250, 0.88);
+    opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
+}
+.dress-active .dress-hint { opacity: 1; }`;
+document.head.appendChild(dragStyle);
+
+const dressHint = document.createElement("div");
+dressHint.className = "dress-hint";
+dressHint.textContent = "↔ Seret untuk putar";
+if (dressRoom) dressRoom.appendChild(dressHint);
+
+let dressDragging = false;
+let dragLastX = 0;
+
+canvas.addEventListener("pointerdown", event => {
+    if (!dressOpen) return;
+    dressDragging = true;
+    dragLastX = event.clientX;
+    canvas.setPointerCapture(event.pointerId);
+});
+
+canvas.addEventListener("pointermove", event => {
+    if (!dressDragging) return;
+    dressYaw -= (event.clientX - dragLastX) * 0.01;
+    dragLastX = event.clientX;
+});
+
+["pointerup", "pointercancel"].forEach(type => {
+    canvas.addEventListener(type, () => { dressDragging = false; });
+});
+
+// Tekan dua kali untuk hadap depan semula
+canvas.addEventListener("dblclick", () => {
+    if (dressOpen) dressYaw = 0;
+});
 
 // ---------- Dipanggil setiap frame dalam animate() ----------
 function updateWear(delta) {
