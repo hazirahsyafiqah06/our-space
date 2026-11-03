@@ -1572,6 +1572,11 @@ createRoomBox(
     5, 2, 2.5
 );
 
+    const windowFrameMaterial = new THREE.MeshStandardMaterial({
+    color: "#ffb3d4",
+    roughness: 0.8
+});
+    
 // WINDOW FRAME
 createRoomBox(
     2.4, 1.8, 0.15,
@@ -1583,9 +1588,9 @@ createRoomBox(
 const windowGlass = new THREE.Mesh(
     new THREE.PlaneGeometry(2.1, 1.5),
     new THREE.MeshStandardMaterial({
-        color: "#bde8ff",
-        emissive: "#8dd8ff",
-        emissiveIntensity: 0.25
+        color: "#6fb8e8",
+        emissive: "#3f9ad6",
+        emissiveIntensity: 0.1
     })
 );
 
@@ -1602,6 +1607,19 @@ createRoomBox(
 createRoomBox(
     2.1, 0.08, 0.05,
     whiteMaterial,
+    0, 2.6, -2.2
+);
+
+    // WINDOW CROSS
+createRoomBox(
+    0.08, 1.5, 0.05,
+    windowFrameMaterial,   // ← tukar sini
+    0, 2.6, -2.2
+);
+
+createRoomBox(
+    2.1, 0.08, 0.05,
+    windowFrameMaterial,   // ← tukar sini
     0, 2.6, -2.2
 );
 
@@ -2111,8 +2129,8 @@ const NIGHT_LOOK = {
     hemiGround:{ day: new THREE.Color(0xffb6d9),  night: new THREE.Color(0x3b2a66) },
     mainColor: { day: new THREE.Color(0xffffff),  night: new THREE.Color(0x9db0ff) },
     roomColor: { day: new THREE.Color("#ffd6e8"), night: new THREE.Color("#ff9fc8") },
-    glass:     { day: new THREE.Color("#bde8ff"), night: new THREE.Color("#141b4d") },
-    glassEmit: { day: new THREE.Color("#8dd8ff"), night: new THREE.Color("#22307a") }
+   glass:     { day: new THREE.Color("#6fb8e8"), night: new THREE.Color("#141b4d") },
+glassEmit: { day: new THREE.Color("#3f9ad6"), night: new THREE.Color("#22307a") }
 };
 
 // ---- Lampu tepi katil (menyala waktu malam) ----
@@ -2181,8 +2199,7 @@ function applyNightLook(t) {
 
     mixColor(windowGlass.material.color, NIGHT_LOOK.glass, t);
     mixColor(windowGlass.material.emissive, NIGHT_LOOK.glassEmit, t);
-    windowGlass.material.emissiveIntensity = 0.25 + 0.35 * t;
-
+    windowGlass.material.emissiveIntensity = 0.1 + 0.5 * t;
     moonMaterial.opacity = t;
     moonHaloMaterial.opacity = 0.22 * t;
 }
@@ -3232,7 +3249,7 @@ window.syncPetOutfit = function (equipped) {
 };
 
 // ---------- Kamera zoom + putar (mod Dress-up) ----------
-const camRest = { pos: new THREE.Vector3(0, 2.3, 6.2), look: new THREE.Vector3(0, 0.95, 0) };
+const camRest = { pos: new THREE.Vector3(0, 2.3, 5.5), look: new THREE.Vector3(0, 0.95, 0) };
 const camZoom = { look: new THREE.Vector3(), dist: 2, height: 0.2 };
 const camTmp = new THREE.Vector3();
 const camLook = new THREE.Vector3();
