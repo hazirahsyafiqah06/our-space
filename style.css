@@ -9479,3 +9479,37 @@ html {
 .pet-room-3d .pet-speech:empty {
     display: none;
 }
+/* ===== PET SHOP POPUP ===== */
+.pet-heading { flex-wrap: wrap; }
+.pet-heading-actions {
+    display: flex;
+    flex: 0 0 100%;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+/* sorok kedai dalam halaman, hanya nampak dalam popup */
+#petShopSection { display: none; }
+
+.pet-shop-overlay #petShopSection {
+    display: block;
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+    max-height: 85vh;
+    overflow-y: auto;
+    margin: 0 !important;
+    padding: 16px;
+    border-radius: 22px;
+    background: #fff7fb;
+    box-shadow: 0 20px 50px rgba(120, 50, 90, .3);
+    animation: petInvPop .22s ease;
+}
+.pet-shop-overlay .pet-store-hero { margin-top: 30px; }
+
+/* betulkan tab (sebelum ni "Care" je nampak sebab button global 100% lebar) */
+.pet-shop-tab {
+    width: auto !important;
+    flex: 0 0 auto;
+}
+.pet-shop-emoji { font-size: 34px !important; }
