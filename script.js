@@ -10530,9 +10530,10 @@ function renderOurPet() {
 
     };
 
-       const wornEmojis = Object.entries(ourPetData.equipped || {})
-        .filter(([id, on]) => on && PET_SHOP_ITEMS[id])
-        .map(([id]) => PET_SHOP_ITEMS[id].emoji)
+          const equippedNow = normalizeEquipped(ourPetData.equipped);
+
+    const wornEmojis = WEAR_SLOTS
+        .map(slot => PET_WEAR_CATALOG[equippedNow[slot]]?.emoji || "")
         .join("");
 
     setText(
@@ -10572,6 +10573,8 @@ function renderOurPet() {
 
     if (window.syncPetCare) window.syncPetCare(ourPetData.cleanliness, ourPetData.poop_count);
     if (window.syncPetClean) window.syncPetClean(ourPetData.last_clean_at);
+        injectWearShop();
+    if (window.syncPetOutfit) window.syncPetOutfit(equippedNow);
 
     const character = document.getElementById("petCharacter");
 
@@ -10691,10 +10694,14 @@ function renderPetInventory() {
         const effect = PET_ITEM_EFFECTS[id] || {};
         const worn = effect.type === "accessory" && ourPetData?.equipped?.[id];
 
-        let label = "Use";
+               let label = "Use";
         if (effect.type === "food") label = "Feed";
         else if (effect.type === "toy") label = "Play";
-        else if (effect.type === "accessory") label = worn ? "Remove" : "Wear";
+        else if (effect.type === "care") label = "Bath";
+        else if (effect.type === "wear") {
+            const equippedNow = normalizeEquipped(ourPetData?.equipped);
+            label = equippedNow[effect.slot] === id ? "Remove" : "Wear";
+        }
 
         return `
             <div class="pet-inventory-item">
@@ -10724,6 +10731,13 @@ async function buyPetItem(itemId) {
     }
 
     if (!ourPetData) return;
+        if (
+        PET_ITEM_EFFECTS[itemId]?.type === "wear" &&
+        (Number(ourPetData.inventory?.[itemId]) || 0) >= 1
+    ) {
+        alert("Dah ada item ni dalam inventory ♡");
+        return;
+    }
 
     const currentCoins = Number(ourPetData.coins) || 0;
 
@@ -10789,6 +10803,7 @@ async function interactWithPet(action) {
     }
 
     if (!ourPetData) return;
+    
 
        const next = {
         happiness: Number(ourPetData.happiness) || 0,
@@ -11329,15 +11344,21 @@ async function usePetItem(itemId) {
 
     let message = "";
 
-    if (effect.type === "accessory") {
-        // PAKAI / BUKA aksesori (item tak habis)
-        const equipped = { ...(ourPetData.equipped || {}) };
-        equipped[itemId] = !equipped[itemId];
+        if (effect.type === "wear") {
+        // PAKAI / BUKA pakaian (item tak habis, 1 item setiap slot)
+        const equipped = normalizeEquipped(ourPetData.equipped);
+
+        if (equipped[effect.slot] === itemId) {
+            equipped[effect.slot] = null;
+            message = `${item.emoji} ${item.name} dibuka`;
+        } else {
+            equipped[effect.slot] = itemId;
+            message = `${item.emoji} ${item.name} dipakai! Comelnya ♡`;
+        }
+
         update.equipped = equipped;
 
-        message = equipped[itemId]
-            ? `${item.emoji} ${item.name} dipakai! Comelnya ♡`
-            : `${item.emoji} ${item.name} dibuka`;
+    } else if (effect.type === "accessory") {
 
     } else {
         const hunger = Number(ourPetData.hunger) || 0;
