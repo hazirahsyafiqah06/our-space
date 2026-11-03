@@ -11392,6 +11392,14 @@ async function usePetItem(itemId) {
         update.inventory = inventory;
 
         message = effect.msg;
+            // SHOW REAL 3D TOYS IN PET ROOM
+if (itemId === "ball" || itemId === "teddy") {
+
+    if (window.showPetToy3D) {
+        window.showPetToy3D(itemId);
+    }
+
+}
 
         // Lepas makan, ada peluang berak 💩
         if (
