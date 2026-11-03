@@ -1064,6 +1064,17 @@
                 </div>
             </div>
 
+                        <div class="pet-stat">
+                <div>
+                    <span>🫧 Cleanliness</span>
+                    <strong id="petCleanText">100/100</strong>
+                </div>
+                <div class="pet-stat-track">
+                    <div id="petCleanBar"
+                         class="pet-stat-fill cleanliness-fill"></div>
+                </div>
+            </div>
+
         </div>
 
         <div class="pet-actions">
@@ -1110,6 +1121,7 @@
             </div>
 
             <div class="pet-shop-tabs" role="group" aria-label="Filter pet shop items">
+                                <button type="button" class="pet-shop-tab" data-pet-filter="care" onclick="filterPetShop('care', this)">🧼 Care</button>
                 <button type="button" class="pet-shop-tab active" data-pet-filter="all" onclick="filterPetShop('all', this)">All items</button>
                 <button type="button" class="pet-shop-tab" data-pet-filter="food" onclick="filterPetShop('food', this)">🍓 Food</button>
                 <button type="button" class="pet-shop-tab" data-pet-filter="toys" onclick="filterPetShop('toys', this)">🧸 Toys</button>
@@ -1158,6 +1170,13 @@
                     <small>Our tiny royal baby</small>
                     <span class="pet-item-price">🪙 120</span>
                     <button type="button" onclick="buyPetItem('crown')">Buy</button>
+                </article>
+                    <article class="pet-shop-item" data-category="care">
+                    <span class="pet-shop-emoji">🧼</span>
+                    <strong>Bubble Soap</strong>
+                    <small>For a squeaky clean bath</small>
+                    <span class="pet-item-price">🪙 25</span>
+                    <button type="button" onclick="buyPetItem('soap')">Buy</button>
                 </article>
             </div>
 
@@ -2169,6 +2188,225 @@ window.syncPetHug = function (lastHugAt) {
 
         if (Date.now() - ts < 15000) {
             window.spawnPetHearts();
+        }
+    }
+};
+
+    /* =========================================
+   🧼 KEBERSIHAN: TAHI, HABUK, SERABUT, GELEMBUNG
+========================================= */
+
+// ---- Tahi 💩 (maksimum 3, atas lantai) ----
+const poopMaterial = new THREE.MeshStandardMaterial({ color: "#8a5530", roughness: 0.7 });
+const poopEyeMaterial = new THREE.MeshBasicMaterial({ color: "#ffffff" });
+const poopPupilMaterial = new THREE.MeshBasicMaterial({ color: "#2a1a10" });
+
+function createPoop(x, z) {
+    const group = new THREE.Group();
+
+    [[0.17, 0.0], [0.12, 0.17], [0.075, 0.3]].forEach(([radius, y]) => {
+        const blob = new THREE.Mesh(
+            new THREE.SphereGeometry(radius, 16, 12),
+            poopMaterial
+        );
+        blob.position.y = y;
+        blob.scale.y = 0.75;
+        group.add(blob);
+    });
+
+    [-0.045, 0.045].forEach(dx => {
+        const eye = new THREE.Mesh(new THREE.SphereGeometry(0.03, 10, 8), poopEyeMaterial);
+        eye.position.set(dx, 0.2, 0.1);
+        group.add(eye);
+
+        const pupil = new THREE.Mesh(new THREE.SphereGeometry(0.014, 8, 6), poopPupilMaterial);
+        pupil.position.set(dx, 0.2, 0.128);
+        group.add(pupil);
+    });
+
+    group.position.set(x, -0.32, z);
+    group.scale.setScalar(1.4);
+    group.visible = false;
+    scene.add(group);
+
+    return group;
+}
+
+const poopMeshes = [
+    createPoop(-1.3, 1.0),
+    createPoop(1.2, 1.2),
+    createPoop(0.2, 2.0)
+];
+
+// ---- Habuk atas lantai bila bilik kotor ----
+const dustMaterial = new THREE.MeshStandardMaterial({
+    color: "#8c7b66",
+    roughness: 1,
+    transparent: true,
+    opacity: 0,
+    depthWrite: false
+});
+
+const dustLayer = new THREE.Mesh(new THREE.PlaneGeometry(10, 10), dustMaterial);
+dustLayer.rotation.x = -Math.PI / 2;
+dustLayer.position.y = -0.47;
+dustLayer.visible = false;
+scene.add(dustLayer);
+
+// ---- Barang berserabut (muncul bila kebersihan makin rendah) ----
+function createMess(type, x, z) {
+    let mesh;
+
+    if (type === "paper") {
+        mesh = new THREE.Mesh(
+            new THREE.IcosahedronGeometry(0.16, 0),
+            new THREE.MeshStandardMaterial({ color: "#f3efe6", flatShading: true })
+        );
+        mesh.position.set(x, -0.34, z);
+
+    } else if (type === "box") {
+        mesh = new THREE.Mesh(
+            new THREE.BoxGeometry(0.35, 0.22, 0.3),
+            new THREE.MeshStandardMaterial({ color: "#c9a27a", roughness: 0.9 })
+        );
+        mesh.position.set(x, -0.39, z);
+        mesh.rotation.y = 0.6;
+
+    } else {
+        mesh = new THREE.Mesh(
+            new THREE.CapsuleGeometry(0.07, 0.28, 4, 8),
+            new THREE.MeshStandardMaterial({ color: "#9ec7e8", roughness: 0.9 })
+        );
+        mesh.position.set(x, -0.4, z);
+        mesh.rotation.z = Math.PI / 2;
+        mesh.rotation.y = 0.5;
+    }
+
+    mesh.visible = false;
+    scene.add(mesh);
+    return mesh;
+}
+
+const messItems = [
+    { mesh: createMess("paper", -2.2, 1.5), showBelow: 45 },
+    { mesh: createMess("box",    2.0, 0.8), showBelow: 40 },
+    { mesh: createMess("paper", -0.8, 2.4), showBelow: 35 },
+    { mesh: createMess("sock",   1.6, 2.2), showBelow: 25 },
+    { mesh: createMess("paper", -3.2, 0.2), showBelow: 15 },
+    { mesh: createMess("box",    3.4, 1.6), showBelow: 8 }
+];
+
+// Dipanggil dari renderOurPet()
+window.syncPetCare = function (cleanliness, poopCount) {
+    const clean = Math.max(0, Math.min(100, Number(cleanliness ?? 100)));
+    const poops = Math.max(0, Math.min(poopMeshes.length, Number(poopCount) || 0));
+
+    poopMeshes.forEach((poop, i) => {
+        poop.visible = i < poops;
+    });
+
+    const dirt = Math.max(0, Math.min(1, (50 - clean) / 50));
+    dustLayer.visible = dirt > 0;
+    dustMaterial.opacity = 0.5 * dirt;
+
+    messItems.forEach(item => {
+        item.mesh.visible = clean < item.showBelow;
+    });
+};
+
+// ---- Gelembung 🫧 bila mandi ----
+const bubbleStyle = document.createElement("style");
+bubbleStyle.textContent = `
+.pet-bubble-layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+    z-index: 6;
+}
+.pet-bubble {
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    animation: petBubbleFloat 2.2s ease-out forwards;
+}
+@keyframes petBubbleFloat {
+    0%   { transform: translate(0, 0) scale(0.4); opacity: 0; }
+    20%  { opacity: 0.95; }
+    85%  { opacity: 0.9; }
+    100% { transform: translate(var(--drift), -95px) scale(1.15); opacity: 0; }
+}`;
+document.head.appendChild(bubbleStyle);
+
+const bubbleRoom = canvas.parentElement;
+if (bubbleRoom && getComputedStyle(bubbleRoom).position === "static") {
+    bubbleRoom.style.position = "relative";
+}
+
+const bubbleLayer = document.createElement("div");
+bubbleLayer.className = "pet-bubble-layer";
+if (bubbleRoom) bubbleRoom.appendChild(bubbleLayer);
+
+const bubbleCenter = new THREE.Vector3();
+const bubbleBox = new THREE.Box3();
+
+function placeBubbleLayer() {
+    let x = canvas.clientWidth * 0.5;
+    let y = canvas.clientHeight * 0.55;
+
+    if (petModel) {
+        bubbleBox.setFromObject(petModel);
+        bubbleBox.getCenter(bubbleCenter);
+        bubbleCenter.project(camera);
+
+        x = (bubbleCenter.x * 0.5 + 0.5) * canvas.clientWidth;
+        y = (-bubbleCenter.y * 0.5 + 0.5) * canvas.clientHeight;
+    }
+
+    bubbleLayer.style.transform =
+        `translate(${x + canvas.offsetLeft}px, ${y + canvas.offsetTop}px)`;
+}
+
+const BUBBLE_EMOJIS = ["🫧", "🫧", "🫧", "✨"];
+
+window.spawnPetBubbles = function (count = 14) {
+    placeBubbleLayer();
+
+    for (let i = 0; i < count; i++) {
+        setTimeout(() => {
+            const bubble = document.createElement("span");
+            bubble.className = "pet-bubble";
+            bubble.textContent =
+                BUBBLE_EMOJIS[Math.floor(Math.random() * BUBBLE_EMOJIS.length)];
+            bubble.style.fontSize = (16 + Math.random() * 18) + "px";
+            bubble.style.marginLeft = (Math.random() * 140 - 70) + "px";
+            bubble.style.marginTop = (Math.random() * 70 - 35) + "px";
+            bubble.style.setProperty("--drift", (Math.random() * 30 - 15) + "px");
+            bubbleLayer.appendChild(bubble);
+            setTimeout(() => bubble.remove(), 2300);
+        }, i * 110);
+    }
+};
+
+// Dipanggil dari renderOurPet(): gelembung keluar bila ada mandi baru (kau atau pasangan)
+let lastCleanSeen;
+
+window.syncPetClean = function (lastCleanAt) {
+    const ts = lastCleanAt ? new Date(lastCleanAt).getTime() : 0;
+
+    if (lastCleanSeen === undefined) {
+        lastCleanSeen = ts;
+        return;
+    }
+
+    if (ts && ts !== lastCleanSeen) {
+        lastCleanSeen = ts;
+
+        if (Date.now() - ts < 15000) {
+            window.spawnPetBubbles();
         }
     }
 };
