@@ -1082,7 +1082,7 @@
                 🍓 Feed
             </button>
 
-            <button onclick="window.openPetPlayMenu()">
+            <button onclick="interactWithPet('play')">
                 🧸 Play
             </button>
 
@@ -1097,34 +1097,6 @@
             <button onclick="interactWithPet('clean')">
                 🫧 Clean
             </button>
-        </div>
-
-        <style>
-        .pet-play-overlay{position:fixed;inset:0;z-index:10050;background:rgba(70,30,65,.42);display:flex;align-items:center;justify-content:center;padding:18px;backdrop-filter:blur(5px)}
-        .pet-play-overlay[hidden]{display:none}
-        .pet-play-card{width:min(440px,100%);background:#fff5fb;border:1px solid #f4c9df;border-radius:24px;padding:22px;box-shadow:0 18px 60px rgba(130,50,100,.25);color:#9d6484}
-        .pet-play-card h3{text-align:center;color:#df568f;margin:0 0 5px;font-size:1.35rem}
-        .pet-play-sub{text-align:center;margin:0 0 18px}
-        .pet-play-options{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-        .pet-play-option{border:1px solid #f0c8df;background:#fff;border-radius:18px;padding:15px 10px;color:#9d6484;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;font:inherit;transition:transform .15s,box-shadow .15s}
-        .pet-play-option:hover:not(:disabled){transform:translateY(-3px);box-shadow:0 8px 20px #eec5dc}
-        .pet-play-option:disabled{opacity:.45;cursor:not-allowed}
-        .pet-play-emoji{font-size:2.6rem}.pet-play-name{font-weight:700;color:#d95891}.pet-play-count{background:#fff1d6;border-radius:20px;padding:4px 10px;color:#a27627;font-weight:700}.pet-play-note{font-size:.8rem;text-align:center}.pet-play-close{display:block;margin:16px auto 0;border:0;background:#f2d6e7;border-radius:20px;padding:9px 20px;color:#9d6484;cursor:pointer}
-        </style>
-        <div id="petPlayMenu" class="pet-play-overlay" hidden onclick="if(event.target===this)window.closePetPlayMenu()">
-            <div class="pet-play-card" role="dialog" aria-modal="true" aria-labelledby="petPlayTitle">
-                <h3 id="petPlayTitle">♡ Let's Play with Mochi ♡</h3>
-                <p class="pet-play-sub">Choose a toy from our shared bag!</p>
-                <div class="pet-play-options">
-                    <button class="pet-play-option" id="petPlayBallOption" type="button" onclick="window.choosePetPlayToy('ball')">
-                        <span class="pet-play-emoji">⚽</span><span class="pet-play-name">Play Ball</span><span class="pet-play-count" id="petPlayBallCount">× 0</span><span class="pet-play-note">Chase the bouncing ball!</span>
-                    </button>
-                    <button class="pet-play-option" id="petPlayTeddyOption" type="button" onclick="window.choosePetPlayToy('teddy')">
-                        <span class="pet-play-emoji">🧸</span><span class="pet-play-name">Teddy Hug</span><span class="pet-play-count" id="petPlayTeddyCount">× 0</span><span class="pet-play-note">Cuddle teddy with hearts!</span>
-                    </button>
-                </div>
-                <button class="pet-play-close" type="button" onclick="window.closePetPlayMenu()">Close ♡</button>
-            </div>
         </div>
 
         <p id="petActionMessage" class="pet-action-message">
@@ -1767,125 +1739,265 @@ camera.lookAt(0, 1.2, -0.5);
 
     
 /* =========================================
-   3D PET TOYS - BALL CHASE / TEDDY CUDDLE
+   3D PET TOYS - BALL & TEDDY
 ========================================= */
+
 let activePetToys = [];
 let petToyStartTime = 0;
 let petToyAnimationActive = false;
-let petToyTypeActive = null;
-let petToyCatBase = null;
 
 window.showPetToy3D = function (toyType) {
+
+    // Clear previous toys
     activePetToys.forEach(obj => scene.remove(obj));
     activePetToys = [];
-    if (!petModel) return;
 
     const toyGroup = new THREE.Group();
     scene.add(toyGroup);
     activePetToys.push(toyGroup);
+
     petToyStartTime = performance.now();
     petToyAnimationActive = true;
-    petToyTypeActive = toyType;
-    petToyCatBase = petModel.position.clone();
 
-    const brown = new THREE.MeshStandardMaterial({ color: 0x9b603d, roughness: 0.85 });
-    const cream = new THREE.MeshStandardMaterial({ color: 0xf3d7b2, roughness: 0.85 });
-    const black = new THREE.MeshStandardMaterial({ color: 0x251810 });
-    const pink = new THREE.MeshStandardMaterial({ color: 0xff6fa8, emissive: 0xff174f, emissiveIntensity: 0.25, side: THREE.DoubleSide });
+    const brown = new THREE.MeshStandardMaterial({
+        color: 0x9b603d,
+        roughness: 0.85
+    });
 
-    if (toyType === "ball") {
-        const ballGroup = new THREE.Group();
-        const ball = new THREE.Mesh(new THREE.SphereGeometry(0.24, 32, 32), new THREE.MeshStandardMaterial({ color: 0xff69a4, roughness: 0.45 }));
-        ballGroup.add(ball);
-        for (let i = 0; i < 3; i++) {
-            const stripe = new THREE.Mesh(new THREE.TorusGeometry(0.24, 0.025, 12, 32), new THREE.MeshStandardMaterial({ color: 0xffe66d }));
-            stripe.rotation.set(i * Math.PI / 3, i * Math.PI / 3, 0);
-            ballGroup.add(stripe);
-        }
-        ballGroup.position.set(-0.8, 0.22, 0.35);
-        toyGroup.add(ballGroup);
-        toyGroup.userData.ball = ballGroup;
+    const cream = new THREE.MeshStandardMaterial({
+        color: 0xf3d7b2,
+        roughness: 0.85
+    });
+
+    const black = new THREE.MeshStandardMaterial({
+        color: 0x251810
+    });
+
+    const pink = new THREE.MeshStandardMaterial({
+        color: 0xff6fa8,
+        emissive: 0xff174f,
+        emissiveIntensity: 0.25
+    });
+
+    // =====================================
+    // 3D BALL
+    // =====================================
+
+    const ballGroup = new THREE.Group();
+
+    const ball = new THREE.Mesh(
+        new THREE.SphereGeometry(0.24, 32, 32),
+        new THREE.MeshStandardMaterial({
+            color: 0xff69a4,
+            roughness: 0.45
+        })
+    );
+
+    ballGroup.add(ball);
+
+    // Yellow decorative stripes
+    for (let i = 0; i < 3; i++) {
+
+        const stripe = new THREE.Mesh(
+            new THREE.TorusGeometry(0.24, 0.025, 12, 32),
+            new THREE.MeshStandardMaterial({
+                color: 0xffe66d
+            })
+        );
+
+        stripe.rotation.set(
+            i * Math.PI / 3,
+            i * Math.PI / 3,
+            0
+        );
+
+        ballGroup.add(stripe);
     }
 
-    if (toyType === "teddy") {
-        const teddy = new THREE.Group();
-        const part = (radius, material, x, y, z) => {
-            const mesh = new THREE.Mesh(new THREE.SphereGeometry(radius, 24, 24), material);
-            mesh.position.set(x, y, z); teddy.add(mesh); return mesh;
-        };
-        part(0.22, brown, 0, 0.23, 0); // body
-        part(0.18, brown, 0, 0.53, 0); // head
-        part(0.075, brown, -0.14, 0.67, 0); part(0.075, brown, 0.14, 0.67, 0); // ears
-        part(0.04, cream, -0.14, 0.67, 0.055); part(0.04, cream, 0.14, 0.67, 0.055);
-        part(0.09, cream, 0, 0.47, 0.13); part(0.025, black, 0, 0.50, 0.21); // muzzle/nose
-        part(0.02, black, -0.065, 0.56, 0.15); part(0.02, black, 0.065, 0.56, 0.15); // eyes
-        part(0.10, brown, -0.22, 0.29, 0); part(0.10, brown, 0.22, 0.29, 0); // arms
-        part(0.11, brown, -0.12, 0.06, 0.03); part(0.11, brown, 0.12, 0.06, 0.03); // legs
+    toyGroup.add(ballGroup);
 
-        const hearts = [];
-        for (let i = 0; i < 3; i++) {
-            const shape = new THREE.Shape();
-            shape.moveTo(0, 0);
-            shape.bezierCurveTo(-0.15, 0.15, -0.18, 0.3, 0, 0.35);
-            shape.bezierCurveTo(0.18, 0.3, 0.15, 0.15, 0, 0);
-            const heart = new THREE.Mesh(new THREE.ShapeGeometry(shape), pink);
-            heart.scale.setScalar(0.4);
-            heart.position.set(i * 0.2 - 0.2, 0.9 + i * 0.15, 0.15);
-            teddy.add(heart); hearts.push(heart);
-        }
-        teddy.position.set(0.55, 0, 0.3);
-        toyGroup.add(teddy);
-        toyGroup.userData.teddy = teddy;
-        toyGroup.userData.hearts = hearts;
+    // =====================================
+    // 3D TEDDY BEAR
+    // =====================================
+
+    const teddy = new THREE.Group();
+
+    function teddySphere(
+        radius,
+        material,
+        x,
+        y,
+        z
+    ) {
+
+        const mesh = new THREE.Mesh(
+            new THREE.SphereGeometry(radius, 24, 24),
+            material
+        );
+
+        mesh.position.set(x, y, z);
+
+        teddy.add(mesh);
+
+        return mesh;
     }
+
+    // Body
+    teddySphere(0.22, brown, 0, 0.23, 0);
+
+    // Head
+    teddySphere(0.18, brown, 0, 0.53, 0);
+
+    // Ears
+    teddySphere(0.075, brown, -0.14, 0.67, 0);
+    teddySphere(0.075, brown, 0.14, 0.67, 0);
+
+    // Inner ears
+    teddySphere(0.04, cream, -0.14, 0.67, 0.055);
+    teddySphere(0.04, cream, 0.14, 0.67, 0.055);
+
+    // Muzzle
+    teddySphere(0.09, cream, 0, 0.47, 0.13);
+
+    // Nose
+    teddySphere(0.025, black, 0, 0.50, 0.21);
+
+    // Eyes
+    teddySphere(0.02, black, -0.065, 0.56, 0.15);
+    teddySphere(0.02, black, 0.065, 0.56, 0.15);
+
+    // Arms
+    teddySphere(0.10, brown, -0.22, 0.29, 0);
+    teddySphere(0.10, brown, 0.22, 0.29, 0);
+
+    // Legs
+    teddySphere(0.11, brown, -0.12, 0.06, 0.03);
+    teddySphere(0.11, brown, 0.12, 0.06, 0.03);
+
+    toyGroup.add(teddy);
+
+    // =====================================
+    // HEARTS
+    // =====================================
+
+    const hearts = [];
+
+    for (let i = 0; i < 3; i++) {
+
+        const heartShape = new THREE.Shape();
+
+        heartShape.moveTo(0, 0);
+
+        heartShape.bezierCurveTo(
+            -0.15, 0.15,
+            -0.18, 0.3,
+            0, 0.35
+        );
+
+        heartShape.bezierCurveTo(
+            0.18, 0.3,
+            0.15, 0.15,
+            0, 0
+        );
+
+        const heart = new THREE.Mesh(
+            new THREE.ShapeGeometry(heartShape),
+            pink
+        );
+
+        heart.scale.setScalar(0.4);
+
+        heart.position.set(
+            i * 0.2 - 0.2,
+            0.9 + i * 0.15,
+            0.15
+        );
+
+        teddy.add(heart);
+
+        hearts.push(heart);
+    }
+
+    // =====================================
+    // POSITION IN ROOM
+    // =====================================
+
+    // Teddy beside cat
+    teddy.position.set(0.9, -0.5, 0.3);
+
+    // Ball near cat
+    ballGroup.position.set(-0.7, 0, 0.3);
+
+    // Save references for animation
+    toyGroup.userData.ball = ballGroup;
+    toyGroup.userData.teddy = teddy;
+    toyGroup.userData.hearts = hearts;
 };
 
-window.updatePetToy3D = function () {
-    if (!petToyAnimationActive || !petModel) return;
-    const elapsed = (performance.now() - petToyStartTime) / 1000;
-    const toyGroup = activePetToys[0];
-    if (!toyGroup) return;
+// =========================================
+// UPDATE TOY ANIMATION
+// =========================================
 
-    if (elapsed >= 7) {
-        activePetToys.forEach(obj => scene.remove(obj));
+window.updatePetToy3D = function () {
+
+    if (!petToyAnimationActive) return;
+
+    const elapsed =
+        (performance.now() - petToyStartTime) / 1000;
+
+    // Remove toys after 8 seconds
+    if (elapsed >= 8) {
+
+        activePetToys.forEach(obj => {
+            scene.remove(obj);
+        });
+
         activePetToys = [];
         petToyAnimationActive = false;
-        petToyTypeActive = null;
-        if (petToyCatBase) petModel.position.copy(petToyCatBase);
-        petToyCatBase = null;
-        window.playPetAnimation("idle");
+
         return;
     }
 
-    if (petToyTypeActive === "ball" && toyGroup.userData.ball) {
-        const ball = toyGroup.userData.ball;
-        // ball loops around the pet, rolls and bounces
-        ball.position.x = Math.sin(elapsed * 3.2) * 1.05;
-        ball.position.z = Math.cos(elapsed * 2.4) * 0.75 + 0.35;
-        ball.position.y = 0.22 + Math.abs(Math.sin(elapsed * 5.2)) * 0.65;
-        ball.rotation.x += 0.11; ball.rotation.z += 0.13;
-        // Cat hops toward the ball, with a small left/right chase
-        petModel.position.x = petToyCatBase.x + Math.sin(elapsed * 3.2) * 0.42;
-        petModel.position.y = petToyCatBase.y + Math.abs(Math.sin(elapsed * 5.2 + 0.8)) * 0.24;
-        petModel.position.z = petToyCatBase.z + Math.cos(elapsed * 2.4) * 0.16;
-        if (elapsed < 0.15) window.playPetAnimation("walk");
-    }
+    activePetToys.forEach(toyGroup => {
 
-    if (petToyTypeActive === "teddy" && toyGroup.userData.teddy) {
+        const ball = toyGroup.userData.ball;
         const teddy = toyGroup.userData.teddy;
-        // Move kitty close as if cuddling teddy; gentle cuddle sway
-        petModel.position.x = petToyCatBase.x + 0.28;
-        petModel.position.y = petToyCatBase.y + Math.sin(elapsed * 3) * 0.035;
-        petModel.position.z = petToyCatBase.z + 0.12;
-        teddy.rotation.y = Math.sin(elapsed * 2.2) * 0.10;
-        teddy.position.y = Math.sin(elapsed * 2.4) * 0.025;
-        (toyGroup.userData.hearts || []).forEach((heart, index) => {
-            heart.position.y = 0.9 + index * 0.15 + Math.sin(elapsed * 2.5 + index) * 0.16;
-            heart.position.x = Math.sin(elapsed + index) * 0.12;
+        const hearts = toyGroup.userData.hearts;
+
+        if (!ball || !teddy) return;
+
+        // Ball bouncing around cat
+        ball.position.x =
+            Math.sin(elapsed * 3) * 1.1 - 0.7;
+
+        ball.position.z =
+            Math.cos(elapsed * 2) * 0.8;
+
+        ball.position.y =
+            Math.abs(Math.sin(elapsed * 5)) * 0.65;
+
+        ball.rotation.x += 0.08;
+        ball.rotation.z += 0.10;
+
+        // Teddy gentle movement
+        teddy.rotation.y =
+            Math.sin(elapsed * 2) * 0.12;
+
+        teddy.position.y =
+            -0.5 + Math.sin(elapsed * 2) * 0.03;
+
+        // Floating hearts
+        hearts.forEach((heart, index) => {
+
+            heart.position.y =
+                0.9 + index * 0.15 +
+                Math.sin(elapsed * 2 + index) * 0.15;
+
         });
-        if (elapsed < 0.15) window.playPetAnimation("idle");
-    }
+
+    });
 };
+
 
 // LOAD CAT MODEL
 const loader = new GLTFLoader();
