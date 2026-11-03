@@ -9375,3 +9375,6 @@ html {
     cursor: pointer;
     background: linear-gradient(135deg, #f08bb4, #c79bf0);
 }
+.cleanliness-fill {
+    background: linear-gradient(90deg, #b8e6dc, #7fd1c0);
+}
