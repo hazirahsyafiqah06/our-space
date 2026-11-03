@@ -9474,3 +9474,8 @@ html {
     flex: 1;
     min-width: 0;
 }
+
+/* sorok kotak ucapan bila kosong */
+.pet-room-3d .pet-speech:empty {
+    display: none;
+}
