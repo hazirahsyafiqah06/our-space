@@ -977,7 +977,9 @@
                 <h2>🐾 Our Little Pet</h2>
                 <p>One little pet, loved by both of us 🩷🩵</p>
             </div>
-            <div class="pet-heading-heart">💕</div>
+           <button type="button" class="pet-inv-open" onclick="openPetInventory()">
+    🎒 <span>Inventory</span>
+</button>
         </div>
 
         
@@ -1179,18 +1181,23 @@
                 </article>
             </div>
 
-            <div class="pet-inventory">
-                <div class="pet-inventory-heading">
-                    <div>
-                        <h3>🎒 Our Inventory</h3>
-                        <span>All the little things we own</span>
-                    </div>
-                    <span class="pet-inventory-bag">♡ Shared bag</span>
-                </div>
-                <div id="petInventoryList" class="pet-inventory-list">
-                    <p class="pet-inventory-empty">Your bag is empty. Visit the Pet Shop! ♡</p>
-                </div>
+            <div class="pet-inv-modal" id="petInvModal" onclick="if(event.target===this)closePetInventory()">
+    <div class="pet-inv-dialog" role="dialog" aria-modal="true" aria-labelledby="petInvTitle">
+        <button type="button" class="pet-inv-close" onclick="closePetInventory()" aria-label="Close">✕</button>
+
+        <div class="pet-inventory-heading">
+            <div>
+                <h3 id="petInvTitle">🎒 Our Inventory</h3>
+                <span>All the little things we own</span>
             </div>
+            <span class="pet-inventory-bag">♡ Shared bag</span>
+        </div>
+
+        <div id="petInventoryList" class="pet-inventory-list">
+            <p class="pet-inventory-empty">Your bag is empty. Visit the Pet Shop! ♡</p>
+        </div>
+    </div>
+</div>
         </section>
 
     </div>
