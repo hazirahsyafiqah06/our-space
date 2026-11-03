@@ -11671,7 +11671,39 @@ function injectWearShop() {
 window.PET_WEAR_CATALOG = PET_WEAR_CATALOG;
 window.normalizeEquipped = normalizeEquipped;
 window.getPetData = () => ourPetData;
-    
+
+// ===== INVENTORY POPUP =====
+function openPetInventory() {
+    const modal = document.getElementById("petInvModal");
+    if (!modal) return;
+
+    // pindah ke <body> supaya popup sentiasa duduk atas semua
+    if (modal.parentElement !== document.body) {
+        document.body.appendChild(modal);
+    }
+
+    renderPetInventory();
+    modal.classList.add("open");
+}
+
+function closePetInventory() {
+    document.getElementById("petInvModal")?.classList.remove("open");
+}
+
+window.openPetInventory = openPetInventory;
+window.closePetInventory = closePetInventory;
+
+// tutup dengan butang Esc
+document.addEventListener("keydown", e => {
+    if (e.key === "Escape") closePetInventory();
+});
+
+// lepas tekan Feed / Play / Wear, popup tutup sendiri supaya nampak reaksi mochi
+document.addEventListener("click", e => {
+    if (e.target.closest("#petInvModal .pet-use-btn")) {
+        setTimeout(closePetInventory, 250);
+    }
+});
     
 
 
