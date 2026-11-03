@@ -11547,16 +11547,22 @@ const HUG_REPLIES = [
 ];
 
 /* =========================================
-   👗 WARDROBE: BAJU + AKSESORI (3 SLOT)
-   Slot: head (kepala), face (muka), body (badan)
+   👗 WARDROBE: BAJU + AKSESORI (5 SLOT)
+   head (kepala) · face (muka) · neck (leher)
+   body (baju padan badan) · back (belakang)
 ========================================= */
 
-const WEAR_SLOTS = ["head", "face", "body"];
+const WEAR_SLOTS = ["head", "face", "neck", "body", "back"];
+
+// Bahagian badan yang ditutup baju (nama tulang dalam animal_cat.glb)
+const SHELL_TORSO     = ["Hips", "Spine", "Neck"];
+const SHELL_WITH_ARMS = ["Hips", "Spine", "Neck", "FrontUpperLeg_L", "FrontUpperLeg_R"];
 
 // ➜ Nak tambah item baru? Tambah satu baris kat sini. Itu je.
-//   build: bentuk 3D siap (crown, bow, partyhat, glasses, shades, bowtie, scarf)
-//   glb:   path fail model .glb (kalau guna model sendiri)
-//   pos / rot / scale: kedudukan (guna ?tune=1 untuk laraskan, lepas tu copy sini)
+//   build: bentuk siap (crown, bow, partyhat, glasses, shades, collar, bowtie, scarf,
+//          shell = baju padan badan, wings_angel, wings_butterfly, backpack)
+//   glb:   path fail model .glb sendiri (sesuai untuk topi, aksesori kecil)
+//   pos / rot / scale: laraskan guna ?tune=1 , lepas tu copy ke sini
 const PET_WEAR_CATALOG = {
 
     // ---- KEPALA ----
@@ -11568,22 +11574,29 @@ const PET_WEAR_CATALOG = {
     glasses:  { name: "Round Glasses", emoji: "👓", price: 80,  slot: "face", build: "glasses" },
     shades:   { name: "Cool Shades",   emoji: "🕶️", price: 100, slot: "face", build: "shades" },
 
-    // ---- BADAN ----
-    bowtie:        { name: "Bow Tie",       emoji: "👔", price: 60,  slot: "body", build: "bowtie", color: "#e25b8a", attach: "head" },
-    scarf_pink:    { name: "Pink Scarf",    emoji: "🧣", price: 110, slot: "body", build: "scarf",  color: "#f58fb6", attach: "head" },
-    scarf_blue:    { name: "Blue Scarf",    emoji: "🧣", price: 110, slot: "body", build: "scarf",  color: "#8bb8f0", attach: "head" },
-    scarf_yellow:  { name: "Yellow Scarf",  emoji: "🧣", price: 110, slot: "body", build: "scarf",  color: "#f6d56b", attach: "head" }
+    // ---- LEHER ----
+    collar_bell:   { name: "Bell Collar",   emoji: "🔔", price: 70,  slot: "neck", build: "collar" },
+    bowtie:        { name: "Bow Tie",       emoji: "👔", price: 60,  slot: "neck", build: "bowtie", color: "#e25b8a" },
+    scarf_pink:    { name: "Pink Scarf",    emoji: "🧣", price: 110, slot: "neck", build: "scarf",  color: "#f58fb6" },
+    scarf_blue:    { name: "Blue Scarf",    emoji: "🧣", price: 110, slot: "neck", build: "scarf",  color: "#8bb8f0" },
+    scarf_yellow:  { name: "Yellow Scarf",  emoji: "🧣", price: 110, slot: "neck", build: "scarf",  color: "#f6d56b" },
 
-    // ---- CONTOH MODEL .glb SENDIRI ----
-    // Letak fail dalam folder models/clothes/ , lepas tu buang // dan tambah koma kat baris atas.
-    // pos/rot/scale kau laraskan guna ?tune=1 (rujuk arahan).
-    //
-    // , sweater_pink: { name: "Cozy Sweater", emoji: "🧶", price: 200, slot: "body",
-    //     glb: "./models/clothes/sweater_pink.glb", attach: "root",
-    //     pos: [0, -0.7, 0], rot: [0, 0, 0], scale: 0.9 }
-    // , cape_red: { name: "Hero Cape", emoji: "🦸", price: 180, slot: "body",
-    //     glb: "./models/clothes/cape_red.glb", attach: "root",
-    //     pos: [0, -0.7, -0.15], rot: [0, 0, 0], scale: 0.9 }
+    // ---- BAJU (padan tepat badan kucing, ikut animasi) ----
+    sweater_pink:  { name: "Pink Sweater",  emoji: "🧶", price: 150, slot: "body", build: "shell", bones: SHELL_WITH_ARMS, color: "#f58fb6" },
+    tee_stripe:    { name: "Striped Tee",   emoji: "👕", price: 120, slot: "body", build: "shell", bones: SHELL_TORSO,     color: "#ffffff", stripe: "#7fb2e8" },
+    hoodie_mint:   { name: "Mint Hoodie",   emoji: "🧥", price: 170, slot: "body", build: "shell", bones: SHELL_WITH_ARMS, color: "#8fd9c2" },
+
+    // ---- BELAKANG ----
+    wings_angel:     { name: "Angel Wings",     emoji: "👼", price: 200, slot: "back", build: "wings_angel" },
+    wings_butterfly: { name: "Butterfly Wings", emoji: "🦋", price: 220, slot: "back", build: "wings_butterfly" },
+    backpack:        { name: "Cute Backpack",   emoji: "🎒", price: 130, slot: "back", build: "backpack", color: "#f58fb6" }
+
+    // ---- CONTOH MODEL .glb SENDIRI (topi, aksesori kecil) ----
+    // Letak fail dalam models/clothes/ , buang // dan tambah koma kat baris atas.
+    // slot: "head" | "face" | "neck" | "back"   (baju guna build: "shell", bukan .glb)
+    // , cowboy_hat: { name: "Cowboy Hat", emoji: "🤠", price: 140, slot: "head",
+    //     glb: "./models/clothes/cowboy_hat.glb", attach: "head",
+    //     pos: [0, 0.27, 0.01], rot: [0, 0, 0], scale: 0.2 }
 };
 
 // Daftarkan ke kedai + tetapkan kesan "wear"
@@ -11594,20 +11607,17 @@ Object.entries(PET_WEAR_CATALOG).forEach(([id, item]) => {
     PET_ITEM_EFFECTS[id] = { type: "wear", slot: item.slot };
 });
 
-// Tukar data "equipped" jadi { head, face, body } (sokong format lama { bow: true })
+// Tukar data "equipped" jadi { head, face, neck, body, back }
+// (sokong format lama { bow: true } dan pindahkan item ke slot yang betul)
 function normalizeEquipped(raw) {
-    const out = { head: null, face: null, body: null };
+    const out = {};
+    WEAR_SLOTS.forEach(slot => { out[slot] = null; });
     if (!raw || typeof raw !== "object") return out;
 
-    WEAR_SLOTS.forEach(slot => {
-        if (typeof raw[slot] === "string" && PET_WEAR_CATALOG[raw[slot]]) {
-            out[slot] = raw[slot];
-        }
-    });
-
-    Object.entries(raw).forEach(([id, on]) => {
-        const item = PET_WEAR_CATALOG[id];
-        if (on === true && item && !out[item.slot]) out[item.slot] = id;
+    Object.entries(raw).forEach(([key, value]) => {
+        const id = typeof value === "string" ? value : (value === true ? key : null);
+        const item = id && PET_WEAR_CATALOG[id];
+        if (item && !out[item.slot]) out[item.slot] = id;
     });
 
     return out;
@@ -11621,7 +11631,7 @@ function injectWearShop() {
 
     grid.dataset.wearReady = "1";
 
-    const slotLabel = { head: "Head", face: "Face", body: "Body" };
+    const slotLabel = { head: "Head", face: "Face", neck: "Neck", body: "Outfit", back: "Back" };
 
     Object.entries(PET_WEAR_CATALOG).forEach(([id, item]) => {
         if (item.shop === false) return; // dah ada kad statik (crown, bow)
