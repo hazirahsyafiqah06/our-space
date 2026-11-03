@@ -1737,6 +1737,267 @@ scene.add(roomLight);
 camera.position.set(0, 3.5, 11);
 camera.lookAt(0, 1.2, -0.5);
 
+    
+/* =========================================
+   3D PET TOYS - BALL & TEDDY
+========================================= */
+
+let activePetToys = [];
+let petToyStartTime = 0;
+let petToyAnimationActive = false;
+
+window.showPetToy3D = function (toyType) {
+
+    // Clear previous toys
+    activePetToys.forEach(obj => scene.remove(obj));
+    activePetToys = [];
+
+    const toyGroup = new THREE.Group();
+    scene.add(toyGroup);
+    activePetToys.push(toyGroup);
+
+    petToyStartTime = performance.now();
+    petToyAnimationActive = true;
+
+    const brown = new THREE.MeshStandardMaterial({
+        color: 0x9b603d,
+        roughness: 0.85
+    });
+
+    const cream = new THREE.MeshStandardMaterial({
+        color: 0xf3d7b2,
+        roughness: 0.85
+    });
+
+    const black = new THREE.MeshStandardMaterial({
+        color: 0x251810
+    });
+
+    const pink = new THREE.MeshStandardMaterial({
+        color: 0xff6fa8,
+        emissive: 0xff174f,
+        emissiveIntensity: 0.25
+    });
+
+    // =====================================
+    // 3D BALL
+    // =====================================
+
+    const ballGroup = new THREE.Group();
+
+    const ball = new THREE.Mesh(
+        new THREE.SphereGeometry(0.24, 32, 32),
+        new THREE.MeshStandardMaterial({
+            color: 0xff69a4,
+            roughness: 0.45
+        })
+    );
+
+    ballGroup.add(ball);
+
+    // Yellow decorative stripes
+    for (let i = 0; i < 3; i++) {
+
+        const stripe = new THREE.Mesh(
+            new THREE.TorusGeometry(0.24, 0.025, 12, 32),
+            new THREE.MeshStandardMaterial({
+                color: 0xffe66d
+            })
+        );
+
+        stripe.rotation.set(
+            i * Math.PI / 3,
+            i * Math.PI / 3,
+            0
+        );
+
+        ballGroup.add(stripe);
+    }
+
+    toyGroup.add(ballGroup);
+
+    // =====================================
+    // 3D TEDDY BEAR
+    // =====================================
+
+    const teddy = new THREE.Group();
+
+    function teddySphere(
+        radius,
+        material,
+        x,
+        y,
+        z
+    ) {
+
+        const mesh = new THREE.Mesh(
+            new THREE.SphereGeometry(radius, 24, 24),
+            material
+        );
+
+        mesh.position.set(x, y, z);
+
+        teddy.add(mesh);
+
+        return mesh;
+    }
+
+    // Body
+    teddySphere(0.22, brown, 0, 0.23, 0);
+
+    // Head
+    teddySphere(0.18, brown, 0, 0.53, 0);
+
+    // Ears
+    teddySphere(0.075, brown, -0.14, 0.67, 0);
+    teddySphere(0.075, brown, 0.14, 0.67, 0);
+
+    // Inner ears
+    teddySphere(0.04, cream, -0.14, 0.67, 0.055);
+    teddySphere(0.04, cream, 0.14, 0.67, 0.055);
+
+    // Muzzle
+    teddySphere(0.09, cream, 0, 0.47, 0.13);
+
+    // Nose
+    teddySphere(0.025, black, 0, 0.50, 0.21);
+
+    // Eyes
+    teddySphere(0.02, black, -0.065, 0.56, 0.15);
+    teddySphere(0.02, black, 0.065, 0.56, 0.15);
+
+    // Arms
+    teddySphere(0.10, brown, -0.22, 0.29, 0);
+    teddySphere(0.10, brown, 0.22, 0.29, 0);
+
+    // Legs
+    teddySphere(0.11, brown, -0.12, 0.06, 0.03);
+    teddySphere(0.11, brown, 0.12, 0.06, 0.03);
+
+    toyGroup.add(teddy);
+
+    // =====================================
+    // HEARTS
+    // =====================================
+
+    const hearts = [];
+
+    for (let i = 0; i < 3; i++) {
+
+        const heartShape = new THREE.Shape();
+
+        heartShape.moveTo(0, 0);
+
+        heartShape.bezierCurveTo(
+            -0.15, 0.15,
+            -0.18, 0.3,
+            0, 0.35
+        );
+
+        heartShape.bezierCurveTo(
+            0.18, 0.3,
+            0.15, 0.15,
+            0, 0
+        );
+
+        const heart = new THREE.Mesh(
+            new THREE.ShapeGeometry(heartShape),
+            pink
+        );
+
+        heart.scale.setScalar(0.4);
+
+        heart.position.set(
+            i * 0.2 - 0.2,
+            0.9 + i * 0.15,
+            0.15
+        );
+
+        teddy.add(heart);
+
+        hearts.push(heart);
+    }
+
+    // =====================================
+    // POSITION IN ROOM
+    // =====================================
+
+    // Teddy beside cat
+    teddy.position.set(0.9, -0.5, 0.3);
+
+    // Ball near cat
+    ballGroup.position.set(-0.7, 0, 0.3);
+
+    // Save references for animation
+    toyGroup.userData.ball = ballGroup;
+    toyGroup.userData.teddy = teddy;
+    toyGroup.userData.hearts = hearts;
+};
+
+// =========================================
+// UPDATE TOY ANIMATION
+// =========================================
+
+window.updatePetToy3D = function () {
+
+    if (!petToyAnimationActive) return;
+
+    const elapsed =
+        (performance.now() - petToyStartTime) / 1000;
+
+    // Remove toys after 8 seconds
+    if (elapsed >= 8) {
+
+        activePetToys.forEach(obj => {
+            scene.remove(obj);
+        });
+
+        activePetToys = [];
+        petToyAnimationActive = false;
+
+        return;
+    }
+
+    activePetToys.forEach(toyGroup => {
+
+        const ball = toyGroup.userData.ball;
+        const teddy = toyGroup.userData.teddy;
+        const hearts = toyGroup.userData.hearts;
+
+        if (!ball || !teddy) return;
+
+        // Ball bouncing around cat
+        ball.position.x =
+            Math.sin(elapsed * 3) * 1.1 - 0.7;
+
+        ball.position.z =
+            Math.cos(elapsed * 2) * 0.8;
+
+        ball.position.y =
+            Math.abs(Math.sin(elapsed * 5)) * 0.65;
+
+        ball.rotation.x += 0.08;
+        ball.rotation.z += 0.10;
+
+        // Teddy gentle movement
+        teddy.rotation.y =
+            Math.sin(elapsed * 2) * 0.12;
+
+        teddy.position.y =
+            -0.5 + Math.sin(elapsed * 2) * 0.03;
+
+        // Floating hearts
+        hearts.forEach((heart, index) => {
+
+            heart.position.y =
+                0.9 + index * 0.15 +
+                Math.sin(elapsed * 2 + index) * 0.15;
+
+        });
+
+    });
+};
+
 
 // LOAD CAT MODEL
 const loader = new GLTFLoader();
@@ -3388,6 +3649,11 @@ function animate() {
 
         updatePetNight(delta);
         updateWear(delta);
+
+    // BALL + TEDDY ANIMATION
+    if (window.updatePetToy3D) {
+        window.updatePetToy3D();
+    }
 
     renderer.render(scene, camera);
 }
