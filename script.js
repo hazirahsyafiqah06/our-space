@@ -11079,9 +11079,10 @@ window.renameOurPet = async function () {
    COINS SYSTEM 🪙
 ========================================= */
 
-const DAILY_CLAIM_AMOUNTS = [50, 60, 70, 80, 90, 100, 110]; // Hari 1 - 7
-const ACTION_REWARD = 100;          // coins setiap tindakan
-const REWARD_ONCE_PER_DAY = true;   // true = setiap jenis tindakan dapat 1x sehari
+
+const DAILY_CLAIM_AMOUNTS = [500, 500, 500, 500, 500, 500, 500]; // Hari 1 - 7
+const ACTION_REWARD = 500; // Coins setiap tindakan
+const REWARD_ONCE_PER_DAY = true;
 
 let myCoinRow = null;
 
