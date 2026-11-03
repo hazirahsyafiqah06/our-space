@@ -10567,6 +10567,12 @@ function renderOurPet() {
     setBar("petHappinessBar", ourPetData.happiness);
     setBar("petEnergyBar", ourPetData.energy);
 
+        setText("petCleanText", `${ourPetData.cleanliness ?? 100}/100`);
+    setBar("petCleanBar", ourPetData.cleanliness ?? 100);
+
+    if (window.syncPetCare) window.syncPetCare(ourPetData.cleanliness, ourPetData.poop_count);
+    if (window.syncPetClean) window.syncPetClean(ourPetData.last_clean_at);
+
     const character = document.getElementById("petCharacter");
 
     if (character) {
@@ -10684,6 +10690,7 @@ const PET_SHOP_ITEMS = {
     ball: { name: "Play Ball", emoji: "⚽", price: 30 },
     bow: { name: "Pretty Bow", emoji: "🎀", price: 75 },
     crown: { name: "Little Crown", emoji: "👑", price: 120 }
+    soap: { name: "Bubble Soap", emoji: "🧼", price: 25 },
 };
 
 // FILTER SHOP CATEGORY
@@ -10824,17 +10831,13 @@ async function interactWithPet(action) {
 
     if (!ourPetData) return;
 
-    const next = {
-
+       const next = {
         happiness: Number(ourPetData.happiness) || 0,
-
         hunger: Number(ourPetData.hunger) || 0,
-
         energy: Number(ourPetData.energy) || 0,
-
-        is_sleeping: false,
-
-
+        cleanliness: Number(ourPetData.cleanliness ?? 100),
+        poop_count: Number(ourPetData.poop_count) || 0,
+        is_sleeping: false
     };
 
 
@@ -10887,6 +10890,7 @@ async function interactWithPet(action) {
         next.happiness = Math.min(100, next.happiness + 20);
         next.energy = Math.max(0, next.energy - 15);
         next.hunger = Math.max(0, next.hunger - 10);
+        next.cleanliness = Math.max(0, next.cleanliness - 8);
 
         window.playPetAnimation("walk");
 
@@ -10941,12 +10945,43 @@ async function interactWithPet(action) {
     }
 
 
-    // CLEAN
+       // CLEAN
     else if (action === "clean") {
 
-        next.happiness = Math.min(100, next.happiness + 10);
+        const soap = Number(ourPetData.inventory?.soap) || 0;
+        const poops = Number(ourPetData.poop_count) || 0;
 
-         window.playPetAnimation("idle");
+        if (soap < 1 && poops < 1) {
+            alert("Tak ada sabun! 🧼 Beli Bubble Soap kat Pet Shop dulu ♡");
+            return;
+        }
+
+        if (soap >= 1) {
+
+            // MANDI PENUH: guna 1 sabun, bersihkan tahi
+            const inventory = { ...(ourPetData.inventory || {}) };
+            inventory.soap = soap - 1;
+
+            next.inventory = inventory;
+            next.cleanliness = 100;
+            next.poop_count = 0;
+            next.happiness = Math.min(100, next.happiness + 10);
+            next.last_clean_at = new Date().toISOString();
+
+            messages.clean =
+                CLEAN_REPLIES[Math.floor(Math.random() * CLEAN_REPLIES.length)];
+
+        } else {
+
+            // Tak ada sabun tapi ada tahi: berus tahi je
+            next.poop_count = 0;
+            next.cleanliness = Math.min(100, next.cleanliness + 5);
+
+            messages.clean =
+                "Tahi dah dibersihkan 💩 Nak mandi, beli sabun dulu 🧼";
+        }
+
+        window.playPetAnimation("idle");
 
     }
 
@@ -11290,13 +11325,17 @@ setTimeout(checkDailyClaim, 3500);
 ========================================= */
 
 const PET_ITEM_EFFECTS = {
-    snack: { type: "food", hunger: 20, happiness: 5, msg: "Yum yum! Strawberry sedap 🍓" },
-    milk:  { type: "food", hunger: 15, energy: 10, msg: "Glug glug... susu fresh 🥛" },
-    teddy: { type: "toy", happiness: 25, msg: "Peluk teddy! So cuddly 🧸" },
-    ball:  { type: "toy", happiness: 20, energy: -10, hunger: -10, msg: "Main bola best! ⚽" },
+    snack: { type: "food", hunger: 20, happiness: 5, cleanliness: -5, msg: "Yum yum! Strawberry sedap 🍓" },
+    milk:  { type: "food", hunger: 15, energy: 10, cleanliness: -3, msg: "Glug glug... susu fresh 🥛" },
+    teddy: { type: "toy", happiness: 25, cleanliness: -3, msg: "Peluk teddy! So cuddly 🧸" },
+    ball:  { type: "toy", happiness: 20, energy: -10, hunger: -10, cleanliness: -8, msg: "Main bola best! ⚽" },
+    soap:  { type: "care" },
     bow:   { type: "accessory" },
     crown: { type: "accessory" }
 };
+
+const POOP_CHANCE_AFTER_FOOD = 0.5; // 50% berak lepas makan
+const MAX_POOP = 3;
 
 async function usePetItem(itemId) {
     if (!currentUser) {
@@ -11310,6 +11349,12 @@ async function usePetItem(itemId) {
     const item = PET_SHOP_ITEMS[itemId];
     const effect = PET_ITEM_EFFECTS[itemId];
     if (!item || !effect) return;
+
+    // Sabun = mandi (guna logik butang Clean)
+    if (effect.type === "care") {
+        await interactWithPet("clean");
+        return;
+    }
 
     const inventory = { ...(ourPetData.inventory || {}) };
 
@@ -11339,13 +11384,15 @@ async function usePetItem(itemId) {
         const hunger = Number(ourPetData.hunger) || 0;
         const happiness = Number(ourPetData.happiness) || 0;
         const energy = Number(ourPetData.energy) || 0;
+        const cleanliness = Number(ourPetData.cleanliness ?? 100);
+        const poop = Number(ourPetData.poop_count) || 0;
 
         if (effect.type === "food" && hunger >= 100) {
             alert("Baby dah kenyang 🍓");
             return;
         }
 
-            if (effect.hunger < 0 && hunger < 15) {
+        if (effect.hunger < 0 && hunger < 15) {
             alert("Baby lapar 🍓 Bagi makan dulu baru boleh main ♡");
             return;
         }
@@ -11358,12 +11405,23 @@ async function usePetItem(itemId) {
         update.hunger = Math.max(0, Math.min(100, hunger + (effect.hunger || 0)));
         update.happiness = Math.min(100, happiness + (effect.happiness || 0));
         update.energy = Math.max(0, Math.min(100, energy + (effect.energy || 0)));
+        update.cleanliness = Math.max(0, Math.min(100, cleanliness + (effect.cleanliness || 0)));
         update.is_sleeping = false;
 
         inventory[itemId] = inventory[itemId] - 1;
         update.inventory = inventory;
 
         message = effect.msg;
+
+        // Lepas makan, ada peluang berak 💩
+        if (
+            effect.type === "food" &&
+            poop < MAX_POOP &&
+            Math.random() < POOP_CHANCE_AFTER_FOOD
+        ) {
+            update.poop_count = poop + 1;
+            message += " ...ups, baby berak 💩";
+        }
 
         if (window.playPetAnimation) {
             window.playPetAnimation(effect.type === "food" ? "eat" : "walk");
@@ -11394,6 +11452,13 @@ async function usePetItem(itemId) {
 
 window.usePetItem = usePetItem;
 
+const CLEAN_REPLIES = [
+    "I'm all clean and fluffy now 🫧",
+    "Wangi dah! 🛁",
+    "Splish splash! Best mandi 🛁",
+    "Segar sangat! 🧼"
+];
+
 /* =========================================
    PET DECAY: STATS TURUN IKUT MASA ⏳
 ========================================= */
@@ -11413,10 +11478,15 @@ async function applyPetDecay() {
     if (!last) {
         const startAt = new Date(now).toISOString();
 
-        await supabaseClient
+        const { error } = await supabaseClient
             .from("our_little_pet")
             .update({ last_decay_at: startAt })
             .eq("id", "our-space-pet");
+
+        if (error) {
+            console.error("DECAY error (check column last_decay_at wujud tak):", error);
+            return;
+        }
 
         ourPetData.last_decay_at = startAt;
         return;
@@ -11430,49 +11500,52 @@ async function applyPetDecay() {
     let hunger = Number(ourPetData.hunger) || 0;
     let happiness = Number(ourPetData.happiness) || 0;
     let energy = Number(ourPetData.energy) || 0;
+    let cleanliness = Number(ourPetData.cleanliness ?? 100);
+    const poop = Number(ourPetData.poop_count) || 0;
 
-    // Kira tick demi tick supaya happiness turun lagi laju bila lapar/penat
     for (let i = 0; i < Math.min(ticks, 200); i++) {
 
         hunger = Math.max(0, hunger - 3);
         energy = Math.max(0, energy - 1);
 
-        let sadness = 1; // turun sikit-sikit biasa
+        // Makin banyak tahi, makin cepat kotor
+        cleanliness = Math.max(0, cleanliness - 2 - poop);
 
-        if (hunger < 50) sadness += 2;   // lapar
-        if (hunger < 20) sadness += 2;   // sangat lapar
+        let sadness = 1;
 
-        if (energy < 50) sadness += 1;   // penat
-        if (energy < 20) sadness += 2;   // sangat penat
+        if (hunger < 50) sadness += 2;
+        if (hunger < 20) sadness += 2;
+
+        if (energy < 50) sadness += 1;
+        if (energy < 20) sadness += 2;
+
+        sadness += poop;                      // tahi bersepah
+        if (cleanliness < 30) sadness += 2;   // badan kotor
 
         happiness = Math.max(0, happiness - sadness);
     }
 
-    const update = {
-        hunger: hunger,
-        happiness: happiness,
-        energy: energy,
-        last_decay_at: newLast
-    };
-
-    // Hanya update kalau last_decay_at masih sama (elak pasangan decay serentak)
     const { data, error } = await supabaseClient
         .from("our_little_pet")
-        .update(update)
+        .update({
+            hunger: hunger,
+            happiness: happiness,
+            energy: energy,
+            cleanliness: cleanliness,
+            last_decay_at: newLast
+        })
         .eq("id", "our-space-pet")
-        .eq("last_decay_at", ourPetData.last_decay_at)
         .select("*")
-        .maybeSingle();
+        .single();
 
     if (error) {
-        console.error("Pet decay error:", error);
+        console.error("DECAY update error:", error);
         return;
     }
 
-    if (data) {
-        ourPetData = data;
-        renderOurPet();
-    }
+    ourPetData = data;
+    renderOurPet();
+}
 }
 
 // Semak setiap 5 minit masa website terbuka
