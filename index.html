@@ -2411,95 +2411,177 @@ window.syncPetClean = function (lastCleanAt) {
     }
 };
 
-    /* =========================================
-   👗 WARDROBE 3D: ASESORI + BAJU + MOD DRESS-UP
+   /* =========================================
+   👗 WARDROBE 3D (dibina khas untuk animal_cat.glb)
+   Semua ukuran dalam unit asal model kucing.
+   Setiap item diletak relatif pada "tulang" kucing
+   (Head / Neck / Spine) jadi ikut gerak badan.
 ========================================= */
 
 const DEG = Math.PI / 180;
+const WEAR_SLOT_LIST = ["head", "face", "neck", "body", "back"];
 
 function wearItem(id) {
     return (window.PET_WEAR_CATALOG || {})[id];
 }
 
-// ---------- Anchor (tempat item melekat) ----------
+// ---------- Anchor pada tulang kucing ----------
 let wearReady = false;
-let headAnchor = null;
-let rootAnchor = null;
-let wearCtx = { fz: 0.3, hz: 0 };
-let petBounds = null;
+let petBodyMesh = null;
+const anchors = { head: null, neck: null, spine: null, root: null };
 
-let desiredOutfit = { head: null, face: null, body: null };
+let desiredOutfit = { head: null, face: null, neck: null, body: null, back: null };
 let outfitDirty = false;
 let tuneLock = false;
-const wornNodes = { head: null, face: null, body: null };
+const wornNodes = { head: null, face: null, neck: null, body: null, back: null };
 
-function findHeadBone(root) {
-    const names = [];
-    let bone = null;
-    let node = null;
-
-    root.traverse(obj => {
-        const name = (obj.name || "").toLowerCase();
-        names.push(obj.name);
-
-        if (!name.includes("head")) return;
-        if (/(end|top|tail|ear|eye|mouth|jaw|nose)/.test(name)) return;
-
-        if (obj.isBone && !bone) bone = obj;
-        else if (!obj.isMesh && !node) node = obj;
-    });
-
-    console.log("Wardrobe → nama node dalam model kucing:", names.join(", "));
-    return bone || node || null;
-}
-
-// Anchor dengan skala = tinggi kucing (H), supaya semua ukuran dalam "unit kucing"
-function makeAnchor(parent, worldPoint, H) {
+// Anchor = tulang itu sendiri, tapi paksi sejajar dunia & skala = unit model
+function makeBoneAnchor(bone, unit) {
     const anchor = new THREE.Object3D();
-    parent.add(anchor);
-    parent.updateWorldMatrix(true, false);
+    bone.add(anchor);
+    bone.updateWorldMatrix(true, false);
 
-    const inverse = new THREE.Matrix4().copy(parent.matrixWorld).invert();
-    const target = new THREE.Matrix4().compose(
-        worldPoint,
-        new THREE.Quaternion(),
-        new THREE.Vector3(H, H, H)
-    );
+    const worldQuat = new THREE.Quaternion();
+    bone.getWorldQuaternion(worldQuat);
+    anchor.quaternion.copy(worldQuat.invert());
 
-    inverse.multiply(target).decompose(anchor.position, anchor.quaternion, anchor.scale);
+    const worldScale = new THREE.Vector3();
+    bone.getWorldScale(worldScale);
+    anchor.scale.set(unit / worldScale.x, unit / worldScale.y, unit / worldScale.z);
+
     return anchor;
 }
 
 function setupWearAnchors() {
     petModel.updateWorldMatrix(true, true);
 
-    const box = new THREE.Box3().setFromObject(petModel);
-    const size = box.getSize(new THREE.Vector3());
-    const center = box.getCenter(new THREE.Vector3());
-    const H = size.y || 1;
+    const modelScale = new THREE.Vector3();
+    petModel.getWorldScale(modelScale);
+    const unit = modelScale.x;
 
-    const front = (box.max.z - center.z) / H;
-    wearCtx = { fz: front, hz: front - 0.3 };
-    petBounds = { center: center.clone(), top: box.max.y, height: H };
+    const find = name => petModel.getObjectByName(name);
 
-    // Titik asal anchor = atas kepala kucing (tengah, ikut bounding box)
-    const topPoint = new THREE.Vector3(center.x, box.max.y, center.z);
+    anchors.head  = makeBoneAnchor(find("Head")  || petModel, unit);
+    anchors.neck  = makeBoneAnchor(find("Neck")  || find("Head") || petModel, unit);
+    anchors.spine = makeBoneAnchor(find("Spine") || petModel, unit);
+    anchors.root  = makeBoneAnchor(petModel, unit);
 
-    const headBone = findHeadBone(petModel);
-    console.log("Wardrobe → item kepala melekat pada:", headBone ? headBone.name : "badan (tiada tulang kepala)");
+    // Mesh badan utama (LOD0). LOD1 sembunyi supaya tak bertindih dengan baju.
+    petModel.traverse(obj => {
+        if (obj.isSkinnedMesh && obj.name === "cat_LOD0") petBodyMesh = obj;
+        if (obj.isSkinnedMesh && obj.name === "cat_LOD1") obj.visible = false;
+    });
+    if (!petBodyMesh) {
+        petModel.traverse(obj => { if (obj.isSkinnedMesh && !petBodyMesh) petBodyMesh = obj; });
+    }
 
-    headAnchor = makeAnchor(headBone || petModel, topPoint, H);
-    rootAnchor = makeAnchor(petModel, topPoint, H);
+    console.log("Wardrobe → siap. Tulang:",
+        !!find("Head"), !!find("Neck"), !!find("Spine"), "· mesh badan:", petBodyMesh?.name);
+
     wearReady = true;
 }
 
-// ---------- Bentuk 3D siap (unit = tinggi kucing) ----------
+// ---------- Baju padan badan (shell dari mesh kucing sendiri) ----------
+function makeShellMaterial(item) {
+    const material = new THREE.MeshStandardMaterial({
+        color: item.color || "#f58fb6",
+        roughness: 0.9
+    });
+
+    if (item.stripe) {
+        material.customProgramCacheKey = () => "wear-stripe";
+        material.onBeforeCompile = shader => {
+            shader.uniforms.uStripe = { value: new THREE.Color(item.stripe) };
+
+            shader.vertexShader = shader.vertexShader
+                .replace("#include <common>", "#include <common>\nvarying float vRestY;")
+                .replace("#include <begin_vertex>", "#include <begin_vertex>\nvRestY = position.y;");
+
+            shader.fragmentShader = shader.fragmentShader
+                .replace("#include <common>", "#include <common>\nvarying float vRestY;\nuniform vec3 uStripe;")
+                .replace(
+                    "#include <color_fragment>",
+                    "#include <color_fragment>\nif (fract(vRestY * 30.0) > 0.5) diffuseColor.rgb = uStripe;"
+                );
+        };
+    }
+
+    return material;
+}
+
+function createFittedShell(item) {
+    const source = petBodyMesh;
+    if (!source) return null;
+
+    const geometry = source.geometry;
+    const bones = source.skeleton.bones;
+    const skinIndex = geometry.attributes.skinIndex;
+    const skinWeight = geometry.attributes.skinWeight;
+    const allowed = new Set(item.bones || SHELL_TORSO);
+
+    // Tandakan titik yang milik bahagian badan yang dipilih (ikut tulang paling dominan)
+    const vertexOk = new Uint8Array(skinIndex.count);
+    for (let v = 0; v < skinIndex.count; v++) {
+        let best = 0;
+        let bestWeight = -1;
+
+        for (let k = 0; k < 4; k++) {
+            const weight = skinWeight.getComponent(v, k);
+            if (weight > bestWeight) { bestWeight = weight; best = k; }
+        }
+
+        const bone = bones[skinIndex.getComponent(v, best)];
+        vertexOk[v] = bone && allowed.has(bone.name) ? 1 : 0;
+    }
+
+    // Ambil segitiga yang ketiga-tiga titiknya terpilih
+    const source3 = geometry.index.array;
+    const indices = [];
+    for (let i = 0; i < source3.length; i += 3) {
+        const a = source3[i], b = source3[i + 1], c = source3[i + 2];
+        if (vertexOk[a] && vertexOk[b] && vertexOk[c]) indices.push(a, b, c);
+    }
+
+    const shellGeometry = new THREE.BufferGeometry();
+    ["position", "normal", "uv", "skinIndex", "skinWeight"].forEach(name => {
+        if (geometry.attributes[name]) {
+            shellGeometry.setAttribute(name, geometry.attributes[name].clone());
+        }
+    });
+    shellGeometry.setIndex(indices);
+
+    // Tolak sedikit ke luar ikut normal supaya baju duduk atas bulu
+    const thickness = item.thickness ?? 0.006;
+    const position = shellGeometry.attributes.position;
+    const normal = shellGeometry.attributes.normal;
+    for (let i = 0; i < position.count; i++) {
+        position.setXYZ(
+            i,
+            position.getX(i) + normal.getX(i) * thickness,
+            position.getY(i) + normal.getY(i) * thickness,
+            position.getZ(i) + normal.getZ(i) * thickness
+        );
+    }
+
+    const mesh = new THREE.SkinnedMesh(shellGeometry, makeShellMaterial(item));
+    mesh.position.copy(source.position);
+    mesh.quaternion.copy(source.quaternion);
+    mesh.scale.copy(source.scale);
+    mesh.frustumCulled = false;
+
+    source.parent.add(mesh);
+    mesh.bind(source.skeleton, source.bindMatrix);   // kongsi tulang → ikut animasi
+    return mesh;
+}
+
+// ---------- Bentuk 3D siap (unit model, kedudukan relatif pada tulang) ----------
 const wearMat = (color, extra = {}) =>
     new THREE.MeshStandardMaterial({ color, roughness: 0.6, ...extra });
 
 const PET_BUILDERS = {
 
-    crown(ctx) {
+    // ===== KEPALA (relatif pada tulang Head) =====
+    crown() {
         const g = new THREE.Group();
         const gold = wearMat("#ffd45e", {
             metalness: 0.35, roughness: 0.35,
@@ -2507,26 +2589,26 @@ const PET_BUILDERS = {
             side: THREE.DoubleSide
         });
 
-        g.add(new THREE.Mesh(new THREE.CylinderGeometry(0.115, 0.125, 0.06, 24, 1, true), gold));
+        g.add(new THREE.Mesh(new THREE.CylinderGeometry(0.063, 0.068, 0.032, 24, 1, true), gold));
 
         for (let i = 0; i < 5; i++) {
             const a = (i / 5) * Math.PI * 2;
-            const x = Math.cos(a) * 0.115;
-            const z = Math.sin(a) * 0.115;
+            const x = Math.cos(a) * 0.065;
+            const z = Math.sin(a) * 0.065;
 
-            const spike = new THREE.Mesh(new THREE.ConeGeometry(0.03, 0.085, 8), gold);
-            spike.position.set(x, 0.07, z);
+            const spike = new THREE.Mesh(new THREE.ConeGeometry(0.017, 0.05, 8), gold);
+            spike.position.set(x, 0.04, z);
             g.add(spike);
 
             const gem = new THREE.Mesh(
-                new THREE.SphereGeometry(0.014, 8, 8),
+                new THREE.SphereGeometry(0.008, 8, 8),
                 wearMat("#ff6fa5", { emissive: "#ff3d86", emissiveIntensity: 0.5 })
             );
-            gem.position.set(x, 0.118, z);
+            gem.position.set(x, 0.068, z);
             g.add(gem);
         }
 
-        g.position.set(0, -0.06, ctx.hz);
+        g.position.set(0, 0.258, 0.01);
         return g;
     },
 
@@ -2535,15 +2617,15 @@ const PET_BUILDERS = {
         const pink = wearMat(item.color || "#ff7fb0");
 
         [-1, 1].forEach(side => {
-            const wing = new THREE.Mesh(new THREE.ConeGeometry(0.055, 0.1, 14), pink);
+            const wing = new THREE.Mesh(new THREE.ConeGeometry(0.03, 0.056, 14), pink);
             wing.rotation.z = side * Math.PI / 2;
-            wing.position.x = side * 0.05;
+            wing.position.x = side * 0.028;
             g.add(wing);
         });
 
-        g.add(new THREE.Mesh(new THREE.SphereGeometry(0.028, 12, 12), wearMat("#ff5c9a")));
+        g.add(new THREE.Mesh(new THREE.SphereGeometry(0.016, 12, 12), wearMat("#ff5c9a")));
 
-        g.position.set(0.2, -0.1, ctx.hz + 0.04);
+        g.position.set(0.088, 0.254, 0.036);
         g.rotation.z = -0.35;
         return g;
     },
@@ -2552,15 +2634,15 @@ const PET_BUILDERS = {
         const g = new THREE.Group();
 
         const cone = new THREE.Mesh(
-            new THREE.ConeGeometry(0.11, 0.28, 24),
+            new THREE.ConeGeometry(0.062, 0.157, 24),
             wearMat(item.color || "#8fd3ff")
         );
-        cone.position.y = 0.14;
+        cone.position.y = 0.0785;
         g.add(cone);
 
-        [[0.09, 0.076], [0.17, 0.045]].forEach(([y, radius]) => {
+        [[0.05, 0.042], [0.095, 0.0245]].forEach(([y, radius]) => {
             const stripe = new THREE.Mesh(
-                new THREE.TorusGeometry(radius, 0.011, 8, 28),
+                new THREE.TorusGeometry(radius, 0.006, 8, 28),
                 wearMat("#ffffff")
             );
             stripe.rotation.x = Math.PI / 2;
@@ -2568,15 +2650,16 @@ const PET_BUILDERS = {
             g.add(stripe);
         });
 
-        const pom = new THREE.Mesh(new THREE.SphereGeometry(0.03, 12, 12), wearMat("#ffe066"));
-        pom.position.y = 0.29;
+        const pom = new THREE.Mesh(new THREE.SphereGeometry(0.017, 12, 12), wearMat("#ffe066"));
+        pom.position.y = 0.163;
         g.add(pom);
 
-        g.position.set(0.02, -0.07, ctx.hz - 0.02);
+        g.position.set(0.01, 0.256, 0.012);
         g.rotation.z = -0.12;
         return g;
     },
 
+    // ===== MUKA (relatif pada tulang Head) =====
     glasses(ctx, item) {
         const g = new THREE.Group();
         const frame = wearMat(item.color || "#3b2f3a", { roughness: 0.4 });
@@ -2586,24 +2669,20 @@ const PET_BUILDERS = {
         });
 
         [-1, 1].forEach(side => {
-            const ring = new THREE.Mesh(new THREE.TorusGeometry(0.07, 0.009, 10, 28), frame);
-            ring.position.x = side * 0.12;
+            const ring = new THREE.Mesh(new THREE.TorusGeometry(0.043, 0.005, 10, 28), frame);
+            ring.position.x = side * 0.082;
             g.add(ring);
 
-            const glass = new THREE.Mesh(new THREE.CircleGeometry(0.07, 24), lens);
-            glass.position.x = side * 0.12;
+            const glass = new THREE.Mesh(new THREE.CircleGeometry(0.043, 24), lens);
+            glass.position.x = side * 0.082;
             g.add(glass);
-
-            const arm = new THREE.Mesh(new THREE.BoxGeometry(0.008, 0.008, 0.24), frame);
-            arm.position.set(side * 0.19, 0, -0.12);
-            g.add(arm);
         });
 
-        const bridge = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.1, 8), frame);
+        const bridge = new THREE.Mesh(new THREE.CylinderGeometry(0.0045, 0.0045, 0.078, 8), frame);
         bridge.rotation.z = Math.PI / 2;
         g.add(bridge);
 
-        g.position.set(0, -0.3, ctx.fz + 0.01);
+        g.position.set(0, 0.087, 0.134);
         return g;
     },
 
@@ -2616,21 +2695,40 @@ const PET_BUILDERS = {
         });
 
         [-1, 1].forEach(side => {
-            const glass = new THREE.Mesh(new THREE.CircleGeometry(0.075, 24), lens);
+            const glass = new THREE.Mesh(new THREE.CircleGeometry(0.047, 24), lens);
             glass.scale.y = 0.8;
-            glass.position.x = side * 0.12;
+            glass.position.x = side * 0.082;
             g.add(glass);
-
-            const arm = new THREE.Mesh(new THREE.BoxGeometry(0.008, 0.008, 0.24), frame);
-            arm.position.set(side * 0.195, 0.01, -0.12);
-            g.add(arm);
         });
 
-        const bar = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.012, 0.008), frame);
-        bar.position.y = 0.035;
+        const bar = new THREE.Mesh(new THREE.BoxGeometry(0.21, 0.007, 0.005), frame);
+        bar.position.y = 0.02;
         g.add(bar);
 
-        g.position.set(0, -0.3, ctx.fz + 0.01);
+        g.position.set(0, 0.087, 0.134);
+        return g;
+    },
+
+    // ===== LEHER (relatif pada tulang Neck) =====
+    collar() {
+        const g = new THREE.Group();
+
+        const band = new THREE.Mesh(
+            new THREE.TorusGeometry(0.098, 0.007, 10, 36),
+            wearMat("#e0405a", { roughness: 0.5 })
+        );
+        band.rotation.x = Math.PI / 2;
+        band.scale.set(1, 0.92, 1);
+        g.add(band);
+
+        const bell = new THREE.Mesh(
+            new THREE.SphereGeometry(0.017, 14, 14),
+            wearMat("#ffd45e", { metalness: 0.5, roughness: 0.3, emissive: "#a67c00", emissiveIntensity: 0.25 })
+        );
+        bell.position.set(0, -0.022, 0.095);
+        g.add(bell);
+
+        g.position.set(0, -0.02, -0.03);
         return g;
     },
 
@@ -2639,15 +2737,15 @@ const PET_BUILDERS = {
         const col = wearMat(item.color || "#e25b8a");
 
         [-1, 1].forEach(side => {
-            const wing = new THREE.Mesh(new THREE.ConeGeometry(0.065, 0.12, 14), col);
+            const wing = new THREE.Mesh(new THREE.ConeGeometry(0.034, 0.066, 14), col);
             wing.rotation.z = side * Math.PI / 2;
-            wing.position.x = side * 0.06;
+            wing.position.x = side * 0.033;
             g.add(wing);
         });
 
-        g.add(new THREE.Mesh(new THREE.SphereGeometry(0.035, 12, 12), wearMat("#b8416c")));
+        g.add(new THREE.Mesh(new THREE.SphereGeometry(0.02, 12, 12), wearMat("#b8416c")));
 
-        g.position.set(0, -0.64, ctx.fz - 0.18);
+        g.position.set(0, -0.035, 0.07);
         return g;
     },
 
@@ -2655,27 +2753,96 @@ const PET_BUILDERS = {
         const g = new THREE.Group();
         const col = wearMat(item.color || "#f58fb6", { roughness: 0.9 });
 
-        const ring = new THREE.Mesh(new THREE.TorusGeometry(0.2, 0.055, 14, 32), col);
+        const ring = new THREE.Mesh(new THREE.TorusGeometry(0.105, 0.024, 14, 32), col);
         ring.rotation.x = Math.PI / 2;
-        ring.scale.set(1, 0.85, 1);
+        ring.scale.set(1, 0.9, 1);
         g.add(ring);
 
-        const tail1 = new THREE.Mesh(new THREE.BoxGeometry(0.085, 0.2, 0.035), col);
-        tail1.position.set(0.1, -0.12, 0.16);
-        tail1.rotation.z = 0.12;
+        const tail1 = new THREE.Mesh(new THREE.BoxGeometry(0.045, 0.1, 0.018), col);
+        tail1.position.set(0.04, -0.05, 0.088);
+        tail1.rotation.z = 0.1;
         g.add(tail1);
 
-        const tail2 = new THREE.Mesh(new THREE.BoxGeometry(0.085, 0.14, 0.035), col);
-        tail2.position.set(0.17, -0.09, 0.15);
+        const tail2 = new THREE.Mesh(new THREE.BoxGeometry(0.045, 0.07, 0.018), col);
+        tail2.position.set(0.075, -0.04, 0.082);
         tail2.rotation.z = -0.1;
         g.add(tail2);
 
-        g.position.set(0, -0.62, ctx.hz - 0.02);
+        g.position.set(0, -0.025, -0.03);
+        return g;
+    },
+
+    // ===== BELAKANG (relatif pada tulang Spine) =====
+    wings_angel() {
+        const g = new THREE.Group();
+        const white = wearMat("#ffffff", { roughness: 0.7, emissive: "#bfc8ff", emissiveIntensity: 0.15 });
+
+        [-1, 1].forEach(side => {
+            const wing = new THREE.Group();
+
+            [[0.11, 0.07, 0.12, 0], [0.09, 0.05, 0.1, -0.06], [0.07, 0.04, 0.08, -0.105]]
+                .forEach(([rx, ry, ox, oy]) => {
+                    const blade = new THREE.Mesh(new THREE.SphereGeometry(1, 16, 12), white);
+                    blade.scale.set(rx, ry, 0.012);
+                    blade.position.set(side * ox, oy, 0);
+                    wing.add(blade);
+                });
+
+            wing.position.set(side * 0.085, 0.075, -0.04);
+            wing.rotation.z = side * 0.45;
+            g.add(wing);
+        });
+
+        return g;
+    },
+
+    wings_butterfly() {
+        const g = new THREE.Group();
+        const upper = wearMat("#ff9ccc", { roughness: 0.7, emissive: "#ff6fa5", emissiveIntensity: 0.12 });
+        const lower = wearMat("#c9a6ff", { roughness: 0.7, emissive: "#9b6cff", emissiveIntensity: 0.12 });
+
+        [-1, 1].forEach(side => {
+            const wing = new THREE.Group();
+
+            const top = new THREE.Mesh(new THREE.SphereGeometry(1, 16, 12), upper);
+            top.scale.set(0.1, 0.075, 0.01);
+            top.position.set(side * 0.11, 0.02, 0);
+            wing.add(top);
+
+            const bottom = new THREE.Mesh(new THREE.SphereGeometry(1, 16, 12), lower);
+            bottom.scale.set(0.07, 0.055, 0.01);
+            bottom.position.set(side * 0.08, -0.06, 0);
+            wing.add(bottom);
+
+            wing.position.set(side * 0.085, 0.075, -0.04);
+            wing.rotation.z = side * 0.35;
+            g.add(wing);
+        });
+
+        return g;
+    },
+
+    backpack(ctx, item) {
+        const g = new THREE.Group();
+        const body = wearMat(item.color || "#f58fb6", { roughness: 0.8 });
+        const dark = wearMat("#e0709a", { roughness: 0.8 });
+
+        g.add(new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.085, 0.06), body));
+
+        const flap = new THREE.Mesh(new THREE.BoxGeometry(0.102, 0.03, 0.062), dark);
+        flap.position.y = 0.03;
+        g.add(flap);
+
+        const pocket = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.035, 0.012), dark);
+        pocket.position.set(0, -0.015, -0.034);
+        g.add(pocket);
+
+        g.position.set(0, 0.127, -0.07);
         return g;
     }
 };
 
-// ---------- Model .glb sendiri ----------
+// ---------- Model .glb sendiri (topi, aksesori kecil) ----------
 const glbCache = {};
 
 function loadWearGlb(url) {
@@ -2700,39 +2867,45 @@ async function buildGlbContent(item) {
 
     const wrap = new THREE.Group();
     wrap.add(model);
-    wrap.scale.setScalar(1 / maxDim);    // sisi terbesar = 1 unit (1 tinggi kucing)
+    wrap.scale.setScalar(1 / maxDim);    // sisi terbesar = 1 unit
     return wrap;
 }
 
 function applyWearTransform(holder, item) {
     const pos = item.pos || [0, 0, 0];
     const rot = item.rot || [0, 0, 0];
-    const scale = item.scale ?? (item.glb ? 0.5 : 1);
+    const scale = item.scale ?? (item.glb ? 0.2 : 1);
 
     holder.position.set(pos[0], pos[1], pos[2]);
     holder.rotation.set(rot[0] * DEG, rot[1] * DEG, rot[2] * DEG);
     holder.scale.setScalar(scale);
 }
 
+const DEFAULT_ATTACH = { head: "head", face: "head", neck: "neck", body: "root", back: "spine" };
+
 async function createWearable(id) {
     const item = wearItem(id);
     if (!item) return null;
 
-    let content = null;
-
     try {
+        // Baju padan badan: terus melekat pada mesh kucing
+        if (item.build === "shell") return createFittedShell(item);
+
+        let content = null;
         if (item.glb) content = await buildGlbContent(item);
-        else if (PET_BUILDERS[item.build]) content = PET_BUILDERS[item.build](wearCtx, item);
+        else if (PET_BUILDERS[item.build]) content = PET_BUILDERS[item.build]({}, item);
+
+        if (!content) return null;
+
+        const holder = new THREE.Group();
+        holder.add(content);
+        applyWearTransform(holder, item);
+        return holder;
+
     } catch (err) {
         console.warn("Wardrobe: tak dapat muat item", id, err);
+        return null;
     }
-
-    if (!content) return null;
-
-    const holder = new THREE.Group();
-    holder.add(content);
-    applyWearTransform(holder, item);
-    return holder;
 }
 
 // ---------- Pasang / tanggal item ikut data ----------
@@ -2757,33 +2930,34 @@ function updateOutfit() {
 
         createWearable(wantId).then(holder => {
             const current = wornNodes[slot];
-            if (!current || current.id !== wantId || desiredOutfit[slot] !== wantId) return;
+            if (!current || current.id !== wantId || desiredOutfit[slot] !== wantId) {
+                holder?.parent?.remove(holder);
+                return;
+            }
 
             if (!holder) {
                 wornNodes[slot] = null;
                 return;
             }
 
-            const item = wearItem(wantId);
-            const attach = item.attach || (slot === "body" ? "root" : "head");
-            (attach === "head" ? headAnchor : rootAnchor).add(holder);
+            if (!holder.parent) {
+                const item = wearItem(wantId);
+                const attach = item.attach || DEFAULT_ATTACH[slot];
+                (anchors[attach] || anchors.root).add(holder);
+            }
+
             current.holder = holder;
         });
     });
 }
-
-const WEAR_SLOT_LIST = ["head", "face", "body"];
 
 // Dipanggil dari renderOurPet() setiap kali data pet berubah (termasuk pasangan)
 window.syncPetOutfit = function (equipped) {
     refreshDressPanel();
     if (tuneLock) return;
 
-    const next = {
-        head: equipped?.head || null,
-        face: equipped?.face || null,
-        body: equipped?.body || null
-    };
+    const next = {};
+    WEAR_SLOT_LIST.forEach(slot => { next[slot] = equipped?.[slot] || null; });
 
     if (WEAR_SLOT_LIST.some(slot => next[slot] !== desiredOutfit[slot])) {
         desiredOutfit = next;
@@ -2801,10 +2975,12 @@ let camTarget = 0;
 const DRESS_ZOOM = 1.9; // makin kecil = makin dekat
 
 function computeZoomTarget() {
-    const H = petBounds.height;
-    const c = petBounds.center;
+    const box = new THREE.Box3().setFromObject(petModel);
+    const size = box.getSize(new THREE.Vector3());
+    const center = box.getCenter(new THREE.Vector3());
+    const H = size.y;
 
-    camZoom.look.set(c.x, petBounds.top - H * 0.5 - H * 0.12, c.z);
+    camZoom.look.set(center.x, box.max.y - H * 0.5 - H * 0.12, center.z);
     camZoom.pos.set(camZoom.look.x, camZoom.look.y + H * 0.2, camZoom.look.z + H * DRESS_ZOOM);
 }
 
@@ -2849,10 +3025,11 @@ dressStyle.textContent = `
     transition: transform 0.45s ease, opacity 0.35s ease;
 }
 .dress-active .dress-panel { opacity: 1; pointer-events: auto; transform: translateY(0); }
-.dress-tabs { display: flex; gap: 6px; margin-bottom: 8px; }
+.dress-tabs { display: flex; gap: 6px; margin-bottom: 8px; overflow-x: auto; }
 .dress-tab {
-    flex: 1; padding: 7px 4px; border: 1px solid #f0d3e3; border-radius: 999px;
+    flex: 1 0 auto; padding: 7px 12px; border: 1px solid #f0d3e3; border-radius: 999px;
     background: #fff; color: #a57590; font-size: 12px; font-weight: 700; cursor: pointer;
+    white-space: nowrap;
 }
 .dress-tab.active { background: linear-gradient(135deg, #f6c6dc, #dcc6f6); color: #7a4766; }
 .dress-list { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
@@ -2886,7 +3063,9 @@ dressPanel.innerHTML = `
     <div class="dress-tabs">
         <button type="button" class="dress-tab" data-slot="head">👑 Head</button>
         <button type="button" class="dress-tab" data-slot="face">👓 Face</button>
-        <button type="button" class="dress-tab" data-slot="body">🧣 Body</button>
+        <button type="button" class="dress-tab" data-slot="neck">🧣 Neck</button>
+        <button type="button" class="dress-tab" data-slot="body">👕 Outfit</button>
+        <button type="button" class="dress-tab" data-slot="back">🎒 Back</button>
     </div>
     <div class="dress-list"></div>`;
 
@@ -2973,7 +3152,7 @@ dressPanel.addEventListener("click", async event => {
 });
 
 function setDressMode(open) {
-    if (open && !petBounds) return; // model belum siap
+    if (open && !wearReady) return; // model belum siap
 
     dressOpen = open;
 
@@ -3027,13 +3206,13 @@ function buildWearTuner() {
     document.head.appendChild(style);
 
     const fields = [
-        ["Pos X", -1.5, 1.5, 0.005, "pos", 0],
-        ["Pos Y", -1.5, 1.5, 0.005, "pos", 1],
-        ["Pos Z", -1.5, 1.5, 0.005, "pos", 2],
+        ["Pos X", -0.6, 0.6, 0.001, "pos", 0],
+        ["Pos Y", -0.6, 0.6, 0.001, "pos", 1],
+        ["Pos Z", -0.6, 0.6, 0.001, "pos", 2],
         ["Rot X", -180, 180, 1, "rot", 0],
         ["Rot Y", -180, 180, 1, "rot", 1],
         ["Rot Z", -180, 180, 1, "rot", 2],
-        ["Saiz", 0.02, 2.5, 0.005, "scale", null]
+        ["Saiz", 0.01, 2, 0.005, "scale", null]
     ];
 
     const panel = document.createElement("div");
@@ -3063,6 +3242,12 @@ function buildWearTuner() {
 
     function writeOut() {
         const item = currentItem();
+
+        if (item.build === "shell") {
+            out.value = "Baju padan badan: tak perlu tala 🙂";
+            return;
+        }
+
         out.value =
             `${select.value}: pos: [${item.pos.map(round).join(", ")}], ` +
             `rot: [${item.rot.map(round).join(", ")}], scale: ${round(item.scale)}`;
@@ -3072,7 +3257,7 @@ function buildWearTuner() {
         const item = currentItem();
         item.pos = item.pos || [0, 0, 0];
         item.rot = item.rot || [0, 0, 0];
-        if (item.scale === undefined) item.scale = item.glb ? 0.5 : 1;
+        if (item.scale === undefined) item.scale = item.glb ? 0.2 : 1;
 
         fields.forEach((f, i) => {
             const value = f[5] === null ? item.scale : item[f[4]][f[5]];
@@ -3098,7 +3283,7 @@ function buildWearTuner() {
             vals[i].textContent = round(value);
 
             const node = wornNodes[item.slot];
-            if (node && node.id === select.value && node.holder) {
+            if (node && node.id === select.value && node.holder && item.build !== "shell") {
                 applyWearTransform(node.holder, item);
             }
             writeOut();
