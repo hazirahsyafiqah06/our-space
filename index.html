@@ -976,9 +976,14 @@
             <div>
                 <h2>🐾 Our Little Pet</h2>
             </div>
-           <button type="button" class="pet-inv-open" onclick="openPetInventory()">
-    🎒 <span>Inventory</span>
-</button>
+          <div class="pet-heading-actions">
+    <button type="button" class="pet-inv-open" onclick="openPetShop()">
+        🛍️ <span>Shop</span>
+    </button>
+    <button type="button" class="pet-inv-open" onclick="openPetInventory()">
+        🎒 <span>Inventory</span>
+    </button>
+</div>
         </div>
 
         
@@ -1104,7 +1109,8 @@
         </p>
 
         <!-- PET SHOP + INVENTORY -->
-        <section class="pet-store" aria-labelledby="petStoreTitle">
+       <section class="pet-store" id="petShopSection" aria-labelledby="petStoreTitle">
+    <button type="button" class="pet-inv-close" onclick="closePetShop()" aria-label="Close">✕</button>
             <div class="pet-store-hero">
                 <div class="pet-store-kicker">A LITTLE TREAT FOR OUR LITTLE FRIEND</div>
                 <div class="pet-store-title-row">
