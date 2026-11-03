@@ -11704,7 +11704,37 @@ document.addEventListener("click", e => {
         setTimeout(closePetInventory, 250);
     }
 });
-    
+
+// ===== PET SHOP POPUP =====
+function openPetShop() {
+    const section = document.getElementById("petShopSection");
+    if (!section) return;
+
+    let overlay = document.getElementById("petShopOverlay");
+    if (!overlay) {
+        overlay = document.createElement("div");
+        overlay.id = "petShopOverlay";
+        overlay.className = "pet-inv-modal pet-shop-overlay";
+        overlay.addEventListener("click", e => {
+            if (e.target === overlay) closePetShop();
+        });
+        document.body.appendChild(overlay);
+        overlay.appendChild(section);   // pindah kedai ke dalam popup
+    }
+
+    overlay.classList.add("open");
+}
+
+function closePetShop() {
+    document.getElementById("petShopOverlay")?.classList.remove("open");
+}
+
+window.openPetShop = openPetShop;
+window.closePetShop = closePetShop;
+
+document.addEventListener("keydown", e => {
+    if (e.key === "Escape") closePetShop();
+});
 
 
 
