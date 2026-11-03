@@ -9446,3 +9446,31 @@ html {
 
 .pet-inv-dialog .pet-inventory-heading { padding-right: 36px; }
 .pet-inv-dialog .pet-inventory-list { grid-template-columns: 1fr; }
+
+/* ===== PET ROOM: PORTRAIT ===== */
+#pet-section .pet-room-3d {
+    width: 100%;
+    max-width: 440px;
+    height: auto;
+    aspect-ratio: 4 / 5;      /* menegak */
+    margin: 0 auto;
+}
+
+@media (max-width: 600px) {
+    #pet-section .pet-room-3d {
+        max-width: 100%;
+        height: auto;
+        aspect-ratio: 4 / 5;
+    }
+}
+
+/* ===== BETULKAN BUTANG INVENTORY ===== */
+.pet-inv-open {
+    width: auto;
+    flex: 0 0 auto;
+    padding: 9px 14px;
+}
+.pet-heading > div:first-child {
+    flex: 1;
+    min-width: 0;
+}
