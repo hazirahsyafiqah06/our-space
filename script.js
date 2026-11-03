@@ -10632,49 +10632,8 @@ async function renameOurPet() {
         return;
     }
 
-    // AUTO REDUCE FULLNESS WHEN PET IS NOT FED
-
-const now = new Date();
-
-const lastDecay = data.last_decay_at
-    ? new Date(data.last_decay_at)
-    : now;
-
-const elapsedHours = Math.floor(
-    (now.getTime() - lastDecay.getTime()) / 3600000
-);
-
-if (elapsedHours > 0) {
-
-    const newHunger = Math.max(
-        0,
-        (Number(data.hunger) || 0) - (elapsedHours * 5)
-    );
-
-    const { data: updatedData, error: decayError } =
-        await supabaseClient
-            .from("our_little_pet")
-            .update({
-                hunger: newHunger,
-                last_decay_at: now.toISOString()
-            })
-            .eq("id", "our-space-pet")
-            .select()
-            .single();
-
-    if (decayError) {
-        console.error("Pet decay error:", decayError);
-        ourPetData = data;
-    } else {
-        ourPetData = updatedData;
-    }
-
-} else {
-    ourPetData = data;
-}
-
-renderOurPet();
-
+       ourPetData = data;
+    renderOurPet();
     alert(`Our pet's new name is ${petName}! ❤️`);
 }
 
@@ -10689,7 +10648,7 @@ const PET_SHOP_ITEMS = {
     teddy: { name: "Teddy Bear", emoji: "🧸", price: 50 },
     ball: { name: "Play Ball", emoji: "⚽", price: 30 },
     bow: { name: "Pretty Bow", emoji: "🎀", price: 75 },
-    crown: { name: "Little Crown", emoji: "👑", price: 120 }
+    crown: { name: "Little Crown", emoji: "👑", price: 120 },
     soap: { name: "Bubble Soap", emoji: "🧼", price: 25 },
 };
 
@@ -11546,7 +11505,7 @@ async function applyPetDecay() {
     ourPetData = data;
     renderOurPet();
 }
-}
+
 
 // Semak setiap 5 minit masa website terbuka
 setInterval(applyPetDecay, 5 * 60 * 1000);
