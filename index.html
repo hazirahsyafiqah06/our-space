@@ -1126,11 +1126,11 @@
             </div>
 
             <div class="pet-shop-tabs" role="group" aria-label="Filter pet shop items">
-                                <button type="button" class="pet-shop-tab" data-pet-filter="care" onclick="filterPetShop('care', this)">🧼 Care</button>
-                <button type="button" class="pet-shop-tab active" data-pet-filter="all" onclick="filterPetShop('all', this)">All items</button>
-                <button type="button" class="pet-shop-tab" data-pet-filter="food" onclick="filterPetShop('food', this)">🐟 Food</button>
-                <button type="button" class="pet-shop-tab" data-pet-filter="toys" onclick="filterPetShop('toys', this)">🧸 Toys</button>
-                <button type="button" class="pet-shop-tab" data-pet-filter="accessories" onclick="filterPetShop('accessories', this)">🎀 Extras</button>
+        <button type="button" class="pet-shop-tab active" data-pet-filter="all" onclick="filterPetShop('all', this)">All items</button>
+        <button type="button" class="pet-shop-tab" data-pet-filter="care" onclick="filterPetShop('care', this)">🧼 Care</button>
+        <button type="button" class="pet-shop-tab" data-pet-filter="food" onclick="filterPetShop('food', this)">🐟 Food</button>
+        <button type="button" class="pet-shop-tab" data-pet-filter="toys" onclick="filterPetShop('toys', this)">🧸 Toys</button>
+        <button type="button" class="pet-shop-tab" data-pet-filter="accessories" onclick="filterPetShop('accessories', this)">🎀 Extras</button>
             </div>
 
             <div class="pet-shop-grid" id="petShopGrid">
@@ -2351,7 +2351,7 @@ function startSleepMode() {
     if (isSleeping) return;
     isSleeping = true;
     setPetNight(true);
-    startZzz();
+    // Zzz mula bila kucing dah tidur dalam bakul
 }
 
 window.playPetAnimation = function (animationName) {
@@ -2612,6 +2612,7 @@ function updateCatStage() {
     if (!petModel) return;
     captureCatHome();
     if (!catHome) return;
+     if (runCatSleepPath()) return; 
 
     const desired = (isSleeping ? catBed : catHome.pos).clone();
     let rotY = catHome.rotY;
@@ -2666,6 +2667,177 @@ function updateCatStage() {
 
     petModel.position.lerp(desired, rate);
     petModel.rotation.y += (rotY - petModel.rotation.y) * 0.2;
+}
+
+    /* =========================================
+   🧺 KUCING JALAN MASUK BAKUL & TIDO BETUL-BETUL
+========================================= */
+const CAT_WALK_SPEED = 1.0;     // laju jalan
+const CAT_HOP_TIME = 0.8;       // masa lompat masuk/keluar bakul (saat)
+const CAT_HOP_HEIGHT = 0.45;    // tinggi lompatan
+const CAT_ENTRY_DIST = 1.3;     // jarak berhenti depan bakul sebelum lompat
+const CAT_SLEEP_SINK = 0.05;    // kucing tenggelam sikit dalam kusyen (naikkan = lagi rendah)
+const CAT_SLEEP_TURN = -0.5;    // arah badan masa tidur
+const BASKET_TOP_Y = BASKET_FLOOR + 0.12 + 0.72 * 0.3;   // paras atas kusyen
+
+let catPhase = "idle";          // idle | toEntry | hopIn | asleep | hopOut | toHome
+let catPhaseStart = 0;
+let catLastTick = performance.now();
+let catClip = "";
+let catEntry = null;
+let catSleepOffset = 0;
+let catGroundFrame = 0;
+let catSleepInit = false;
+const catHopFrom = new THREE.Vector3();
+const catBox = new THREE.Box3();
+
+function setCatClip(name) {
+    if (catClip === name) return;
+    catClip = name;
+    let clip = name;
+    if (name === "walk") {
+        clip = Object.keys(petActions).find(k => k.includes("walk") || k.includes("run")) || "idle";
+    }
+    basePlayPetAnimation(clip);
+}
+
+function catHeading(dx, dz) {
+    return Math.atan2(dx, dz) + catHome.rotY;
+}
+
+function turnCat(target, k) {
+    let d = target - petModel.rotation.y;
+    d = Math.atan2(Math.sin(d), Math.cos(d));
+    petModel.rotation.y += d * k;
+}
+
+function walkCat(dest, dt) {
+    const p = petModel.position;
+    const dx = dest.x - p.x;
+    const dz = dest.z - p.z;
+    const dist = Math.hypot(dx, dz);
+    p.y += (dest.y - p.y) * 0.2;
+    if (dist < 0.04) return true;
+    const step = Math.min(dist, CAT_WALK_SPEED * dt);
+    p.x += dx / dist * step;
+    p.z += dz / dist * step;
+    turnCat(catHeading(dx, dz), 0.25);
+    return false;
+}
+
+function enterAsleep() {
+    catSleepOffset = 0;
+    catClip = "";
+    setCatClip("sleep");
+    if (!zzzActive) startZzz();
+}
+
+function hopCat(from, to, t) {
+    const e = t * t * (3 - 2 * t);
+    petModel.position.lerpVectors(from, to, e);
+    petModel.position.y += Math.sin(Math.PI * t) * CAT_HOP_HEIGHT;
+    turnCat(catHeading(to.x - from.x, to.z - from.z), 0.3);
+}
+
+// return true = kucing tengah jalan/tidur, updateCatStage biasa dilangkau
+function runCatSleepPath() {
+    const now = performance.now();
+    const dt = Math.min(0.05, (now - catLastTick) / 1000);
+    catLastTick = now;
+
+    if (!catEntry) {
+        const dir = new THREE.Vector3(
+            catHome.pos.x - catBed.x, 0, catHome.pos.z - catBed.z
+        ).normalize();
+        catEntry = new THREE.Vector3(
+            catBed.x + dir.x * CAT_ENTRY_DIST,
+            catHome.pos.y,
+            catBed.z + dir.z * CAT_ENTRY_DIST
+        );
+    }
+
+    // kalau website dibuka masa kucing memang tengah tidur, terus letak dalam bakul
+    if (!catSleepInit) {
+        catSleepInit = true;
+        if (isSleeping) {
+            petModel.position.copy(catBed);
+            petModel.rotation.y = CAT_SLEEP_TURN + catHome.rotY;
+            catPhase = "asleep";
+            enterAsleep();
+        }
+    }
+
+    if (isSleeping) {
+        if (catPhase === "idle" || catPhase === "hopOut" || catPhase === "toHome") {
+            catPhase = "toEntry";
+            catClip = "";
+        }
+    } else if (catPhase === "toEntry") {
+        catPhase = "toHome";
+        catClip = "";
+    } else if (catPhase === "hopIn" || catPhase === "asleep") {
+        catPhase = "hopOut";
+        catPhaseStart = now;
+        catHopFrom.copy(petModel.position);
+        catClip = "";
+    }
+
+    if (catPhase === "idle") return false;
+
+    petModel.rotation.x += (0 - petModel.rotation.x) * 0.2;
+
+    if (catPhase === "toEntry") {
+        setCatClip("walk");
+        if (walkCat(catEntry, dt)) {
+            catPhase = "hopIn";
+            catPhaseStart = now;
+            catHopFrom.copy(petModel.position);
+            catClip = "";
+        }
+
+    } else if (catPhase === "hopIn") {
+        setCatClip("idle");
+        const t = Math.min(1, (now - catPhaseStart) / 1000 / CAT_HOP_TIME);
+        hopCat(catHopFrom, catBed, t);
+        if (t >= 1) {
+            catPhase = "asleep";
+            enterAsleep();
+        }
+
+    } else if (catPhase === "asleep") {
+        turnCat(CAT_SLEEP_TURN + catHome.rotY, 0.08);
+        petModel.position.x += (catBed.x - petModel.position.x) * 0.1;
+        petModel.position.z += (catBed.z - petModel.position.z) * 0.1;
+        petModel.position.y = catBed.y + catSleepOffset;
+
+        // pastikan badan kucing betul-betul atas kusyen (tak terapung)
+        if (++catGroundFrame % 6 === 0) {
+            catBox.setFromObject(petModel, true);
+            const err = (BASKET_TOP_Y - CAT_SLEEP_SINK) - catBox.min.y;
+            if (Math.abs(err) > 0.004) {
+                catSleepOffset = THREE.MathUtils.clamp(catSleepOffset + err * 0.35, -0.6, 0.6);
+            }
+        }
+
+    } else if (catPhase === "hopOut") {
+        setCatClip("idle");
+        const t = Math.min(1, (now - catPhaseStart) / 1000 / CAT_HOP_TIME);
+        hopCat(catHopFrom, catEntry, t);
+        if (t >= 1) {
+            catPhase = "toHome";
+            catClip = "";
+        }
+
+    } else if (catPhase === "toHome") {
+        setCatClip("walk");
+        if (walkCat(catHome.pos, dt)) {
+            catPhase = "idle";
+            catClip = "";
+            setCatClip("idle");
+        }
+    }
+
+    return true;
 }
 
 // Sambung ke loop animate() sedia ada
