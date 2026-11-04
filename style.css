@@ -9577,3 +9577,120 @@ html {
 #pet-section .pet-name-edit { display: flex; align-items: center; justify-content: flex-start; flex-wrap: nowrap; gap: 6px; }
 #pet-section #petNameDisplay { font-size: 16px; font-weight: 600; color: #8f5575; overflow-wrap: anywhere; }
 #pet-section .pet-name-edit .pet-edit-btn { flex: 0 0 auto; margin: 0; padding: 2px 4px; line-height: 1; }
+
+/* ===== NAMA SEBARIS ===== */
+#pet-section .pet-name-row > div:first-child { flex: 1 1 0; min-width: 0; text-align: left; }
+#pet-section .pet-name-edit { min-width: 0; flex-wrap: nowrap; }
+#pet-section #petNameDisplay {
+    display: block;
+    min-width: 0;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    overflow-wrap: normal;
+}
+
+/* ===== BUTANG X (bulat, selari dengan baris atas popup) ===== */
+.pet-inv-close {
+    position: static !important;
+    flex: 0 0 32px;
+    width: 32px;
+    height: 32px;
+    margin: 0;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    font-size: 14px;
+}
+
+/* ===== POPUP SHOP (ringkas untuk mobile) ===== */
+.pet-inv-modal { padding: 14px; }
+.pet-shop-overlay #petShopSection {
+    display: flex;
+    flex-direction: column;
+    max-width: 440px;
+    max-height: 78vh;
+    max-height: min(78dvh, 620px);
+    overflow: hidden;
+    padding: 12px;
+}
+.pet-shop-overlay .pet-store-hero { flex: 0 0 auto; margin-top: 0; padding: 12px 14px; }
+.pet-shop-overlay .pet-store-kicker { margin-bottom: 6px; font-size: 8px; }
+.pet-shop-overlay .pet-store-title-row { gap: 8px; }
+.pet-shop-overlay .pet-store-title-row h3 { font-size: 17px; margin: 0 0 2px; }
+.pet-shop-overlay .pet-store-title-row p { font-size: 11px; max-width: none; }
+.pet-shop-overlay .pet-store-wallet { padding: 6px 10px; }
+.pet-shop-overlay .pet-shop-tabs { flex: 0 0 auto; flex-wrap: nowrap; margin: 10px 0 8px; }
+.pet-shop-overlay .pet-shop-grid {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    -webkit-overflow-scrolling: touch;
+}
+.pet-shop-overlay .pet-shop-item { padding: 8px; gap: 4px; }
+.pet-shop-overlay .pet-shop-emoji { min-height: 50px; font-size: 28px !important; }
+.pet-shop-overlay .pet-shop-item small {
+    min-height: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.pet-shop-overlay .pet-shop-item button { padding: 7px 8px; }
+
+/* ===== POPUP INVENTORY (kemas, 2 kolum) ===== */
+.pet-inv-dialog {
+    display: flex;
+    flex-direction: column;
+    max-width: 400px;
+    max-height: 78vh;
+    max-height: min(78dvh, 600px);
+    overflow: hidden;
+    padding: 14px;
+}
+.pet-inv-dialog .pet-inventory-heading {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding-right: 0;
+}
+.pet-inv-dialog .pet-inventory-heading h3 { margin: 0 0 2px; font-size: 16px; }
+.pet-inv-dialog .pet-inventory-heading > div { flex: 1; min-width: 0; }
+@media (max-width: 420px) { .pet-inv-dialog .pet-inventory-bag { display: none; } }
+.pet-inv-dialog .pet-inventory-list {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+}
+.pet-inv-dialog .pet-inventory-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 10px 8px;
+    border: 1px solid #f0e1e9;
+    border-radius: 14px;
+    background: #fff;
+    text-align: center;
+}
+.pet-inv-dialog .pet-inventory-emoji { font-size: 30px; line-height: 1.1; }
+.pet-inv-dialog .pet-inventory-name { flex: none; font-size: 12px; font-weight: 700; color: #805d75; }
+.pet-inventory-qty {
+    padding: 2px 9px;
+    border-radius: 999px;
+    background: #fff1d6;
+    color: #9a6a1f;
+    font-size: 11px;
+    font-weight: 800;
+}
+.pet-inv-dialog .pet-use-btn { width: 100%; margin-top: 4px; padding: 7px 8px; }
