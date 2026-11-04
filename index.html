@@ -1083,7 +1083,7 @@
 
         <div class="pet-actions">
            <button onclick="openPetChooser('feed')">
-    🍓 Feed
+    🐟 Feed
 </button>
 
 <button onclick="openPetChooser('play')">
@@ -1128,16 +1128,16 @@
             <div class="pet-shop-tabs" role="group" aria-label="Filter pet shop items">
                                 <button type="button" class="pet-shop-tab" data-pet-filter="care" onclick="filterPetShop('care', this)">🧼 Care</button>
                 <button type="button" class="pet-shop-tab active" data-pet-filter="all" onclick="filterPetShop('all', this)">All items</button>
-                <button type="button" class="pet-shop-tab" data-pet-filter="food" onclick="filterPetShop('food', this)">🍓 Food</button>
+                <button type="button" class="pet-shop-tab" data-pet-filter="food" onclick="filterPetShop('food', this)">🐟 Food</button>
                 <button type="button" class="pet-shop-tab" data-pet-filter="toys" onclick="filterPetShop('toys', this)">🧸 Toys</button>
                 <button type="button" class="pet-shop-tab" data-pet-filter="accessories" onclick="filterPetShop('accessories', this)">🎀 Extras</button>
             </div>
 
             <div class="pet-shop-grid" id="petShopGrid">
                 <article class="pet-shop-item" data-category="food">
-                    <span class="pet-shop-emoji">🍓</span>
-                    <strong>Strawberry Snack</strong>
-                    <small>A sweet little snack</small>
+                    <span class="pet-shop-emoji">🐟</span>
+                    <strong>Fish Snack</strong>
+                    <small>A yummy little fish</small>
                     <span class="pet-item-price">🪙 20</span>
                     <button type="button" onclick="buyPetItem('snack')">Buy</button>
                 </article>
@@ -1641,56 +1641,62 @@ createRoomBox(
     1.35, 2.5, -2.1
 );
     
-const bedMaterial = new THREE.MeshStandardMaterial({
-    color: "#c78ba9",
-    roughness: 0.8
+// ===== BAKUL KUCING 🧺 =====
+const BASKET_X = 2.0;
+const BASKET_Z = -0.9;
+const BASKET_FLOOR = -0.5;
+
+const wickerMat = new THREE.MeshStandardMaterial({ color: "#d9a566", roughness: 0.9, side: THREE.DoubleSide });
+const wickerDark = new THREE.MeshStandardMaterial({ color: "#b8803f", roughness: 0.9 });
+const cushionMat = new THREE.MeshStandardMaterial({ color: "#ffb3d4", roughness: 0.85 });
+const bowMat = new THREE.MeshStandardMaterial({ color: "#ff6fa8", roughness: 0.6 });
+
+const basket = new THREE.Group();
+basket.position.set(BASKET_X, BASKET_FLOOR, BASKET_Z);
+scene.add(basket);
+
+// dinding
+const basketWall = new THREE.Mesh(new THREE.CylinderGeometry(0.85, 0.7, 0.5, 40, 1, true), wickerMat);
+basketWall.position.y = 0.25;
+basket.add(basketWall);
+
+// lapik bawah
+const basketBase = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.7, 0.05, 40), wickerDark);
+basketBase.position.y = 0.025;
+basket.add(basketBase);
+
+// anyaman
+[0.1, 0.22, 0.34, 0.46].forEach(h => {
+    const r = 0.7 + 0.15 * (h / 0.5);
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(r, 0.025, 8, 40), wickerDark);
+    ring.rotation.x = Math.PI / 2;
+    ring.position.y = h;
+    basket.add(ring);
 });
-    
-// BED
-createRoomBox(
-    2.4, 0.35, 1.8,
-    bedMaterial,
-    2.5, -0.1, -1
-);
 
-// BED LEGS
-createRoomBox(
-    0.2, 0.5, 0.2,
-    woodMaterial,
-    1.5, -0.35, -1.6
-);
+// bibir bakul
+const basketRim = new THREE.Mesh(new THREE.TorusGeometry(0.85, 0.05, 10, 48), wickerDark);
+basketRim.rotation.x = Math.PI / 2;
+basketRim.position.y = 0.5;
+basket.add(basketRim);
 
-createRoomBox(
-    0.2, 0.5, 0.2,
-    woodMaterial,
-    3.5, -0.35, -1.6
-);
+// kusyen empuk
+const cushion = new THREE.Mesh(new THREE.SphereGeometry(0.72, 32, 16), cushionMat);
+cushion.scale.y = 0.3;
+cushion.position.y = 0.12;
+basket.add(cushion);
 
-createRoomBox(
-    0.2, 0.5, 0.2,
-    woodMaterial,
-    1.5, -0.35, -0.4
-);
-
-createRoomBox(
-    0.2, 0.5, 0.2,
-    woodMaterial,
-    3.5, -0.35, -0.4
-);
-
-// PILLOW
-createRoomBox(
-    0.8, 0.2, 0.5,
-    pinkMaterial,
-    2.5, 0.15, -1.6
-);
-
-// BLANKET
-createRoomBox(
-    1.5, 0.15, 1,
-    pinkMaterial,
-    2.5, 0.15, -0.8
-);
+// reben comel kat depan
+[-1, 1].forEach(s => {
+    const loop = new THREE.Mesh(new THREE.SphereGeometry(0.09, 16, 16), bowMat);
+    loop.scale.set(1.3, 0.8, 0.5);
+    loop.position.set(s * 0.11, 0.34, 0.83);
+    loop.rotation.z = s * 0.4;
+    basket.add(loop);
+});
+const bowKnot = new THREE.Mesh(new THREE.SphereGeometry(0.05, 12, 12), bowMat);
+bowKnot.position.set(0, 0.34, 0.84);
+basket.add(bowKnot);
 
 // CARPET
 const carpet = new THREE.Mesh(
@@ -2385,31 +2391,41 @@ window.syncPetSleep = function (sleeping) {
     }
 };
 
-    /* =========================================
-   🐱 CAT STAGE: katil, lompat, makan, minum
+/* =========================================
+   🐱 CAT STAGE: bakul, lompat, makan ikan, minum susu
 ========================================= */
 let petToyType = null;
-let catHome = null;      // kedudukan asal kucing
-let catBed = null;       // kedudukan atas katil
-let petFoodProp = null;  // strawberry / botol susu yang sedang dimakan
+let catHome = null;
+let catBed = null;
+let petFoodProp = null;
 
-const CAT_BED_X = 2.1;          // kiri/kanan atas katil
-const CAT_BED_Z = -0.9;         // dalam/luar atas katil
-const CAT_MOUTH_HEIGHT = 0.55;  // tinggi mulut (0 = kaki, 1 = kepala)
-const CAT_MOUTH_Z = 0.05;       // jarak depan mulut
-const PET_FOOD_DURATION = 3.4;  // saat makan/minum
+const CAT_BED_X = 2.0;          // sama dengan BASKET_X
+const CAT_BED_Z = -0.9;         // sama dengan BASKET_Z
+const CAT_BED_Y = -0.2;         // paras kusyen dalam bakul
+const FLOOR_Y = -0.5;
+const CAT_MOUTH_HEIGHT = 0.55;  // tinggi mulut (susu)
+const CAT_MOUTH_Z = 0.05;
+const CAT_FISH_DIST = 0.3;      // jarak pinggan ikan dari kucing
+const PET_FOOD_DURATION = 3.6;
 
 function captureCatHome() {
     if (!petModel || catHome) return;
 
-    catHome = { pos: petModel.position.clone(), rotY: petModel.rotation.y };
-
     const box = new THREE.Box3().setFromObject(petModel);
     const c = box.getCenter(new THREE.Vector3());
 
+    catHome = {
+        pos: petModel.position.clone(),
+        rotY: petModel.rotation.y,
+        // titik kaki kucing (pusat tunduk)
+        pivotOffset: new THREE.Vector3(c.x, box.min.y, c.z).sub(petModel.position),
+        // depan kaki kucing
+        front: new THREE.Vector3(c.x, box.min.y, box.max.z)
+    };
+
     catBed = new THREE.Vector3(
         catHome.pos.x + (CAT_BED_X - c.x),
-        catHome.pos.y + (0.1 - box.min.y),   // atas tilam
+        catHome.pos.y + (CAT_BED_Y - box.min.y),
         catHome.pos.z + (CAT_BED_Z - c.z)
     );
 }
@@ -2424,37 +2440,87 @@ function getCatMouth(target) {
     );
 }
 
-// ---- Strawberry 🍓 ----
-function makeStrawberry() {
+// ---- Ikan 🐟 atas pinggan ----
+function makeFish() {
     const g = new THREE.Group();
+    const meat = new THREE.Group();
+    const bone = new THREE.Group();
 
-    const body = new THREE.Mesh(
-        new THREE.SphereGeometry(0.11, 20, 20),
-        new THREE.MeshStandardMaterial({ color: 0xff3b5c, roughness: 0.45 })
-    );
-    body.scale.set(1, 1.15, 1);
-    g.add(body);
+    const bodyMat = new THREE.MeshStandardMaterial({ color: 0x6fb7ff, roughness: 0.4 });
+    const bellyMat = new THREE.MeshStandardMaterial({ color: 0xe8f4ff, roughness: 0.5 });
+    const finMat = new THREE.MeshStandardMaterial({ color: 0x4f9be8, roughness: 0.5 });
+    const plateMat = new THREE.MeshStandardMaterial({ color: 0xffb3d4, roughness: 0.6 });
+    const boneMat = new THREE.MeshStandardMaterial({ color: 0xfffaf0, roughness: 0.6 });
 
-    const seedMat = new THREE.MeshStandardMaterial({ color: 0xffe9a8 });
-    for (let i = 0; i < 16; i++) {
-        const a = i * 2.4;
-        const y = ((i % 5) - 2) * 0.045;
-        const r = Math.sqrt(Math.max(0, 0.11 * 0.11 - y * y));
-        const seed = new THREE.Mesh(new THREE.SphereGeometry(0.009, 6, 6), seedMat);
-        seed.position.set(Math.cos(a) * r, y * 1.15, Math.sin(a) * r);
-        g.add(seed);
-    }
+    // pinggan
+    const plate = new THREE.Mesh(new THREE.CylinderGeometry(0.26, 0.22, 0.03, 32), plateMat);
+    plate.position.y = -0.055;
+    g.add(plate);
 
-    const leafMat = new THREE.MeshStandardMaterial({ color: 0x5cb85c });
+    // badan
+    const body = new THREE.Mesh(new THREE.SphereGeometry(0.12, 24, 24), bodyMat);
+    body.scale.set(1.7, 0.8, 0.55);
+    body.position.y = 0.03;
+    meat.add(body);
+
+    const belly = new THREE.Mesh(new THREE.SphereGeometry(0.12, 24, 24), bellyMat);
+    belly.scale.set(1.5, 0.45, 0.5);
+    belly.position.set(0, 0.0, 0.015);
+    meat.add(belly);
+
+    // ekor
+    const tail = new THREE.Mesh(new THREE.ConeGeometry(0.1, 0.18, 3), finMat);
+    tail.rotation.z = -Math.PI / 2;
+    tail.scale.set(1, 1, 0.3);
+    tail.position.set(-0.26, 0.03, 0);
+    meat.add(tail);
+
+    // sirip atas
+    const fin = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.1, 3), finMat);
+    fin.scale.set(1, 1, 0.3);
+    fin.position.set(-0.02, 0.12, 0);
+    meat.add(fin);
+
+    // mata
+    const eye = new THREE.Mesh(new THREE.SphereGeometry(0.025, 12, 12),
+        new THREE.MeshStandardMaterial({ color: 0xffffff }));
+    eye.position.set(0.15, 0.06, 0.065);
+    meat.add(eye);
+
+    const pupil = new THREE.Mesh(new THREE.SphereGeometry(0.013, 10, 10),
+        new THREE.MeshStandardMaterial({ color: 0x111111 }));
+    pupil.position.set(0.16, 0.06, 0.085);
+    meat.add(pupil);
+
+    g.add(meat);
+
+    // tulang ikan (nampak bila dah habis)
+    const spine = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.012, 0.012), boneMat);
+    spine.position.y = 0.0;
+    bone.add(spine);
+
     for (let i = 0; i < 5; i++) {
-        const a = (i / 5) * Math.PI * 2;
-        const leaf = new THREE.Mesh(new THREE.SphereGeometry(0.045, 8, 8), leafMat);
-        leaf.scale.set(1, 0.25, 0.5);
-        leaf.position.set(Math.cos(a) * 0.05, 0.125, Math.sin(a) * 0.05);
-        leaf.rotation.y = -a;
-        g.add(leaf);
+        const rib = new THREE.Mesh(new THREE.BoxGeometry(0.012, 0.1, 0.012), boneMat);
+        rib.position.set(-0.12 + i * 0.07, 0.0, 0);
+        bone.add(rib);
     }
 
+    const skull = new THREE.Mesh(new THREE.SphereGeometry(0.04, 12, 12), boneMat);
+    skull.position.set(0.22, 0.0, 0);
+    bone.add(skull);
+
+    const boneTail = new THREE.Mesh(new THREE.ConeGeometry(0.04, 0.07, 3), boneMat);
+    boneTail.rotation.z = -Math.PI / 2;
+    boneTail.scale.z = 0.3;
+    boneTail.position.set(-0.25, 0, 0);
+    bone.add(boneTail);
+
+    bone.position.y = 0.03;
+    bone.visible = false;
+    g.add(bone);
+
+    g.userData.meat = meat;
+    g.userData.bone = bone;
     return g;
 }
 
@@ -2468,8 +2534,7 @@ function makeMilkBottle() {
     const milkMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.6 });
     const capMat = new THREE.MeshStandardMaterial({ color: 0xff8fbd });
 
-    const body = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.3, 24), glass);
-    g.add(body);
+    g.add(new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.3, 24), glass));
 
     const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.085, 0.1, 24), glass);
     neck.position.y = 0.2;
@@ -2490,14 +2555,14 @@ function makeMilkBottle() {
 window.showPetFood3D = function (foodType) {
     if (petFoodProp) scene.remove(petFoodProp.obj);
 
-    const obj = foodType === "milk" ? makeMilkBottle() : makeStrawberry();
+    const obj = foodType === "milk" ? makeMilkBottle() : makeFish();
     scene.add(obj);
 
     petFoodProp = { type: foodType, obj, start: performance.now() };
 };
 
 function updatePetFood() {
-    if (!petFoodProp || !petModel) return;
+    if (!petFoodProp || !petModel || !catHome) return;
 
     const t = (performance.now() - petFoodProp.start) / 1000;
     const p = t / PET_FOOD_DURATION;
@@ -2508,11 +2573,11 @@ function updatePetFood() {
         return;
     }
 
-    const mouth = getCatMouth(new THREE.Vector3());
     const obj = petFoodProp.obj;
 
     if (petFoodProp.type === "milk") {
-        // botol makin senget + susu makin sikit
+        const mouth = getCatMouth(new THREE.Vector3());
+
         const tilt = -(0.5 + 0.9 * Math.min(1, p * 1.4));
         obj.rotation.set(tilt, 0, 0);
 
@@ -2525,18 +2590,24 @@ function updatePetFood() {
         obj.userData.milk.position.y = -0.14 + 0.13 * level;
 
     } else {
-        // strawberry kena gigit 4 kali
-        const bites = 1 - 0.2 * Math.floor(p * 4);
-        obj.scale.setScalar(bites * (1 + Math.sin(t * 16) * 0.04));
+        // ikan atas pinggan, depan kucing (atas lantai)
         obj.position.set(
-            mouth.x,
-            mouth.y - 0.02 + Math.sin(t * 12) * 0.012,
-            mouth.z + 0.08
+            catHome.front.x,
+            FLOOR_Y + 0.08,
+            catHome.front.z + CAT_FISH_DIST
         );
+
+        const meat = obj.userData.meat;
+        const bone = obj.userData.bone;
+
+        // digigit 4 kali, last tinggal tulang
+        meat.scale.set(1 - 0.2 * Math.floor(p * 4), 1, 1);
+        meat.visible = p < 0.8;
+        bone.visible = p >= 0.7;
     }
 }
 
-// ---- Gerakan kucing: tidur atas katil, lompat main ----
+// ---- Gerakan kucing ----
 function updateCatStage() {
     if (!petModel) return;
     captureCatHome();
@@ -2545,7 +2616,21 @@ function updateCatStage() {
     const desired = (isSleeping ? catBed : catHome.pos).clone();
     let rotY = catHome.rotY;
     let rate = 0.08;
+    let pitch = 0;   // tunduk (+) / dongak (-)
 
+    // MAKAN / MINUM
+    if (petFoodProp && !isSleeping) {
+        const t = (performance.now() - petFoodProp.start) / 1000;
+        rate = 0.2;
+
+        if (petFoodProp.type === "milk") {
+            pitch = -0.12;                          // dongak sikit minum
+        } else {
+            pitch = 0.5 + Math.sin(t * 9) * 0.08;   // tunduk makan ikan
+        }
+    }
+
+    // MAIN
     if (petToyAnimationActive && !isSleeping) {
         const t = (performance.now() - petToyStartTime) / 1000;
         rate = 0.35;
@@ -2556,13 +2641,28 @@ function updateCatStage() {
             rotY += Math.sin(t * 2.5) * 0.25;
 
         } else if (petToyType === "ball") {
-            // kejar bola
+            // lompat ikut bounce bola
             const ball = activePetToys[0]?.userData.ball;
-            if (ball) desired.x += (ball.position.x + 0.7) * 0.8;
-            desired.y += Math.abs(Math.sin(t * 5)) * 0.12;
-            rotY += Math.sin(t * 3) * 0.35;
+            if (ball) {
+                desired.x += (ball.position.x + 0.7) * 0.9;
+                desired.z += ball.position.z * 0.5;
+                desired.y += ball.position.y * 0.55;
+
+                rotY += THREE.MathUtils.clamp(
+                    (desired.x - petModel.position.x) * 2, -0.6, 0.6
+                );
+            }
         }
     }
+
+    // tunduk dengan pusat pada kaki kucing
+    petModel.rotation.x += (pitch - petModel.rotation.x) * 0.2;
+    const q = new THREE.Quaternion().setFromAxisAngle(
+        new THREE.Vector3(1, 0, 0), petModel.rotation.x
+    );
+    desired
+        .add(catHome.pivotOffset)
+        .sub(catHome.pivotOffset.clone().applyQuaternion(q));
 
     petModel.position.lerp(desired, rate);
     petModel.rotation.y += (rotY - petModel.rotation.y) * 0.2;
@@ -3610,9 +3710,11 @@ dressPanel.innerHTML = `
 if (dressRoom) {
     dressRoom.appendChild(dressVignette);
     dressRoom.appendChild(dressPanel);
-    dressRoom.appendChild(dressBtn);
 }
 
+// butang Dress up duduk sebelah Shop & Inventory
+const petActionsBar = document.querySelector(".pet-heading-actions");
+(petActionsBar || dressRoom)?.appendChild(dressBtn);
 function refreshDressPanel() {
     if (!dressOpen) return;
 
