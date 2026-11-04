@@ -9535,3 +9535,21 @@ html {
 .pet-choice strong { color: #805d75; font-size: 13px; }
 .pet-choice small { color: #ad91a1; font-size: 12px; font-weight: 700; }
 .pet-choice.empty { opacity: .65; }
+
+/* Dress up dalam bar atas */
+.pet-heading-actions { flex-wrap: wrap; }
+.pet-heading-actions .dress-btn {
+    position: static !important;
+    transform: none !important;
+    top: auto !important;
+    right: auto !important;
+    max-width: none !important;
+    padding: 10px 14px !important;
+    border: 1px solid #f1dce7 !important;
+    background: linear-gradient(135deg, #fff, #ffeaf4) !important;
+    color: #b0507f !important;
+    font-size: 13px !important;
+    font-weight: 800;
+    box-shadow: 0 6px 16px rgba(226, 120, 170, .18) !important;
+    z-index: auto !important;
+}
