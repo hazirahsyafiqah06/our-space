@@ -1771,6 +1771,403 @@ scene.add(roomLight);
 camera.position.set(0, 3.5, 11);
 camera.lookAt(0, 1.2, -0.5);
 
+/* =========================================
+   🏡 COZY ROOM MAKEOVER: lantai kayu, dinding hangat, perabot, bayang, tingkap
+========================================= */
+{
+const ROOM_EXPOSURE = 1.05;   // terang/gelap keseluruhan (cuba 0.9 hingga 1.3)
+
+// random tetap supaya corak sama setiap kali
+let seed = 7;
+const rnd = () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };
+
+function canvasTex(w, h, draw, repX = 1, repY = 1) {
+    const c = document.createElement("canvas");
+    c.width = w; c.height = h;
+    draw(c.getContext("2d"), w, h);
+    const t = new THREE.CanvasTexture(c);
+    t.colorSpace = THREE.SRGBColorSpace;
+    t.wrapS = t.wrapT = THREE.RepeatWrapping;
+    t.repeat.set(repX, repY);
+    t.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    return t;
+}
+
+function mat(color, rough = 0.8, extra = {}) {
+    return new THREE.MeshStandardMaterial({ color, roughness: rough, ...extra });
+}
+
+function removeAt(x, y, z) {
+    scene.children.filter(o =>
+        o.isMesh &&
+        Math.abs(o.position.x - x) < 0.001 &&
+        Math.abs(o.position.y - y) < 0.001 &&
+        Math.abs(o.position.z - z) < 0.001
+    ).forEach(o => { scene.remove(o); o.geometry.dispose(); });
+}
+
+function box(w, h, d, m, x, y, z) {
+    return createRoomBox(w, h, d, m, x, y, z);
+}
+
+function cyl(rt, rb, h, m, x, y, z, seg = 20) {
+    const o = new THREE.Mesh(new THREE.CylinderGeometry(rt, rb, h, seg), m);
+    o.position.set(x, y, z);
+    scene.add(o);
+    return o;
+}
+
+// ---------- bahan ----------
+const woodDark  = mat("#6b4528", 0.6);
+const woodMid   = mat("#a9774a", 0.65);
+const woodLight = mat("#c9a272", 0.65);
+const creamMat  = mat("#f1e6d2", 0.8);
+const potTerra  = mat("#b9663f", 0.85);
+const leafDark  = mat("#4f7d46", 0.8);
+const leafMid   = mat("#6e9a52", 0.8);
+const curtA     = mat("#c27a54", 0.95);
+const curtB     = mat("#b36a46", 0.95);
+const lampShade = mat("#f6dcae", 0.9, { emissive: "#ffbf6a", emissiveIntensity: 0.35, side: THREE.DoubleSide });
+
+// ---------- buang hiasan pink lama ----------
+[
+    [-2.5, -0.15, -1], [-2.5, 0.25, -1], [-2.5, 0.45, -1], [-2.5, 0.75, -1],  // meja + lampu
+    [-3.5, -0.25, -1.5], [-3.5, 0.35, -1.5],                                   // pasu + daun
+    [-1.35, 2.5, -2.1], [1.35, 2.5, -2.1],                                     // langsir
+    [0, 2.6, -2.2]                                                             // palang tingkap
+].forEach(p => removeAt(...p));
+
+// ---------- LANTAI KAYU ----------
+const floorTex = canvasTex(1024, 1024, (g, w, h) => {
+    const rows = 12, ph = h / rows;
+    for (let r = 0; r < rows; r++) {
+        const joint = 220 + rnd() * 580;
+        [[0, joint], [joint, w]].forEach(([x0, x1]) => {
+            g.fillStyle = `hsl(${24 + rnd() * 6}, ${44 + rnd() * 8}%, ${37 + rnd() * 8}%)`;
+            g.fillRect(x0, r * ph, x1 - x0, ph);
+            for (let i = 0; i < 12; i++) {
+                const y = r * ph + rnd() * ph;
+                g.strokeStyle = `rgba(50,25,8,${0.05 + rnd() * 0.08})`;
+                g.lineWidth = 0.8 + rnd() * 1.4;
+                g.beginPath();
+                g.moveTo(x0, y);
+                g.bezierCurveTo(
+                    x0 + (x1 - x0) * 0.3, y + (rnd() - 0.5) * 7,
+                    x0 + (x1 - x0) * 0.7, y + (rnd() - 0.5) * 7,
+                    x1, y + (rnd() - 0.5) * 3
+                );
+                g.stroke();
+            }
+            g.fillStyle = "rgba(25,12,4,0.6)";
+            g.fillRect(x0, r * ph, 2.5, ph);
+        });
+        g.fillStyle = "rgba(25,12,4,0.55)";
+        g.fillRect(0, r * ph, w, 2.5);
+    }
+}, 4.2, 5.6);
+
+creamFloor.color.set("#ffffff");
+creamFloor.map = floorTex;
+creamFloor.roughness = 0.55;
+creamFloor.needsUpdate = true;
+roomFloor.geometry.dispose();
+roomFloor.geometry = new THREE.PlaneGeometry(14, 14);
+
+// ---------- DINDING ----------
+const wallTex = canvasTex(64, 8, (g, w, h) => {
+    g.fillStyle = "#ecdcc2"; g.fillRect(0, 0, w, h);
+    g.fillStyle = "#e3d1b5"; g.fillRect(0, 0, w / 2, h);
+}, 20, 1);
+pinkWall.color.set("#ffffff");
+pinkWall.map = wallTex;
+pinkWall.roughness = 0.95;
+pinkWall.needsUpdate = true;
+
+// sambung dinding ke atas supaya tak nampak latar
+box(10, 4, 0.2, pinkWall, 0, 6.5, -2.5);
+
+const wainTex = canvasTex(64, 64, (g, w, h) => {
+    g.fillStyle = "#c39a6a"; g.fillRect(0, 0, w, h);
+    g.fillStyle = "rgba(60,35,15,.38)"; g.fillRect(0, 0, 3, h);
+    g.fillStyle = "rgba(255,235,200,.10)"; g.fillRect(3, 0, 6, h);
+    for (let i = 0; i < 26; i++) {
+        g.fillStyle = `rgba(70,40,15,${0.04 + rnd() * 0.06})`;
+        g.fillRect(10 + rnd() * 50, 0, 1, h);
+    }
+}, 26, 1);
+box(10, 1.2, 0.06, new THREE.MeshStandardMaterial({ map: wainTex, roughness: 0.7 }), 0, 0.1, -2.37);
+box(10, 0.07, 0.1, woodDark, 0, 0.72, -2.35);    // chair rail
+box(10, 0.16, 0.09, woodDark, 0, -0.42, -2.35);  // skirting
+
+// ---------- TINGKAP ----------
+whiteMaterial.color.set("#f4ead8");
+
+const skyTex = canvasTex(256, 256, (g, w, h) => {
+    const gr = g.createLinearGradient(0, 0, 0, h);
+    gr.addColorStop(0, "#79b4e6");
+    gr.addColorStop(1, "#d9eefa");
+    g.fillStyle = gr; g.fillRect(0, 0, w, h);
+    [[60, 60, 34], [150, 45, 26], [200, 95, 30], [90, 115, 22]].forEach(([x, y, r]) => {
+        for (let k = 0; k < 5; k++) {
+            const cx = x + k * 14 - 28, cy = y + (k % 2) * 6;
+            const rg = g.createRadialGradient(cx, cy, 2, cx, cy, r);
+            rg.addColorStop(0, "rgba(255,255,255,.95)");
+            rg.addColorStop(1, "rgba(255,255,255,0)");
+            g.fillStyle = rg; g.fillRect(0, 0, w, h);
+        }
+    });
+    g.fillStyle = "#a6cb92";
+    g.beginPath(); g.moveTo(0, h); g.lineTo(0, 190);
+    g.quadraticCurveTo(70, 160, 140, 195); g.quadraticCurveTo(200, 215, w, 180);
+    g.lineTo(w, h); g.fill();
+    g.fillStyle = "#86b476";
+    g.beginPath(); g.moveTo(0, h); g.lineTo(0, 225);
+    g.quadraticCurveTo(90, 205, 170, 232); g.quadraticCurveTo(220, 245, w, 222);
+    g.lineTo(w, h); g.fill();
+}, 1, 1);
+windowGlass.material.map = skyTex;
+windowGlass.material.color.set("#ffffff");
+windowGlass.material.needsUpdate = true;
+
+box(0.06, 1.5, 0.04, whiteMaterial, 0, 2.6, -2.21);   // palang tingkap
+box(2.1, 0.06, 0.04, whiteMaterial, 0, 2.6, -2.21);
+box(2.7, 0.07, 0.28, woodLight, 0, 1.66, -2.2);        // birai tingkap
+
+// batang langsir + hujung
+const rod = cyl(0.03, 0.03, 3.9, woodDark, 0, 3.82, -2.1, 12);
+rod.rotation.z = Math.PI / 2;
+[-1, 1].forEach(s => {
+    const fin = new THREE.Mesh(new THREE.SphereGeometry(0.06, 12, 12), woodDark);
+    fin.position.set(s * 1.95, 3.82, -2.1);
+    scene.add(fin);
+});
+
+// langsir kain (berlipat)
+[-1, 1].forEach(s => {
+    for (let i = 0; i < 8; i++) {
+        box(0.1, 2.7, 0.07, i % 2 ? curtA : curtB,
+            s * (1.15 + i * 0.095), 2.35, -2.1 + (i % 2) * 0.035);
+    }
+    box(0.12, 0.07, 0.16, woodDark, s * 1.2, 2.0, -2.05);   // tali ikat
+});
+
+// ---------- PERABOT ----------
+// meja tepi
+box(0.95, 0.07, 0.95, woodMid, -2.5, 0.31, -1);
+[[-0.4, -0.4], [0.4, -0.4], [-0.4, 0.4], [0.4, 0.4]].forEach(([dx, dz]) =>
+    box(0.07, 0.78, 0.07, woodDark, -2.5 + dx, -0.11, -1 + dz));
+box(0.8, 0.04, 0.8, woodMid, -2.5, -0.25, -1);
+
+// lampu meja (menyala bila malam)
+cyl(0.12, 0.14, 0.05, woodDark, -2.5, 0.37, -1);
+cyl(0.02, 0.02, 0.3, woodDark, -2.5, 0.55, -1, 8);
+cyl(0.17, 0.26, 0.3, lampShade, -2.5, 0.85, -1, 24);
+
+// buku + cawan atas meja
+box(0.34, 0.05, 0.24, mat("#8f4b3a"), -2.2, 0.375, -0.8);
+box(0.3, 0.05, 0.22, mat("#d9a441"), -2.2, 0.425, -0.8);
+cyl(0.06, 0.05, 0.1, creamMat, -2.85, 0.4, -0.75, 16);
+
+// pasu pokok (tepi kiri)
+function makePlant(x, z, scale = 1) {
+    const g = new THREE.Group();
+    g.position.set(x, -0.5, z);
+    g.scale.setScalar(scale);
+    const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.17, 0.4, 20), potTerra);
+    pot.position.y = 0.2;
+    g.add(pot);
+    for (let i = 0; i < 9; i++) {
+        const a = (i / 9) * Math.PI * 2;
+        const pivot = new THREE.Group();
+        pivot.position.y = 0.4;
+        pivot.rotation.y = a;
+        const tilt = new THREE.Group();
+        tilt.rotation.z = -0.45 - (i % 3) * 0.14;
+        const leaf = new THREE.Mesh(new THREE.SphereGeometry(0.22, 12, 10), i % 2 ? leafDark : leafMid);
+        leaf.scale.set(0.45, 1.5, 0.14);
+        leaf.position.y = 0.28 + (i % 3) * 0.06;
+        tilt.add(leaf);
+        pivot.add(tilt);
+        g.add(pivot);
+    }
+    scene.add(g);
+    return g;
+}
+makePlant(-3.1, -1.75, 1.15);
+
+// kabinet bawah tingkap
+box(2.0, 0.62, 0.5, woodMid, 0, -0.19, -2.1);
+box(2.1, 0.05, 0.56, woodLight, 0, 0.145, -2.1);
+box(0.92, 0.5, 0.02, woodDark, -0.48, -0.19, -1.84);
+box(0.92, 0.5, 0.02, woodDark, 0.48, -0.19, -1.84);
+[-0.1, 0.1].forEach(dx => {
+    const knob = new THREE.Mesh(new THREE.SphereGeometry(0.03, 10, 10), creamMat);
+    knob.position.set(dx, -0.19, -1.82);
+    scene.add(knob);
+});
+// hiasan atas kabinet
+cyl(0.07, 0.1, 0.22, creamMat, -0.7, 0.28, -2.15, 16);
+box(0.3, 0.05, 0.22, mat("#8fa57a"), 0.65, 0.195, -2.12);
+box(0.26, 0.05, 0.2, mat("#c27a54"), 0.65, 0.245, -2.12);
+
+// rak dinding kanan + pokok kecil + buku
+box(1.3, 0.06, 0.3, woodMid, 2.6, 1.5, -2.25);
+const miniPot = cyl(0.09, 0.07, 0.14, potTerra, 2.25, 1.6, -2.25, 16);
+for (let i = 0; i < 4; i++) {
+    const leaf = new THREE.Mesh(new THREE.SphereGeometry(0.1, 10, 8), leafMid);
+    leaf.scale.set(0.8, 1.3, 0.5);
+    leaf.position.set(2.25 + (i - 1.5) * 0.05, 1.77 + (i % 2) * 0.04, -2.25);
+    scene.add(leaf);
+}
+box(0.07, 0.3, 0.2, mat("#8f4b3a"), 2.75, 1.68, -2.25);
+box(0.07, 0.26, 0.2, mat("#d9a441"), 2.83, 1.66, -2.25);
+box(0.07, 0.32, 0.2, mat("#7d9a6a"), 2.91, 1.69, -2.25);
+
+// ---------- BINGKAI GAMBAR ----------
+function makeArt(kind) {
+    return canvasTex(128, 160, (g, w, h) => {
+        g.fillStyle = "#f4e6d2"; g.fillRect(0, 0, w, h);
+        if (kind === "heart") {
+            g.fillStyle = "#d9777f";
+            g.beginPath();
+            g.moveTo(64, 120);
+            g.bezierCurveTo(10, 85, 18, 35, 64, 62);
+            g.bezierCurveTo(110, 35, 118, 85, 64, 120);
+            g.fill();
+        } else if (kind === "arches") {
+            [["#c27a54", 50], ["#e0b684", 36], ["#8fa57a", 22]].forEach(([c, r]) => {
+                g.fillStyle = c;
+                g.beginPath(); g.arc(64, 105 - r * 0.2, r, Math.PI, 0); g.lineTo(64 + r, 140); g.lineTo(64 - r, 140); g.fill();
+            });
+        } else if (kind === "sun") {
+            g.fillStyle = "#e8b25a"; g.beginPath(); g.arc(64, 70, 28, 0, Math.PI * 2); g.fill();
+            g.fillStyle = "#a6704a"; g.beginPath(); g.moveTo(0, 150); g.quadraticCurveTo(50, 95, 128, 130); g.lineTo(128, 160); g.lineTo(0, 160); g.fill();
+        } else {
+            g.fillStyle = "#2f3a5a"; g.fillRect(0, 0, w, h);
+            g.fillStyle = "#f6e6a8"; g.beginPath(); g.arc(70, 70, 26, 0, Math.PI * 2); g.fill();
+            g.fillStyle = "#2f3a5a"; g.beginPath(); g.arc(80, 62, 24, 0, Math.PI * 2); g.fill();
+        }
+    }, 1, 1);
+}
+function makeFrame(w, h, x, y, kind) {
+    box(w + 0.12, h + 0.12, 0.06, woodDark, x, y, -2.37);
+    const art = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshStandardMaterial({ map: makeArt(kind), roughness: 0.9 }));
+    art.position.set(x, y, -2.338);
+    scene.add(art);
+}
+makeFrame(0.7, 0.9, -2.55, 2.55, "heart");
+makeFrame(0.4, 0.5, -3.15, 2.85, "moon");
+makeFrame(0.9, 0.65, 2.55, 2.95, "arches");
+makeFrame(0.4, 0.5, 3.1, 2.4, "sun");
+
+// ---------- KARPET + BAKUL ----------
+carpet.material.color.set("#ffffff");
+carpet.material.map = canvasTex(512, 512, (g, w, h) => {
+    const c = w / 2;
+    [["#c4714e", 256], ["#efe3cc", 238], ["#d8a24a", 214], ["#efe3cc", 190], ["#a85f42", 150], ["#efe3cc", 128]].forEach(([col, r]) => {
+        g.fillStyle = col; g.beginPath(); g.arc(c, c, r, 0, Math.PI * 2); g.fill();
+    });
+    for (let i = 0; i < 1500; i++) {
+        g.fillStyle = `rgba(80,40,20,${rnd() * 0.07})`;
+        g.fillRect(rnd() * w, rnd() * h, 2, 2);
+    }
+}, 1, 1);
+carpet.material.needsUpdate = true;
+
+wickerMat.color.set("#c99a5e");
+wickerDark.color.set("#9a6a38");
+cushionMat.color.set("#e6bfa8");
+bowMat.color.set("#b85c46");
+
+// ---------- CAHAYA ----------
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = ROOM_EXPOSURE;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+scene.background = new THREE.Color("#d8c2a0");
+
+const hemi = scene.children.find(o => o.isHemisphereLight);
+if (hemi) {
+    hemi.color.set("#fff1dc");
+    hemi.groundColor.set("#8a6a4a");
+    hemi.intensity = 1.6;
+}
+
+mainLight.color.set("#ffe8c8");
+mainLight.intensity = 2.4;
+mainLight.position.set(3, 6, 5);
+mainLight.castShadow = true;
+mainLight.shadow.mapSize.set(1024, 1024);
+mainLight.shadow.camera.left = -7;
+mainLight.shadow.camera.right = 7;
+mainLight.shadow.camera.top = 7;
+mainLight.shadow.camera.bottom = -7;
+mainLight.shadow.camera.near = 1;
+mainLight.shadow.camera.far = 24;
+mainLight.shadow.camera.updateProjectionMatrix();
+mainLight.shadow.bias = -0.0004;
+mainLight.shadow.normalBias = 0.03;
+
+roomLight.color.set("#ffcf9a");
+roomLight.intensity = 10;
+roomLight.position.set(0, 3.2, 1.5);
+
+// cahaya matahari jatuh atas lantai depan tingkap (siang je)
+const sunTex = canvasTex(256, 256, (g, w, h) => {
+    g.fillStyle = "#000"; g.fillRect(0, 0, w, h);
+    g.setTransform(1, 0, -0.28, 1, 50, 0);
+    g.shadowColor = "rgba(255,225,160,1)";
+    g.shadowBlur = 16;
+    g.fillStyle = "rgba(255,230,170,0.9)";
+    [[40, 40], [136, 40], [40, 136], [136, 136]].forEach(([x, y]) => g.fillRect(x, y, 80, 80));
+}, 1, 1);
+const sunPatchMat = new THREE.MeshBasicMaterial({
+    map: sunTex, transparent: true, opacity: 0.32,
+    blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false
+});
+const sunPatch = new THREE.Mesh(new THREE.PlaneGeometry(3.2, 3.2), sunPatchMat);
+sunPatch.rotation.x = -Math.PI / 2;
+sunPatch.position.set(0.5, -0.46, -0.2);
+sunPatch.renderOrder = 1;
+sunPatch.userData.noShadow = true;
+scene.add(sunPatch);
+
+windowGlass.userData.noShadow = true;
+
+// ---------- bayang + animasi lampu / matahari ----------
+function underPet(o) {
+    for (let p = o; p; p = p.parent) if (p === petModel) return true;
+    return false;
+}
+
+function applyShadowFlags() {
+    scene.traverse(o => {
+        if (!o.isMesh || o.userData.shadowDone) return;
+        o.userData.shadowDone = true;
+        if (o.userData.noShadow || o.material.transparent || o.material.isMeshBasicMaterial) return;
+
+        if (o.material === pinkWall || o === roomFloor || o === carpet) {
+            o.receiveShadow = true;           // dinding, lantai, karpet: terima bayang je
+        } else if (petModel && underPet(o)) {
+            o.castShadow = true;              // kucing: hasilkan bayang je
+        } else {
+            o.castShadow = true;
+            o.receiveShadow = true;
+        }
+    });
+}
+
+let roomTick = 0;
+function updateRoomExtras() {
+    requestAnimationFrame(updateRoomExtras);
+    const night = nightMix;
+    lampShade.emissiveIntensity = 0.35 + 0.9 * night;
+    sunPatchMat.opacity = 0.32 * (1 - night);
+    if (roomTick++ % 20 === 0) applyShadowFlags();
+}
+requestAnimationFrame(updateRoomExtras);
+}
     
 /* =========================================
    3D PET TOYS - BALL & TEDDY
@@ -2145,13 +2542,13 @@ const hemiLight = scene.children.find(o => o.isHemisphereLight);
 
 // ---- Warna siang vs malam ----
 const NIGHT_LOOK = {
-    bg:        { day: new THREE.Color("#ffd9ec"), night: new THREE.Color("#1a1740") },
-    hemiSky:   { day: new THREE.Color(0xffffff),  night: new THREE.Color(0x7f8cff) },
-    hemiGround:{ day: new THREE.Color(0xffb6d9),  night: new THREE.Color(0x3b2a66) },
-    mainColor: { day: new THREE.Color(0xffffff),  night: new THREE.Color(0x9db0ff) },
-    roomColor: { day: new THREE.Color("#ffd6e8"), night: new THREE.Color("#ff9fc8") },
-   glass:     { day: new THREE.Color("#6fb8e8"), night: new THREE.Color("#141b4d") },
-glassEmit: { day: new THREE.Color("#3f9ad6"), night: new THREE.Color("#22307a") }
+    bg:        { day: new THREE.Color("#d8c2a0"), night: new THREE.Color("#1a1428") },
+    hemiSky:   { day: new THREE.Color("#fff1dc"), night: new THREE.Color(0x7f8cff) },
+    hemiGround:{ day: new THREE.Color("#8a6a4a"), night: new THREE.Color(0x3b2a66) },
+    mainColor: { day: new THREE.Color("#ffe8c8"), night: new THREE.Color(0x9db0ff) },
+    roomColor: { day: new THREE.Color("#ffcf9a"), night: new THREE.Color("#ff9f5a") },
+    glass:     { day: new THREE.Color("#ffffff"), night: new THREE.Color("#141b4d") },
+    glassEmit: { day: new THREE.Color("#555555"), night: new THREE.Color("#22307a") }
 };
 
 // ---- Lampu tepi katil (menyala waktu malam) ----
@@ -2194,8 +2591,8 @@ const stars = starSpots.map(([x, y]) => {
 let nightMix = 0;     // 0 = siang, 1 = malam
 let nightTarget = 0;
 
-const DAY_INTENSITY   = { hemi: 3,   main: 3,   room: 15 };
-const NIGHT_INTENSITY = { hemi: 0.9, main: 0.7, room: 3.5 };
+const DAY_INTENSITY   = { hemi: 1.6, main: 2.4, room: 10 };
+const NIGHT_INTENSITY = { hemi: 0.7, main: 0.6, room: 3 };
 
 function mixColor(target, pair, t) {
     target.copy(pair.day).lerp(pair.night, t);
