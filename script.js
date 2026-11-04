@@ -10703,11 +10703,13 @@ function renderPetInventory() {
             label = equippedNow[effect.slot] === id ? "Remove" : "Wear";
         }
 
+               const showQty = effect.type !== "wear";   // pakaian tak payah jumlah
+
         return `
             <div class="pet-inventory-item">
                 <span class="pet-inventory-emoji">${item.emoji}</span>
                 <span class="pet-inventory-name">${item.name}</span>
-                <strong>× ${quantity}</strong>
+                ${showQty ? `<span class="pet-inventory-qty">× ${quantity}</span>` : ""}
                 <button type="button" class="pet-use-btn"
                     onclick="window.usePetItem('${id}')">${label}</button>
             </div>
@@ -11814,6 +11816,63 @@ document.addEventListener("keydown", e => {
     if (e.key === "Escape") closePetChooser();
 });
 
+/* ===== AUTO: semua 🪙 jadi ikon syiling + betulkan butang X popup ===== */
+(function () {
+    const COIN = "🪙";
 
+    function swapCoins(root) {
+        if (!root) return;
+        if (root.nodeType === 3) root = root.parentNode;
+        if (!root || root.nodeType !== 1) return;
+        const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+            acceptNode(n) {
+                if (!n.nodeValue.includes(COIN)) return NodeFilter.FILTER_REJECT;
+                const tag = n.parentElement && n.parentElement.tagName;
+                if (["SCRIPT", "STYLE", "TEXTAREA", "TITLE"].includes(tag)) return NodeFilter.FILTER_REJECT;
+                return NodeFilter.FILTER_ACCEPT;
+            }
+        });
+        const nodes = [];
+        while (walker.nextNode()) nodes.push(walker.currentNode);
+        nodes.forEach(node => {
+            const frag = document.createDocumentFragment();
+            const parts = node.nodeValue.split(COIN);
+            parts.forEach((part, i) => {
+                if (part) frag.appendChild(document.createTextNode(part));
+                if (i < parts.length - 1) {
+                    const s = document.createElement("span");
+                    s.className = "coin-ic";
+                    frag.appendChild(s);
+                }
+            });
+            node.parentNode.replaceChild(frag, node);
+        });
+    }
+
+    function fixCloseButtons() {
+        const shopX = document.querySelector("#petShopSection > .pet-inv-close");
+        const shopRow = document.querySelector("#petShopSection .pet-store-title-row");
+        if (shopX && shopRow) shopRow.appendChild(shopX);
+
+        const invX = document.querySelector("#petInvModal .pet-inv-dialog > .pet-inv-close");
+        const invRow = document.querySelector("#petInvModal .pet-inventory-heading");
+        if (invX && invRow) invRow.appendChild(invX);
+    }
+
+    function start() {
+        swapCoins(document.body);
+        fixCloseButtons();
+        new MutationObserver(muts => {
+            muts.forEach(m => m.addedNodes.forEach(swapCoins));
+            fixCloseButtons();
+        }).observe(document.body, { childList: true, subtree: true });
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", start);
+    } else {
+        start();
+    }
+})();
 
 
