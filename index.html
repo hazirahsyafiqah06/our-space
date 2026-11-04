@@ -2768,18 +2768,15 @@ function runCatSleepPath() {
     }
 
     if (isSleeping) {
-        if (catPhase === "idle" || catPhase === "hopOut" || catPhase === "toHome") {
+        if (catPhase === "idle") {
             catPhase = "toEntry";
             catClip = "";
         }
-    } else if (catPhase === "toEntry") {
-        catPhase = "toHome";
+    } else if (catPhase !== "idle") {
+        // bangun: tak jalan, terus ikut gerakan biasa
+        catPhase = "idle";
         catClip = "";
-    } else if (catPhase === "hopIn" || catPhase === "asleep") {
-        catPhase = "hopOut";
-        catPhaseStart = now;
-        catHopFrom.copy(petModel.position);
-        catClip = "";
+        return false;
     }
 
     if (catPhase === "idle") return false;
@@ -2817,23 +2814,6 @@ function runCatSleepPath() {
             if (Math.abs(err) > 0.004) {
                 catSleepOffset = THREE.MathUtils.clamp(catSleepOffset + err * 0.35, -0.6, 0.6);
             }
-        }
-
-    } else if (catPhase === "hopOut") {
-        setCatClip("idle");
-        const t = Math.min(1, (now - catPhaseStart) / 1000 / CAT_HOP_TIME);
-        hopCat(catHopFrom, catEntry, t);
-        if (t >= 1) {
-            catPhase = "toHome";
-            catClip = "";
-        }
-
-    } else if (catPhase === "toHome") {
-        setCatClip("walk");
-        if (walkCat(catHome.pos, dt)) {
-            catPhase = "idle";
-            catClip = "";
-            setCatClip("idle");
         }
     }
 
