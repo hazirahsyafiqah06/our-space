@@ -10537,9 +10537,9 @@ function renderOurPet() {
         .join("");
 
     setText(
-        "petNameDisplay",
-        (ourPetData.pet_name || "Baby Love") + (wornEmojis ? " " + wornEmojis : "")
-    );
+    "petNameDisplay",
+    ourPetData.pet_name || "Baby Love"
+);
 
     setText("petCoinsDisplay", ourPetData.coins ?? 100);
 
@@ -11173,7 +11173,7 @@ async function saveMyCoinRow() {
 function showCoinToast(text) {
     const toast = document.createElement("div");
     toast.className = "coin-toast";
-    toast.innerHTML = `<span class="coin-toast-icon">🪙</span><span>${text}</span>`;
+    toast.innerHTML = `<span class="coin-toast-icon"><span class="coin-ic"></span></span><span>${text}</span>`;
     document.body.appendChild(toast);
 
     requestAnimationFrame(() => toast.classList.add("show"));
@@ -11246,7 +11246,7 @@ function showDailyClaimModal(day) {
         return `
             <div class="claim-day ${state}">
                 <small>Day ${n}</small>
-                <span>${n < day ? "✅" : "🪙"}</span>
+               <span>${n < day ? "✅" : '<span class="coin-ic"></span>'}</span>
                 <strong>${amount}</strong>
             </div>`;
     }).join("");
@@ -11257,7 +11257,7 @@ function showDailyClaimModal(day) {
     overlay.innerHTML = `
         <div class="daily-claim-card">
             <small>DAILY REWARD</small>
-            <h3>Claim your coins 🪙</h3>
+            <h3>Claim your coins </h3>
             <p>Login setiap hari untuk dapat coins lebih banyak ♡</p>
             <div class="claim-days">${days}</div>
             <button type="button" id="claimCoinsBtn">
@@ -11657,7 +11657,7 @@ function injectWearShop() {
             <span class="pet-shop-emoji">${item.emoji}</span>
             <strong>${item.name}</strong>
             <small>${slotLabel[item.slot]} item ✨</small>
-            <span class="pet-item-price">🪙 ${item.price}</span>
+           <span class="pet-item-price"><span class="coin-ic"></span> ${item.price}</span>
             <button type="button" onclick="buyPetItem('${id}')">Buy</button>
         `;
         grid.appendChild(card);
