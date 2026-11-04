@@ -1118,7 +1118,7 @@
                         <p>Choose something cute for our baby ♡</p>
                     </div>
                     <div class="pet-store-wallet" aria-label="Available coins">
-                        <span>🪙</span>
+                        <span class="coin-ic"></span>
                         <strong id="petShopCoins">0</strong>
                         <small>COINS</small>
                     </div>
@@ -1138,7 +1138,7 @@
                     <span class="pet-shop-emoji">🐟</span>
                     <strong>Fish Snack</strong>
                     <small>A yummy little fish</small>
-                    <span class="pet-item-price">🪙 20</span>
+                   <span class="pet-item-price"><span class="coin-ic"></span> 20</span>
                     <button type="button" onclick="buyPetItem('snack')">Buy</button>
                 </article>
                 <article class="pet-shop-item" data-category="food">
@@ -3745,7 +3745,7 @@ function refreshDressPanel() {
                     class="dress-tile ${on ? "on" : ""} ${owned ? "" : "locked"}"
                     data-action="${owned ? "wear" : "buy"}" data-id="${id}">
                     <span>${item.emoji}</span>
-                    <small>${owned ? item.name : "🔒 🪙" + item.price}</small>
+                    <small>${owned ? item.name : "🔒 " + item.price}</small>
                 </button>`);
         });
 
