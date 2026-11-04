@@ -2820,12 +2820,49 @@ function runCatSleepPath() {
     return true;
 }
 
+    // ===== BUBBLE CAKAP DI ATAS KEPALA KUCING =====
+const speechHeadPos = new THREE.Vector3();
+const speechBox = new THREE.Box3();
+
+function updatePetSpeechBubble() {
+    const bubble = document.getElementById("petSpeech");
+    if (!bubble || !petModel || !bubble.textContent.trim()) return;
+
+    const room = bubble.offsetParent || canvas.parentElement;
+    const roomW = room.clientWidth;
+    const roomH = room.clientHeight;
+
+    speechBox.setFromObject(petModel);
+    speechHeadPos.set(
+        (speechBox.min.x + speechBox.max.x) / 2,
+        speechBox.max.y,
+        (speechBox.min.z + speechBox.max.z) / 2
+    ).project(camera);
+
+    const headX = (speechHeadPos.x * 0.5 + 0.5) * canvas.clientWidth + canvas.offsetLeft;
+    const headY = (-speechHeadPos.y * 0.5 + 0.5) * canvas.clientHeight + canvas.offsetTop;
+
+    const w = bubble.offsetWidth;
+    const hgt = bubble.offsetHeight;
+    const half = w / 2;
+
+    const x = Math.min(Math.max(headX, half + 8), roomW - half - 8);
+    const y = Math.min(Math.max(headY - 14, hgt + 8), roomH - 8);
+
+    bubble.classList.add("above-cat");
+    bubble.style.left = x + "px";
+    bubble.style.top = y + "px";
+    bubble.style.transform = "translate(-50%, -100%)";
+    bubble.style.setProperty("--tail-x", (headX - (x - half)) + "px");
+}
+    
 // Sambung ke loop animate() sedia ada
 const baseUpdatePetToy3D = window.updatePetToy3D;
 window.updatePetToy3D = function () {
     if (baseUpdatePetToy3D) baseUpdatePetToy3D();
     updateCatStage();
     updatePetFood();
+    updatePetSpeechBubble(); 
 };
 
     /* =========================================
