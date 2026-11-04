@@ -9759,3 +9759,9 @@ html {
     padding: 2px 4px !important;
     line-height: 1 !important;
 }
+/* ===== BILIK COZY: buang pink ===== */
+.pet-room-3d { background: #d8c2a0 !important; }
+.pet-room-3d .pet-room-floor,
+#pet-section .pet-room-3d .pet-room-floor {
+    background: linear-gradient(180deg, #a9774a, #6b4528) !important;
+}
