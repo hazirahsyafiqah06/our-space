@@ -1082,13 +1082,13 @@
         </div>
 
         <div class="pet-actions">
-            <button onclick="interactWithPet('feed')">
-                🍓 Feed
-            </button>
+           <button onclick="openPetChooser('feed')">
+    🍓 Feed
+</button>
 
-            <button onclick="interactWithPet('play')">
-                🧸 Play
-            </button>
+<button onclick="openPetChooser('play')">
+    🧸 Play
+</button>
 
             <button onclick="interactWithPet('sleep')">
                 🌙 Sleep
@@ -1956,10 +1956,19 @@ window.showPetToy3D = function (toyType) {
     // Ball near cat
     ballGroup.position.set(-0.7, 0, 0.3);
 
-    // Save references for animation
+        // Save references for animation
     toyGroup.userData.ball = ballGroup;
     toyGroup.userData.teddy = teddy;
     toyGroup.userData.hearts = hearts;
+
+    // Teddy je ATAU bola je
+    petToyType = toyType;
+    ballGroup.visible = toyType !== "teddy";
+    teddy.visible = toyType !== "ball";
+
+    // Letak mainan sebelah kucing (ikut kedudukan kucing)
+    const home = catHome ? catHome.pos : (petModel ? petModel.position : new THREE.Vector3());
+    toyGroup.position.set(home.x, 0, home.z);
 };
 
 // =========================================
@@ -2374,6 +2383,197 @@ window.syncPetSleep = function (sleeping) {
         wakePet();
         basePlayPetAnimation("idle");
     }
+};
+
+    /* =========================================
+   🐱 CAT STAGE: katil, lompat, makan, minum
+========================================= */
+let petToyType = null;
+let catHome = null;      // kedudukan asal kucing
+let catBed = null;       // kedudukan atas katil
+let petFoodProp = null;  // strawberry / botol susu yang sedang dimakan
+
+const CAT_BED_X = 2.1;          // kiri/kanan atas katil
+const CAT_BED_Z = -0.9;         // dalam/luar atas katil
+const CAT_MOUTH_HEIGHT = 0.55;  // tinggi mulut (0 = kaki, 1 = kepala)
+const CAT_MOUTH_Z = 0.05;       // jarak depan mulut
+const PET_FOOD_DURATION = 3.4;  // saat makan/minum
+
+function captureCatHome() {
+    if (!petModel || catHome) return;
+
+    catHome = { pos: petModel.position.clone(), rotY: petModel.rotation.y };
+
+    const box = new THREE.Box3().setFromObject(petModel);
+    const c = box.getCenter(new THREE.Vector3());
+
+    catBed = new THREE.Vector3(
+        catHome.pos.x + (CAT_BED_X - c.x),
+        catHome.pos.y + (0.1 - box.min.y),   // atas tilam
+        catHome.pos.z + (CAT_BED_Z - c.z)
+    );
+}
+
+function getCatMouth(target) {
+    const box = new THREE.Box3().setFromObject(petModel);
+    const size = box.getSize(new THREE.Vector3());
+    return target.set(
+        (box.min.x + box.max.x) / 2,
+        box.min.y + size.y * CAT_MOUTH_HEIGHT,
+        box.max.z + CAT_MOUTH_Z
+    );
+}
+
+// ---- Strawberry 🍓 ----
+function makeStrawberry() {
+    const g = new THREE.Group();
+
+    const body = new THREE.Mesh(
+        new THREE.SphereGeometry(0.11, 20, 20),
+        new THREE.MeshStandardMaterial({ color: 0xff3b5c, roughness: 0.45 })
+    );
+    body.scale.set(1, 1.15, 1);
+    g.add(body);
+
+    const seedMat = new THREE.MeshStandardMaterial({ color: 0xffe9a8 });
+    for (let i = 0; i < 16; i++) {
+        const a = i * 2.4;
+        const y = ((i % 5) - 2) * 0.045;
+        const r = Math.sqrt(Math.max(0, 0.11 * 0.11 - y * y));
+        const seed = new THREE.Mesh(new THREE.SphereGeometry(0.009, 6, 6), seedMat);
+        seed.position.set(Math.cos(a) * r, y * 1.15, Math.sin(a) * r);
+        g.add(seed);
+    }
+
+    const leafMat = new THREE.MeshStandardMaterial({ color: 0x5cb85c });
+    for (let i = 0; i < 5; i++) {
+        const a = (i / 5) * Math.PI * 2;
+        const leaf = new THREE.Mesh(new THREE.SphereGeometry(0.045, 8, 8), leafMat);
+        leaf.scale.set(1, 0.25, 0.5);
+        leaf.position.set(Math.cos(a) * 0.05, 0.125, Math.sin(a) * 0.05);
+        leaf.rotation.y = -a;
+        g.add(leaf);
+    }
+
+    return g;
+}
+
+// ---- Botol susu 🥛 ----
+function makeMilkBottle() {
+    const g = new THREE.Group();
+
+    const glass = new THREE.MeshStandardMaterial({
+        color: 0xdff3ff, transparent: true, opacity: 0.45, roughness: 0.1
+    });
+    const milkMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.6 });
+    const capMat = new THREE.MeshStandardMaterial({ color: 0xff8fbd });
+
+    const body = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.3, 24), glass);
+    g.add(body);
+
+    const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.085, 0.1, 24), glass);
+    neck.position.y = 0.2;
+    g.add(neck);
+
+    const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.055, 0.04, 24), capMat);
+    cap.position.y = 0.27;
+    g.add(cap);
+
+    const milk = new THREE.Mesh(new THREE.CylinderGeometry(0.088, 0.088, 0.26, 24), milkMat);
+    milk.position.y = -0.01;
+    g.add(milk);
+
+    g.userData.milk = milk;
+    return g;
+}
+
+window.showPetFood3D = function (foodType) {
+    if (petFoodProp) scene.remove(petFoodProp.obj);
+
+    const obj = foodType === "milk" ? makeMilkBottle() : makeStrawberry();
+    scene.add(obj);
+
+    petFoodProp = { type: foodType, obj, start: performance.now() };
+};
+
+function updatePetFood() {
+    if (!petFoodProp || !petModel) return;
+
+    const t = (performance.now() - petFoodProp.start) / 1000;
+    const p = t / PET_FOOD_DURATION;
+
+    if (p >= 1) {
+        scene.remove(petFoodProp.obj);
+        petFoodProp = null;
+        return;
+    }
+
+    const mouth = getCatMouth(new THREE.Vector3());
+    const obj = petFoodProp.obj;
+
+    if (petFoodProp.type === "milk") {
+        // botol makin senget + susu makin sikit
+        const tilt = -(0.5 + 0.9 * Math.min(1, p * 1.4));
+        obj.rotation.set(tilt, 0, 0);
+
+        const neckTip = new THREE.Vector3(0, 0.29, 0).applyEuler(obj.rotation);
+        obj.position.copy(mouth).sub(neckTip);
+        obj.position.y += Math.sin(t * 10) * 0.005;
+
+        const level = Math.max(0.08, 1 - p * 0.95);
+        obj.userData.milk.scale.y = level;
+        obj.userData.milk.position.y = -0.14 + 0.13 * level;
+
+    } else {
+        // strawberry kena gigit 4 kali
+        const bites = 1 - 0.2 * Math.floor(p * 4);
+        obj.scale.setScalar(bites * (1 + Math.sin(t * 16) * 0.04));
+        obj.position.set(
+            mouth.x,
+            mouth.y - 0.02 + Math.sin(t * 12) * 0.012,
+            mouth.z + 0.08
+        );
+    }
+}
+
+// ---- Gerakan kucing: tidur atas katil, lompat main ----
+function updateCatStage() {
+    if (!petModel) return;
+    captureCatHome();
+    if (!catHome) return;
+
+    const desired = (isSleeping ? catBed : catHome.pos).clone();
+    let rotY = catHome.rotY;
+    let rate = 0.08;
+
+    if (petToyAnimationActive && !isSleeping) {
+        const t = (performance.now() - petToyStartTime) / 1000;
+        rate = 0.35;
+
+        if (petToyType === "teddy") {
+            // lompat-lompat dengan teddy
+            desired.y += Math.abs(Math.sin(t * 5)) * 0.28;
+            rotY += Math.sin(t * 2.5) * 0.25;
+
+        } else if (petToyType === "ball") {
+            // kejar bola
+            const ball = activePetToys[0]?.userData.ball;
+            if (ball) desired.x += (ball.position.x + 0.7) * 0.8;
+            desired.y += Math.abs(Math.sin(t * 5)) * 0.12;
+            rotY += Math.sin(t * 3) * 0.35;
+        }
+    }
+
+    petModel.position.lerp(desired, rate);
+    petModel.rotation.y += (rotY - petModel.rotation.y) * 0.2;
+}
+
+// Sambung ke loop animate() sedia ada
+const baseUpdatePetToy3D = window.updatePetToy3D;
+window.updatePetToy3D = function () {
+    if (baseUpdatePetToy3D) baseUpdatePetToy3D();
+    updateCatStage();
+    updatePetFood();
 };
 
     /* =========================================
