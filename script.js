@@ -10646,7 +10646,7 @@ async function renameOurPet() {
 // =====================================
 
 const PET_SHOP_ITEMS = {
-    snack: { name: "Strawberry Snack", emoji: "🍓", price: 20 },
+    snack: { name: "Fish Snack", emoji: "🐟", price: 20 },
     milk: { name: "Fresh Milk", emoji: "🥛", price: 30 },
     teddy: { name: "Teddy Bear", emoji: "🧸", price: 50 },
     ball: { name: "Play Ball", emoji: "⚽", price: 30 },
@@ -11300,7 +11300,7 @@ setTimeout(checkDailyClaim, 3500);
 ========================================= */
 
 const PET_ITEM_EFFECTS = {
-    snack: { type: "food", hunger: 20, happiness: 5, cleanliness: -5, msg: "Yum yum! Strawberry sedap 🍓" },
+    snack: { type: "food", hunger: 20, happiness: 5, cleanliness: -5, msg: "Yum yum! Ikan sedap 🐟" },
     milk:  { type: "food", hunger: 15, energy: 10, cleanliness: -3, msg: "Glug glug... susu fresh 🥛" },
     teddy: { type: "toy", happiness: 25, cleanliness: -3, msg: "Peluk teddy! So cuddly 🧸" },
     ball:  { type: "toy", happiness: 20, energy: -10, hunger: -10, cleanliness: -8, msg: "Main bola best! ⚽" },
@@ -11743,7 +11743,7 @@ document.addEventListener("keydown", e => {
 
 // ===== POPUP PILIHAN FEED / PLAY =====
 const PET_CHOICES = {
-    feed: { title: "🍓 Choose food", ids: ["snack", "milk"], label: "Feed" },
+   feed: { title: "🐟 Choose food", ids: ["snack", "milk"], label: "Feed" },
     play: { title: "🧸 Choose a toy", ids: ["teddy", "ball"], label: "Play" }
 };
 
