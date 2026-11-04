@@ -10859,7 +10859,7 @@ async function interactWithPet(action) {
         }
 
         if (next.hunger < 15) {
-            alert("Baby lapar 🍓 Bagi makan dulu baru boleh main ♡");
+           alert(`${petDisplayName()} lapar 🍓 Bagi makan dulu baru boleh main ♡`);
             return;
         }
 
@@ -11371,17 +11371,17 @@ async function usePetItem(itemId) {
         const poop = Number(ourPetData.poop_count) || 0;
 
         if (effect.type === "food" && hunger >= 100) {
-            alert("Baby dah kenyang 🍓");
+            alert(`${petDisplayName()} dah kenyang 🍓`);
             return;
         }
 
         if (effect.hunger < 0 && hunger < 15) {
-            alert("Baby lapar 🍓 Bagi makan dulu baru boleh main ♡");
+           alert(`${petDisplayName()} lapar 🍓 Bagi makan dulu baru boleh main ♡`);
             return;
         }
 
         if (effect.energy < 0 && energy < Math.abs(effect.energy)) {
-            alert("Baby penat. Biar dia tidur dulu 🌙");
+            alert(`${petDisplayName()} penat. Biar dia tidur dulu 🌙`);
             return;
         }
 
@@ -11416,7 +11416,7 @@ if (itemId === "ball" || itemId === "teddy") {
             Math.random() < POOP_CHANCE_AFTER_FOOD
         ) {
             update.poop_count = poop + 1;
-            message += " ...ups, baby berak 💩";
+           message += ` ...ups, ${petDisplayName()} berak 💩`;
         }
 
         if (window.playPetAnimation) {
@@ -11874,5 +11874,9 @@ document.addEventListener("keydown", e => {
         start();
     }
 })();
+
+function petDisplayName() {
+    return (ourPetData && ourPetData.pet_name) || "Baby";
+}
 
 
