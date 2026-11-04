@@ -9513,3 +9513,25 @@ html {
     flex: 0 0 auto;
 }
 .pet-shop-emoji { font-size: 34px !important; }
+
+/* ===== POPUP FEED / PLAY ===== */
+.pet-choice-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+.pet-choice {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 14px 10px;
+    border: 1px solid #f0e1e9;
+    border-radius: 16px;
+    background: #fff;
+    text-align: center;
+}
+.pet-choice-emoji { font-size: 44px !important; line-height: 1.2; }
+.pet-choice strong { color: #805d75; font-size: 13px; }
+.pet-choice small { color: #ad91a1; font-size: 12px; font-weight: 700; }
+.pet-choice.empty { opacity: .65; }
