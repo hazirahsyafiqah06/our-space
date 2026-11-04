@@ -10821,7 +10821,7 @@ async function interactWithPet(action) {
 
         play: "That was so fun! Let's play again 🧸",
 
-        sleep: "Zzz... I feel refreshed 🌙",
+       sleep: "Goodnight mommy & daddy 🌙 Zzz...",
 
         hug: "Big hugs for my favorite humans 🤗",
 
@@ -11401,6 +11401,11 @@ if (itemId === "ball" || itemId === "teddy") {
     }
 
 }
+            if (itemId === "snack" || itemId === "milk") {
+    if (window.showPetFood3D) {
+        window.showPetFood3D(itemId);
+    }
+}
 
         // Lepas makan, ada peluang berak 💩
         if (
@@ -11734,6 +11739,79 @@ window.closePetShop = closePetShop;
 
 document.addEventListener("keydown", e => {
     if (e.key === "Escape") closePetShop();
+});
+
+// ===== POPUP PILIHAN FEED / PLAY =====
+const PET_CHOICES = {
+    feed: { title: "🍓 Choose food", ids: ["snack", "milk"], label: "Feed" },
+    play: { title: "🧸 Choose a toy", ids: ["teddy", "ball"], label: "Play" }
+};
+
+function openPetChooser(kind) {
+    const cfg = PET_CHOICES[kind];
+    if (!cfg) return;
+
+    let modal = document.getElementById("petChooserModal");
+    if (!modal) {
+        modal = document.createElement("div");
+        modal.id = "petChooserModal";
+        modal.className = "pet-inv-modal";
+        modal.addEventListener("click", e => {
+            if (e.target === modal) closePetChooser();
+        });
+        document.body.appendChild(modal);
+    }
+
+    const inv = ourPetData?.inventory || {};
+
+    modal.innerHTML = `
+        <div class="pet-inv-dialog">
+            <button type="button" class="pet-inv-close" onclick="closePetChooser()" aria-label="Close">✕</button>
+
+            <div class="pet-inventory-heading">
+                <div>
+                    <h3>${cfg.title}</h3>
+                    <span>Pick one for our baby ♡</span>
+                </div>
+            </div>
+
+            <div class="pet-choice-grid">
+                ${cfg.ids.map(id => {
+                    const item = PET_SHOP_ITEMS[id];
+                    const qty = Number(inv[id]) || 0;
+                    return `
+                        <div class="pet-choice ${qty < 1 ? "empty" : ""}">
+                            <span class="pet-choice-emoji">${item.emoji}</span>
+                            <strong>${item.name}</strong>
+                            <small>Stock: ${qty}</small>
+                            ${qty > 0
+                                ? `<button type="button" class="pet-use-btn" onclick="choosePetItem('${id}')">${cfg.label}</button>`
+                                : `<button type="button" class="pet-use-btn" onclick="closePetChooser();openPetShop()">Buy</button>`}
+                        </div>
+                    `;
+                }).join("")}
+            </div>
+        </div>
+    `;
+
+    modal.classList.add("open");
+}
+
+function closePetChooser() {
+    document.getElementById("petChooserModal")?.classList.remove("open");
+}
+
+function choosePetItem(id) {
+    closePetChooser();
+    window.usePetItem(id);
+}
+
+window.openPetChooser = openPetChooser;
+window.closePetChooser = closePetChooser;
+window.choosePetItem = choosePetItem;
+
+document.addEventListener("keydown", e => {
+    if (e.key === "Escape") closePetChooser();
 });
 
 
