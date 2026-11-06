@@ -11940,31 +11940,92 @@ function historyTimeAgo(iso) {
 }
 
 function ensureHistoryPanel() {
-    let panel = document.getElementById("petHistoryPanel");
-    if (panel) return panel;
+    let modal = document.getElementById("petDiaryModal");
 
-    const anchor = document.getElementById("petActionMessage");
-    if (!anchor) return null;
+    if (!modal) {
+        modal = document.createElement("div");
+        modal.id = "petDiaryModal";
+        modal.className = "pet-inv-modal pet-diary-modal";
+        modal.innerHTML = `
+            <div class="pet-inv-dialog pet-diary-dialog">
+                <div class="pet-diary-head">
+                    <div>
+                        <h3>📜 Pet diary</h3>
+                        <span>apa kita buat untuk dia ♡</span>
+                    </div>
+                    <button type="button" class="pet-inv-close" onclick="closePetDiary()" aria-label="Close">✕</button>
+                </div>
+                <ul id="petHistoryList" class="pet-history-list"></ul>
+                <button type="button" id="petHistoryMore" class="pet-history-more" hidden></button>
+            </div>
+        `;
+        modal.addEventListener("click", e => {
+            if (e.target === modal) closePetDiary();
+        });
+        modal.querySelector("#petHistoryMore").onclick = () => {
+            petHistoryExpanded = !petHistoryExpanded;
+            renderPetHistory();
+        };
+        document.body.appendChild(modal);
+    }
 
-    panel = document.createElement("div");
-    panel.id = "petHistoryPanel";
-    panel.className = "pet-history";
-    panel.innerHTML = `
-        <div class="pet-history-head">
-            <strong>📜 Pet diary</strong>
-            <span>apa kita buat untuk dia ♡</span>
-        </div>
-        <ul id="petHistoryList" class="pet-history-list"></ul>
-        <button type="button" id="petHistoryMore" class="pet-history-more" hidden></button>
-    `;
-    anchor.insertAdjacentElement("afterend", panel);
+    // butang Diary sebelah Shop / Inventory / Dress up
+    if (!document.getElementById("petDiaryBtn")) {
+        const bar = document.querySelector(".pet-heading-actions");
+        if (bar) {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.id = "petDiaryBtn";
+            btn.className = "pet-inv-open";
+            btn.innerHTML = '📜 <span>Diary</span><b id="petDiaryBadge" class="pet-diary-badge" hidden></b>';
+            btn.onclick = openPetDiary;
+            bar.appendChild(btn);
+        }
+    }
 
-    panel.querySelector("#petHistoryMore").onclick = () => {
-        petHistoryExpanded = !petHistoryExpanded;
-        renderPetHistory();
-    };
-    return panel;
+    return modal;
 }
+
+function readDiarySeen() {
+    try { return Number(localStorage.getItem("petDiarySeen")) || 0; } catch (e) { return 0; }
+}
+
+function markDiarySeen() {
+    try { localStorage.setItem("petDiarySeen", String(Date.now())); } catch (e) {}
+    updateDiaryBadge();
+}
+
+function updateDiaryBadge() {
+    const badge = document.getElementById("petDiaryBadge");
+    if (!badge || !currentUser) return;
+
+    const seen = readDiarySeen();
+    const n = petHistory.filter(r =>
+        r.user_id !== currentUser.id && new Date(r.created_at).getTime() > seen
+    ).length;
+
+    badge.hidden = n === 0;
+    badge.textContent = n > 9 ? "9+" : String(n);
+}
+
+function openPetDiary() {
+    const modal = ensureHistoryPanel();
+    petHistoryExpanded = false;
+    renderPetHistory();
+    modal.classList.add("open");
+    markDiarySeen();
+}
+
+function closePetDiary() {
+    document.getElementById("petDiaryModal")?.classList.remove("open");
+}
+
+window.openPetDiary = openPetDiary;
+window.closePetDiary = closePetDiary;
+
+document.addEventListener("keydown", e => {
+    if (e.key === "Escape") closePetDiary();
+});
 
 function renderPetHistory(note) {
     const list = document.getElementById("petHistoryList");
@@ -12022,8 +12083,11 @@ function addPetHistory(row, fresh) {
     petHistory = petHistory.slice(0, PET_HISTORY_LIMIT);
     if (fresh) petHistoryFreshId = row.id;
     renderPetHistory();
-}
 
+    const isOpen = document.getElementById("petDiaryModal")?.classList.contains("open");
+    if (isOpen) markDiarySeen();
+    else updateDiaryBadge();
+}
 async function loadPetHistory() {
     const { data, error } = await supabaseClient
         .from("pet_activity")
@@ -12046,6 +12110,11 @@ async function initPetHistory() {
     if (!currentUser || !ensureHistoryPanel()) return;
 
     await loadPetHistory();
+        // kali pertama: jangan tunjuk titik merah untuk aktiviti lama
+    let firstTime = true;
+    try { firstTime = !localStorage.getItem("petDiarySeen"); } catch (e) {}
+    if (firstTime) markDiarySeen();
+    else updateDiaryBadge();
 
     if (!petHistoryChannel) {
         petHistoryChannel = supabaseClient
