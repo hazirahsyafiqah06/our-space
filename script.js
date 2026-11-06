@@ -11879,4 +11879,277 @@ function petDisplayName() {
     return (ourPetData && ourPetData.pet_name) || "Baby";
 }
 
+/* =========================================
+   📜 PET DIARY: sejarah aktiviti (Zirah & Zul nampak apa yang partner buat)
+========================================= */
+const PET_HISTORY_LIMIT = 30;
+const PET_HISTORY_SHOW = 6;
 
+let petHistory = [];
+let petHistoryChannel = null;
+let petHistoryExpanded = false;
+let petHistoryFreshId = null;
+
+const PET_HISTORY_ICONS = {
+    feed: "🍓", play: "🧸", sleep: "🌙", hug: "🤗",
+    clean: "🫧", buy: "🛍️", dress: "👗", rename: "✏️"
+};
+
+function historyPetName() {
+    return (ourPetData && ourPetData.pet_name) || "Baby";
+}
+
+function historyWho(userId) {
+    if (currentUser && userId === currentUser.id) return "Awak";
+    return userId === HAZIRAH_ID ? "Zirah" : "Zul";
+}
+
+function historyText(row) {
+    const who = historyWho(row.user_id);
+    const pet = historyPetName();
+    const d = row.detail || "";
+
+    switch (row.action) {
+        case "feed":   return `${who} bagi ${pet} makan ${d}`;
+        case "play":   return d ? `${who} main ${d} dengan ${pet}` : `${who} main dengan ${pet}`;
+        case "sleep":  return `${who} tidurkan ${pet}`;
+        case "hug":    return `${who} peluk ${pet}`;
+        case "clean":  return d === "poop"
+            ? `${who} bersihkan tahi ${pet} 💩`
+            : `${who} mandikan ${pet}`;
+        case "buy":    return `${who} beli ${d}`;
+        case "dress": {
+            const [verb, name] = d.split("|");
+            return verb === "pakai"
+                ? `${who} pakaikan ${name} kat ${pet}`
+                : `${who} bukakan ${name} dari ${pet}`;
+        }
+        case "rename": return `${who} tukar nama jadi ${d}`;
+        default:       return `${who} ${d}`;
+    }
+}
+
+function historyTimeAgo(iso) {
+    const s = Math.max(0, (Date.now() - new Date(iso).getTime()) / 1000);
+    if (s < 60) return "baru je";
+    if (s < 3600) return `${Math.floor(s / 60)} min lalu`;
+    if (s < 86400) return `${Math.floor(s / 3600)} jam lalu`;
+    const d = new Date(iso);
+    return d.toLocaleDateString("en-GB", { day: "numeric", month: "short" }) + ", " +
+        d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+}
+
+function ensureHistoryPanel() {
+    let panel = document.getElementById("petHistoryPanel");
+    if (panel) return panel;
+
+    const anchor = document.getElementById("petActionMessage");
+    if (!anchor) return null;
+
+    panel = document.createElement("div");
+    panel.id = "petHistoryPanel";
+    panel.className = "pet-history";
+    panel.innerHTML = `
+        <div class="pet-history-head">
+            <strong>📜 Pet diary</strong>
+            <span>apa kita buat untuk dia ♡</span>
+        </div>
+        <ul id="petHistoryList" class="pet-history-list"></ul>
+        <button type="button" id="petHistoryMore" class="pet-history-more" hidden></button>
+    `;
+    anchor.insertAdjacentElement("afterend", panel);
+
+    panel.querySelector("#petHistoryMore").onclick = () => {
+        petHistoryExpanded = !petHistoryExpanded;
+        renderPetHistory();
+    };
+    return panel;
+}
+
+function renderPetHistory(note) {
+    const list = document.getElementById("petHistoryList");
+    const more = document.getElementById("petHistoryMore");
+    if (!list) return;
+
+    list.innerHTML = "";
+
+    if (!petHistory.length) {
+        const li = document.createElement("li");
+        li.className = "pet-history-empty";
+        li.textContent = note || "Belum ada aktiviti lagi. Jom jaga dia sama-sama ♡";
+        list.appendChild(li);
+        if (more) more.hidden = true;
+        return;
+    }
+
+    const rows = petHistoryExpanded ? petHistory : petHistory.slice(0, PET_HISTORY_SHOW);
+
+    rows.forEach(row => {
+        const li = document.createElement("li");
+        li.className = "pet-history-item" +
+            (row.user_id === (currentUser && currentUser.id) ? " mine" : " partner") +
+            (row.id === petHistoryFreshId ? " fresh" : "");
+
+        const icon = document.createElement("span");
+        icon.className = "pet-history-icon";
+        icon.textContent = PET_HISTORY_ICONS[row.action] || "🐾";
+
+        const body = document.createElement("div");
+        body.className = "pet-history-body";
+
+        const text = document.createElement("p");
+        text.textContent = historyText(row);
+
+        const time = document.createElement("small");
+        time.textContent = historyTimeAgo(row.created_at);
+
+        body.appendChild(text);
+        body.appendChild(time);
+        li.appendChild(icon);
+        li.appendChild(body);
+        list.appendChild(li);
+    });
+
+    if (more) {
+        more.hidden = petHistory.length <= PET_HISTORY_SHOW;
+        more.textContent = petHistoryExpanded ? "Tunjuk sikit je" : `Tengok semua (${petHistory.length})`;
+    }
+}
+
+function addPetHistory(row, fresh) {
+    if (!row || petHistory.some(r => r.id === row.id)) return;
+    petHistory.unshift(row);
+    petHistory = petHistory.slice(0, PET_HISTORY_LIMIT);
+    if (fresh) petHistoryFreshId = row.id;
+    renderPetHistory();
+}
+
+async function loadPetHistory() {
+    const { data, error } = await supabaseClient
+        .from("pet_activity")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(PET_HISTORY_LIMIT);
+
+    if (error) {
+        console.warn("Pet history load error:", error);
+        petHistory = [];
+        renderPetHistory("Diary belum aktif. Table pet_activity belum dibuat di Supabase.");
+        return;
+    }
+
+    petHistory = data || [];
+    renderPetHistory();
+}
+
+async function initPetHistory() {
+    if (!currentUser || !ensureHistoryPanel()) return;
+
+    await loadPetHistory();
+
+    if (!petHistoryChannel) {
+        petHistoryChannel = supabaseClient
+            .channel("our-space-pet-history")
+            .on(
+                "postgres_changes",
+                { event: "INSERT", schema: "public", table: "pet_activity" },
+                payload => addPetHistory(payload.new, true)
+            )
+            .subscribe();
+
+        setInterval(() => renderPetHistory(), 60000);
+    }
+}
+
+async function logPetActivity(action, detail) {
+    if (!currentUser) return;
+
+    const { data, error } = await supabaseClient
+        .from("pet_activity")
+        .insert({ user_id: currentUser.id, action, detail: detail || "" })
+        .select()
+        .single();
+
+    if (error) {
+        console.warn("Pet history log error:", error);
+        return;
+    }
+
+    addPetHistory(data, false);
+}
+
+// ---------- sambung ke tindakan sedia ada ----------
+(function hookPetHistory() {
+    const stamp = () => (ourPetData ? ourPetData.updated_at : null);
+    const changed = before =>
+        ourPetData &&
+        ourPetData.updated_at !== before &&
+        currentUser &&
+        ourPetData.updated_by === currentUser.id;
+
+    // load pet -> mula diary
+    const _load = loadOurPet;
+    loadOurPet = async function () {
+        await _load.apply(this, arguments);
+        initPetHistory();
+    };
+
+    // sleep / hug / clean / play (butang terus)
+    const _interact = interactWithPet;
+    interactWithPet = async function (action) {
+        const before = stamp();
+        const soapBefore = Number(ourPetData && ourPetData.inventory && ourPetData.inventory.soap) || 0;
+
+        await _interact.apply(this, arguments);
+
+        if (action === "feed") return;           // dilog oleh usePetItem
+        if (!changed(before)) return;
+
+        logPetActivity(action, action === "clean" ? (soapBefore >= 1 ? "bath" : "poop") : "");
+    };
+    window.interactWithPet = interactWithPet;
+
+    // makan / main dengan item / pakai pakaian
+    const _use = usePetItem;
+    usePetItem = async function (itemId) {
+        const before = stamp();
+
+        await _use.apply(this, arguments);
+
+        const item = PET_SHOP_ITEMS[itemId];
+        const effect = PET_ITEM_EFFECTS[itemId];
+        if (!item || !effect || effect.type === "care") return;   // sabun dilog oleh Clean
+        if (!changed(before)) return;
+
+        const label = `${item.name} ${item.emoji}`;
+
+        if (effect.type === "food") {
+            logPetActivity("feed", label);
+        } else if (effect.type === "toy") {
+            logPetActivity("play", label);
+        } else if (effect.type === "wear") {
+            const equipped = normalizeEquipped(ourPetData.equipped);
+            const on = equipped[effect.slot] === itemId;
+            logPetActivity("dress", `${on ? "pakai" : "buka"}|${label}`);
+        }
+    };
+    window.usePetItem = usePetItem;
+
+    // beli kat shop
+    const _buy = buyPetItem;
+    buyPetItem = async function (itemId) {
+        const before = stamp();
+        await _buy.apply(this, arguments);
+        const item = PET_SHOP_ITEMS[itemId];
+        if (item && changed(before)) logPetActivity("buy", `${item.name} ${item.emoji}`);
+    };
+    window.buyPetItem = buyPetItem;
+
+    // tukar nama
+    const _rename = window.renameOurPet;
+    window.renameOurPet = async function () {
+        const before = ourPetData && ourPetData.pet_name;
+        await _rename.apply(this, arguments);
+        if (ourPetData && ourPetData.pet_name !== before) logPetActivity("rename", ourPetData.pet_name);
+    };
+})();
