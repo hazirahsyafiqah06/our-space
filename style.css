@@ -9765,3 +9765,78 @@ html {
 #pet-section .pet-room-3d .pet-room-floor {
     background: linear-gradient(180deg, #a9774a, #6b4528) !important;
 }
+
+/* ===== PET DIARY ===== */
+.pet-history {
+    margin-top: 14px;
+    padding: 14px;
+    border: 1px solid #f3dce8;
+    border-radius: 18px;
+    background: #fff9fc;
+}
+.pet-history-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+.pet-history-head strong { font-size: 14px; color: #8f5575; }
+.pet-history-head span { font-size: 11px; color: #b58aa3; }
+
+.pet-history-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+.pet-history-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 11px;
+    border-radius: 14px;
+    background: #fff;
+    border: 1px solid #f6e5ee;
+    border-left: 4px solid #f2b6d0;      /* pink = awak */
+}
+.pet-history-item.partner { border-left-color: #9ec1f0; }   /* biru = partner */
+.pet-history-item.fresh { animation: petHistoryPop 0.9s ease; }
+
+.pet-history-icon { flex: 0 0 auto; font-size: 20px; line-height: 1; }
+.pet-history-body { min-width: 0; flex: 1; }
+.pet-history-body p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.35;
+    color: #7a5469;
+    overflow-wrap: anywhere;
+}
+.pet-history-body small { font-size: 11px; color: #b79aab; }
+
+.pet-history-empty {
+    padding: 10px 4px;
+    font-size: 12px;
+    text-align: center;
+    color: #b58aa3;
+}
+.pet-history-more {
+    width: 100%;
+    margin-top: 10px;
+    padding: 8px;
+    border: 1px solid #f0d7e4;
+    border-radius: 12px;
+    background: #fff;
+    color: #a0627f;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+@keyframes petHistoryPop {
+    0%   { transform: scale(0.96); background: #fff0f7; }
+    100% { transform: scale(1);    background: #fff; }
+}
