@@ -9840,3 +9840,47 @@ html {
     0%   { transform: scale(0.96); background: #fff0f7; }
     100% { transform: scale(1);    background: #fff; }
 }
+
+/* ===== BUTANG + POPUP DIARY ===== */
+.pet-heading-actions { flex-wrap: wrap; gap: 8px; }
+#petDiaryBtn { position: relative; }
+
+.pet-diary-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: #ff5d8f;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 18px;
+    text-align: center;
+    box-shadow: 0 0 0 2px #fff;
+}
+.pet-diary-badge[hidden] { display: none; }
+
+.pet-diary-dialog .pet-diary-head {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+.pet-diary-dialog .pet-diary-head h3 { margin: 0 0 2px; font-size: 16px; color: #8f5575; }
+.pet-diary-dialog .pet-diary-head span { font-size: 11px; color: #b58aa3; }
+.pet-diary-dialog .pet-history-list { flex: 1 1 auto; min-height: 0; max-height: none; }
+
+/* teks dalam diary: rata kiri, tak renggang */
+.pet-history-item { text-align: left; }
+.pet-history-body p,
+.pet-history-body small {
+    display: block;
+    text-align: left;
+    letter-spacing: normal;
+}
+.pet-history-icon { width: 24px; text-align: center; }
